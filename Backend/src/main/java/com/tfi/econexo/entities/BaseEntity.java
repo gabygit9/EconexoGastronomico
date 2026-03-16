@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
  * Abstract base class providing common auditing fields for all entities.
  * The {@code BaseEntity} class defines metadata attributes automatically
  * managed by Spring Data JPA’s auditing infrastructure. It captures
- * creation and modification timestamps as well as the usernames
+ * creation and modification timestamps as well as the identifiers
  * of the users responsible for those actions.
  * */
 @Getter
@@ -76,7 +76,7 @@ public abstract class BaseEntity {
     @JsonProperty("created_by")
     @CreatedBy
     @Column(name = "created_by", nullable = false, updatable = false)
-    protected String createdBy;
+    protected Long createdBy;
 
     /**
      * Represents the identifier of the last user who updated this entity.
