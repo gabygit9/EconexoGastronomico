@@ -1,7 +1,7 @@
-package com.tfi.econexo.entities;
+package com.tfi.econexo.entities.donation;
 
 
-public enum CommerceType {
+public enum DonorType {
     STORE,
     SUPERMARKET,
     RESTAURANT,

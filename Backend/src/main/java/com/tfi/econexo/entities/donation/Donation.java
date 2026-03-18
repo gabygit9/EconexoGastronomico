@@ -1,7 +1,11 @@
-package com.tfi.econexo.entities;
+package com.tfi.econexo.entities.donation;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.tfi.econexo.entities.base.BaseEntity;
+import com.tfi.econexo.entities.logistics.Driver;
+import com.tfi.econexo.entities.organization.Organization;
+import com.tfi.econexo.entities.logistics.Vehicle;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,7 +22,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Donation extends BaseEntity{
+public class Donation extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

@@ -1,6 +1,9 @@
-package com.tfi.econexo.entities;
+package com.tfi.econexo.entities.organization;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.tfi.econexo.entities.base.BaseEntity;
+import com.tfi.econexo.entities.location.Neighborhood;
+import com.tfi.econexo.entities.auth.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,18 +12,22 @@ import lombok.NoArgsConstructor;
 import org.locationtech.jts.geom.Point;
 
 @Entity
-@Table(name = "donors")
+@Table(name = "organizations")
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Donor extends BaseEntity {
+public class Organization extends BaseEntity {
 
-    @JsonProperty("business_name")
+    @JsonProperty("organization_name")
     @Column(nullable = false)
-    private String businessName;
+    private String organizationName;
 
-    @Column(unique = true, nullable = false)
+    @JsonProperty("responsible_name")
+    @Column(nullable = false)
+    private String responsibleName;
+
+    @Column(unique = true)
     private String cuit;
 
     private String phone;
@@ -36,8 +43,6 @@ public class Donor extends BaseEntity {
     @JoinColumn(name = "neighborhood_id", nullable = false)
     private Neighborhood neighborhood;
 
-    // --- POSTGIS ---
-    // SRID 4326 usa el estándar GPS mundial (Latitud/Longitud)
     @Column(columnDefinition = "geometry(Point, 4326)")
     private Point location;
 
@@ -45,7 +50,7 @@ public class Donor extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @JsonProperty("commerce_type")
+    @JsonProperty("organization_type")
     @Enumerated(EnumType.STRING)
-    private CommerceType commerceType;
+    private OrganizationType organizationType;
 }

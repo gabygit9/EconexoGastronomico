@@ -1,6 +1,7 @@
-package com.tfi.econexo.entities;
+package com.tfi.econexo.entities.catalog;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.tfi.econexo.entities.base.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;

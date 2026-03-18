@@ -1,6 +1,7 @@
-package com.tfi.econexo.entities;
+package com.tfi.econexo.entities.logistics;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.tfi.econexo.entities.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

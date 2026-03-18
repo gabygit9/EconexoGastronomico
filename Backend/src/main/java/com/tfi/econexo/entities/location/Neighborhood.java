@@ -1,5 +1,6 @@
-package com.tfi.econexo.entities;
+package com.tfi.econexo.entities.location;
 
+import com.tfi.econexo.entities.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Neighborhood extends BaseEntity{
+public class Neighborhood extends BaseEntity {
 
     @Column(nullable = false)
     private String name;

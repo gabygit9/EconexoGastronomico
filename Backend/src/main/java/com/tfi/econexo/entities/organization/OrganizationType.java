@@ -1,4 +1,4 @@
-package com.tfi.econexo.entities;
+package com.tfi.econexo.entities.organization;
 
 public enum OrganizationType {
     SOUP_KITCHEN,

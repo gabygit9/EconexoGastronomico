@@ -1,4 +1,4 @@
-package com.tfi.econexo.entities;
+package com.tfi.econexo.entities.base;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;

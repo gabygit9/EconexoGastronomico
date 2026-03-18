@@ -1,4 +1,4 @@
-package com.tfi.econexo.entities;
+package com.tfi.econexo.entities.auth;
 
 public enum Role {
     ADMIN,

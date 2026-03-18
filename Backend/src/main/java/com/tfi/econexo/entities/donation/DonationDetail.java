@@ -1,7 +1,9 @@
-package com.tfi.econexo.entities;
+package com.tfi.econexo.entities.donation;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.tfi.econexo.entities.base.BaseEntity;
+import com.tfi.econexo.entities.catalog.Category;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,7 +18,7 @@ import java.time.LocalDate;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class DonationDetail extends BaseEntity{
+public class DonationDetail extends BaseEntity {
 
     @Column(nullable = false)
     @JsonProperty("quantity_kg")
