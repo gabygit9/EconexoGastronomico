@@ -50,7 +50,7 @@ public abstract class BaseEntity {
      * the database. It is marked as non-updatable to ensure the original
      * creation time remains intact.
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     @JsonProperty("created_date")
     @CreatedDate
     @Column(name = "created_date", nullable = false, updatable = false)
@@ -61,7 +61,7 @@ public abstract class BaseEntity {
      * This field is automatically managed by JPA and is updated to the current
      * timestamp each time an update operation is performed on the entity.
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     @JsonProperty("updated_date")
     @LastModifiedDate
     @Column(name = "updated_date", nullable = false)
