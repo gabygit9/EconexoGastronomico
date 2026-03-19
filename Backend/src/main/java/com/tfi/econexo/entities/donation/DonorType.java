@@ -8,5 +8,6 @@ public enum DonorType {
     HOTEL,
     BAR,
     EVENT_HALL,
-    PRIVATE_CITIZEN
+    PRIVATE_CITIZEN,
+    BAKERY
 }

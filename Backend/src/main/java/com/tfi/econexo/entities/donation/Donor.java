@@ -23,8 +23,12 @@ public class Donor extends BaseEntity {
     @Column(nullable = false)
     private String businessName;
 
+    @JsonProperty("legal_name")
+    @Column(nullable = false)
+    private String legalName;
+
     @Column(unique = true, nullable = false)
-    private String cuit;
+    private String taxIdentification;
 
     private String phone;
 

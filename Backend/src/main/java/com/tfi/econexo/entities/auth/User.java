@@ -1,9 +1,7 @@
 package com.tfi.econexo.entities.auth;
 
 import com.tfi.econexo.entities.base.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,10 +17,8 @@ import lombok.NoArgsConstructor;
 public class User extends BaseEntity {
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Role role;
-
-    @Column(nullable = false, unique = true)
-    private String userName;
 
     @Column(nullable = false, length = 255)
     private String password;
