@@ -1,4 +1,4 @@
-package com.tfi.econexo.util;
+package com.tfi.econexo.exception;
 
 import com.tfi.econexo.dtos.common.ErrorApi;
 import jakarta.persistence.EntityNotFoundException;

@@ -7,6 +7,7 @@ import com.tfi.econexo.entities.auth.User;
 import com.tfi.econexo.entities.donation.Donor;
 import com.tfi.econexo.entities.donation.DonorType;
 import com.tfi.econexo.entities.location.Neighborhood;
+import com.tfi.econexo.mappers.DonorMapper;
 import com.tfi.econexo.repositories.auth.UserRepository;
 import com.tfi.econexo.repositories.donation.DonorRepository;
 import com.tfi.econexo.repositories.location.NeighborhoodRepository;
@@ -28,6 +29,7 @@ public class AuthServiceImpl implements AuthService {
     private final DonorRepository donorRepository;
     private final UserRepository userRepository;
     private final NeighborhoodRepository neighborhoodRepository;
+    private final DonorMapper donorMapper;
 
     @Transactional
     @Override
@@ -46,14 +48,7 @@ public class AuthServiceImpl implements AuthService {
         Neighborhood neighborhood = neighborhoodRepository.findById(donorRegistrationDTO.neighborhoodId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid neighborhood ID"));
 
-        Donor donor = new Donor();
-        donor.setBusinessName(donorRegistrationDTO.businessName());
-        donor.setLegalName(donorRegistrationDTO.legalName());
-        donor.setTaxIdentification(donorRegistrationDTO.taxIdentification());
-        donor.setPhone(donorRegistrationDTO.phone());
-        donor.setStreet(donorRegistrationDTO.street());
-        donor.setStreetNumber(donorRegistrationDTO.streetNumber());
-        donor.setDonorType(DonorType.valueOf(donorRegistrationDTO.donorType()));
+        Donor donor = donorMapper.toEntity(donorRegistrationDTO);
         donor.setUser(savedUser);
         donor.setNeighborhood(neighborhood);
 
@@ -63,20 +58,9 @@ public class AuthServiceImpl implements AuthService {
 
         Donor savedDonor = donorRepository.save(donor);
 
-        return new DonorResponseDTO(
-                savedDonor.getId(),
-                savedDonor.getBusinessName(),
-                savedDonor.getLegalName(),
-                savedDonor.getTaxIdentification(),
-                savedDonor.getPhone(),
-                savedDonor.getStreet(),
-                savedDonor.getStreetNumber(),
-                savedDonor.getNeighborhood().getId(),
-                savedDonor.getDonorType().name()
-        );
+        return donorMapper.toResponseDTO(savedDonor);
     }
-
-
+    
     private boolean isEmailValid(String email){
         String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
         return email != null && email.matches(emailRegex);
