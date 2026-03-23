@@ -1,7 +1,9 @@
 package com.tfi.econexo.controllers.auth;
 
-import com.tfi.econexo.dtos.auth.DonorRegistrationDTO;
-import com.tfi.econexo.dtos.auth.DonorResponseDTO;
+import com.tfi.econexo.dtos.auth.donor.DonorRegistrationDTO;
+import com.tfi.econexo.dtos.auth.donor.DonorResponseDTO;
+import com.tfi.econexo.dtos.auth.driver.DriverRegistrationDTO;
+import com.tfi.econexo.dtos.auth.driver.DriverResponseDTO;
 import com.tfi.econexo.services.auth.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,5 +24,10 @@ public class AuthController {
     @PostMapping("/register/donor")
     public ResponseEntity<DonorResponseDTO> registerDonor(@RequestBody @Valid DonorRegistrationDTO donorRegistrationDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.registerDonor(donorRegistrationDTO));
+    }
+
+    @PostMapping("/register/driver")
+    public ResponseEntity<DriverResponseDTO> registerDriver(@RequestBody @Valid DriverRegistrationDTO driverRegistrationDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(authService.registerDriver(driverRegistrationDTO));
     }
 }

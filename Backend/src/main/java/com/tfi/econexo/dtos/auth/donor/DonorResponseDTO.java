@@ -1,4 +1,4 @@
-package com.tfi.econexo.dtos.auth;
+package com.tfi.econexo.dtos.auth.donor;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

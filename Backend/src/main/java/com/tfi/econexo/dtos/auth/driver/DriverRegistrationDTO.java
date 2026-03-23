@@ -1,11 +1,13 @@
-package com.tfi.econexo.dtos.auth;
+package com.tfi.econexo.dtos.auth.driver;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-public record DonorRegistrationDTO(
+import java.time.LocalDate;
+
+public record DriverRegistrationDTO(
         @NotNull
         @Email
         String email,
@@ -14,12 +16,17 @@ public record DonorRegistrationDTO(
         @Size(min = 8, message = "Password must be at least 8 characters long")
         String password,
 
-        @JsonProperty("business_name")
         @NotNull
-        String businessName,
+        @JsonProperty("first_name")
+        String firstName,
 
-        @JsonProperty("legal_name")
-        String legalName,
+        @NotNull
+        @JsonProperty("last_name")
+        String lastName,
+
+        @NotNull
+        @JsonProperty("license_driver")
+        String licenseDriver,
 
         @JsonProperty("tax_identification")
         @NotNull
@@ -29,11 +36,8 @@ public record DonorRegistrationDTO(
         String phone,
 
         @NotNull
-        String street,
-
-        @JsonProperty("street_number")
-        @NotNull
-        String streetNumber,
+        @JsonProperty("date_of_birth")
+        LocalDate dateOfBirth,
 
         @NotNull
         Double latitude,
@@ -45,8 +49,17 @@ public record DonorRegistrationDTO(
         @NotNull
         Long neighborhoodId,
 
-        @JsonProperty("donor_type")
+        @JsonProperty("number_plate")
+        String numberPlate,
+
+        @JsonProperty("has_refrigeration")
+        boolean hasRefrigeration,
+
+        @JsonProperty("vehicle_type")
         @NotNull
-        String donorType
-)
-{}
+        String vehicleType,
+
+        @NotNull
+        Integer capacity
+) {
+}
