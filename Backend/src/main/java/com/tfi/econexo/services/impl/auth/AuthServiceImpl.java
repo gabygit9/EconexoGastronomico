@@ -4,6 +4,8 @@ import com.tfi.econexo.dtos.auth.donor.DonorRegistrationDTO;
 import com.tfi.econexo.dtos.auth.donor.DonorResponseDTO;
 import com.tfi.econexo.dtos.auth.driver.DriverRegistrationDTO;
 import com.tfi.econexo.dtos.auth.driver.DriverResponseDTO;
+import com.tfi.econexo.dtos.auth.login.LoginRequestDTO;
+import com.tfi.econexo.dtos.auth.login.LoginResponseDTO;
 import com.tfi.econexo.dtos.auth.organization.OrganizationRegistrationDTO;
 import com.tfi.econexo.dtos.auth.organization.OrganizationResponseDTO;
 import com.tfi.econexo.entities.auth.Role;
@@ -54,7 +56,6 @@ public class AuthServiceImpl implements AuthService {
         validateCredentials(donorRegistrationDTO.email(), donorRegistrationDTO.password());
 
         User user = createUser(donorRegistrationDTO.email(), donorRegistrationDTO.password(), Role.DONOR.name());
-
         User savedUser = userRepository.save(user);
 
         Neighborhood neighborhood = neighborhoodRepository.findById(donorRegistrationDTO.neighborhoodId())
@@ -142,6 +143,16 @@ public class AuthServiceImpl implements AuthService {
         Organization savedOrganization = organizationRepository.save(organization);
 
         return organizationMapper.toResponseDTO(savedOrganization);
+    }
+
+    @Override
+    public LoginResponseDTO login(LoginRequestDTO request) {
+        User user = userRepository.findByEmail(request.email())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid credentials"));
+        if (!user.getPassword().equals(request.password())) {
+            throw new IllegalArgumentException("Invalid credentials");
+        }
+        return new LoginResponseDTO(user.getId(), user.getEmail(), user.getRole().name());
     }
 
     private User createUser(String email,String password, String role) {

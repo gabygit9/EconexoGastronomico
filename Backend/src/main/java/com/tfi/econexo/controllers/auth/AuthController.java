@@ -4,6 +4,8 @@ import com.tfi.econexo.dtos.auth.donor.DonorRegistrationDTO;
 import com.tfi.econexo.dtos.auth.donor.DonorResponseDTO;
 import com.tfi.econexo.dtos.auth.driver.DriverRegistrationDTO;
 import com.tfi.econexo.dtos.auth.driver.DriverResponseDTO;
+import com.tfi.econexo.dtos.auth.login.LoginRequestDTO;
+import com.tfi.econexo.dtos.auth.login.LoginResponseDTO;
 import com.tfi.econexo.dtos.auth.organization.OrganizationRegistrationDTO;
 import com.tfi.econexo.dtos.auth.organization.OrganizationResponseDTO;
 import com.tfi.econexo.services.auth.AuthService;
@@ -36,5 +38,10 @@ public class AuthController {
     @PostMapping("/register/organization")
     public ResponseEntity<OrganizationResponseDTO> registerOrganization(@RequestBody @Valid OrganizationRegistrationDTO organizationRegistrationDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.registerOrganization(organizationRegistrationDTO));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody @Valid LoginRequestDTO loginRequestDTO) {
+        return ResponseEntity.ok(authService.login(loginRequestDTO));
     }
 }
