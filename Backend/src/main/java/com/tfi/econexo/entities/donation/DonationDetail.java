@@ -36,11 +36,11 @@ public class DonationDetail extends BaseEntity {
     @Column(length = 255)
     private String allergenWarning;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "donation_id", nullable = false)
     private Donation donation;
 
-    @ManyToOne
+    @ManyToOne(fetch =  FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 }

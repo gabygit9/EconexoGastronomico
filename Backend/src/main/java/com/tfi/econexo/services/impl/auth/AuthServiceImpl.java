@@ -4,6 +4,8 @@ import com.tfi.econexo.dtos.auth.donor.DonorRegistrationDTO;
 import com.tfi.econexo.dtos.auth.donor.DonorResponseDTO;
 import com.tfi.econexo.dtos.auth.driver.DriverRegistrationDTO;
 import com.tfi.econexo.dtos.auth.driver.DriverResponseDTO;
+import com.tfi.econexo.dtos.auth.organization.OrganizationRegistrationDTO;
+import com.tfi.econexo.dtos.auth.organization.OrganizationResponseDTO;
 import com.tfi.econexo.entities.auth.Role;
 import com.tfi.econexo.entities.auth.User;
 import com.tfi.econexo.entities.donation.Donor;
@@ -11,12 +13,15 @@ import com.tfi.econexo.entities.location.Neighborhood;
 import com.tfi.econexo.entities.logistics.Driver;
 import com.tfi.econexo.entities.logistics.Vehicle;
 import com.tfi.econexo.entities.logistics.VehicleType;
+import com.tfi.econexo.entities.organization.Organization;
 import com.tfi.econexo.mappers.DonorMapper;
 import com.tfi.econexo.mappers.DriverMapper;
+import com.tfi.econexo.mappers.OrganizationMapper;
 import com.tfi.econexo.repositories.auth.UserRepository;
 import com.tfi.econexo.repositories.donation.DonorRepository;
 import com.tfi.econexo.repositories.location.NeighborhoodRepository;
 import com.tfi.econexo.repositories.logistics.DriverRepository;
+import com.tfi.econexo.repositories.organization.OrganizationRepository;
 import com.tfi.econexo.services.auth.AuthService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -35,10 +40,12 @@ public class AuthServiceImpl implements AuthService {
 
     private final DonorRepository donorRepository;
     private final DriverRepository driverRepository;
+    private final OrganizationRepository organizationRepository;
     private final UserRepository userRepository;
     private final NeighborhoodRepository neighborhoodRepository;
     private final DonorMapper donorMapper;
     private final DriverMapper driverMapper;
+    private final OrganizationMapper organizationMapper;
 
     @Transactional
     @Override
@@ -110,6 +117,31 @@ public class AuthServiceImpl implements AuthService {
                 driverSaved.getNeighborhood().getId(),
                 savedVehicle.getCapacityKg()
         );
+    }
+
+    @Transactional
+    @Override
+    public OrganizationResponseDTO registerOrganization(OrganizationRegistrationDTO organizationRegistrationDTO) {
+        if(organizationRegistrationDTO == null){throw new IllegalArgumentException("Organization registration data cannot be null");}
+        validateCredentials(organizationRegistrationDTO.email(), organizationRegistrationDTO.password());
+
+        User user = createUser(organizationRegistrationDTO.email(), organizationRegistrationDTO.password(), Role.ORGANIZATION.name());
+        User savedUser = userRepository.save(user);
+
+        Neighborhood neighborhood = neighborhoodRepository.findById(organizationRegistrationDTO.neighborhoodId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid neighborhood ID"));
+
+        Organization organization = organizationMapper.toEntity(organizationRegistrationDTO);
+        organization.setUser(savedUser);
+        organization.setNeighborhood(neighborhood);
+
+        GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+        Point location = geometryFactory.createPoint(new Coordinate(organizationRegistrationDTO.longitude(), organizationRegistrationDTO.latitude()));
+        organization.setLocation(location);
+
+        Organization savedOrganization = organizationRepository.save(organization);
+
+        return organizationMapper.toResponseDTO(savedOrganization);
     }
 
     private User createUser(String email,String password, String role) {

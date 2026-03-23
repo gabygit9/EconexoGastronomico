@@ -7,5 +7,6 @@ public enum OrganizationType {
     SHELTER,
     COMMUNITY_CENTER,
     ELDERLY_HOME,
-    CHILDREN_HOME
+    CHILDREN_HOME,
+    OTHER
 }

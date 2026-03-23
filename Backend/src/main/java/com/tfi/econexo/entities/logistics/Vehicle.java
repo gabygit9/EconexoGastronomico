@@ -29,7 +29,7 @@ public class Vehicle extends BaseEntity {
     @JsonProperty("capacity_kg")
     private int capacityKg;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "driver_id", nullable = false)
     private Driver driver;
 }

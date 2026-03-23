@@ -39,14 +39,14 @@ public class Organization extends BaseEntity {
     @Column(nullable = false)
     private String streetNumber;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "neighborhood_id", nullable = false)
     private Neighborhood neighborhood;
 
     @Column(columnDefinition = "geometry(Point, 4326)")
     private Point location;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 

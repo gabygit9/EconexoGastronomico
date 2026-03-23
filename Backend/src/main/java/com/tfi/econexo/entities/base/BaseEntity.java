@@ -89,4 +89,6 @@ public abstract class BaseEntity {
     @LastModifiedBy
     @Column(name = "updated_by", nullable = false)
     protected Long updatedBy;
+
+    private boolean isActive = true;
 }

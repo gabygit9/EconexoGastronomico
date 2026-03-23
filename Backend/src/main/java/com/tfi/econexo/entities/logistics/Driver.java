@@ -49,11 +49,11 @@ public class Driver extends BaseEntity {
     @Column(columnDefinition = "geometry(Point, 4326)")
     private Point currentLocation;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "neighborhood_id", nullable = false)
     private Neighborhood neighborhood;
 

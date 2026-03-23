@@ -38,19 +38,19 @@ public class Donation extends BaseEntity {
     @Column(nullable = false)
     private LocalDateTime endDateTime;
 
-    @ManyToOne
+    @ManyToOne(fetch =  FetchType.LAZY)
     @JoinColumn(name = "donor_id", nullable = false)
     private Donor donor;
 
-    @ManyToOne
+    @ManyToOne(fetch =  FetchType.LAZY)
     @JoinColumn(name = "organization_id")
     private Organization organization;
 
-    @ManyToOne
+    @ManyToOne(fetch =   FetchType.LAZY)
     @JoinColumn(name = "driver_id")
     private Driver driver;
 
-    @ManyToOne
+    @ManyToOne(fetch =  FetchType.LAZY)
     @JoinColumn(name = "vehicle_id")
     private Vehicle vehicle;
 
