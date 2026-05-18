@@ -1,6 +1,6 @@
 package com.tfi.econexo.exception;
 
-import com.tfi.econexo.dtos.common.ErrorApi;
+import com.tfi.econexo.dto.common.ErrorApi;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

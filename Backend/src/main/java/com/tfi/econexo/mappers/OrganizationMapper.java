@@ -1,8 +1,8 @@
 package com.tfi.econexo.mappers;
 
-import com.tfi.econexo.dtos.auth.organization.OrganizationRegistrationDTO;
-import com.tfi.econexo.dtos.auth.organization.OrganizationResponseDTO;
-import com.tfi.econexo.entities.organization.Organization;
+import com.tfi.econexo.dto.auth.organization.OrganizationRegistrationDTO;
+import com.tfi.econexo.dto.auth.organization.OrganizationResponseDTO;
+import com.tfi.econexo.entity.organization.Organization;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;

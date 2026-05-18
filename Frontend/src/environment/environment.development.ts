@@ -1,0 +1,3 @@
+export const environmentDevelopment = {
+  apiUrl: 'http://localhost:8080/api',
+};

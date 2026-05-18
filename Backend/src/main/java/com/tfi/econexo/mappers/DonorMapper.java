@@ -1,8 +1,8 @@
 package com.tfi.econexo.mappers;
 
-import com.tfi.econexo.dtos.auth.donor.DonorRegistrationDTO;
-import com.tfi.econexo.dtos.auth.donor.DonorResponseDTO;
-import com.tfi.econexo.entities.donation.Donor;
+import com.tfi.econexo.dto.auth.donor.DonorRegistrationDTO;
+import com.tfi.econexo.dto.auth.donor.DonorResponseDTO;
+import com.tfi.econexo.entity.donation.Donor;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;

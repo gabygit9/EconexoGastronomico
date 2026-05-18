@@ -1,70 +1,87 @@
-🍃 EcoNexo Gastronómico
+# 🍃 EcoNexo Gastronómico
 
-EcoNexo es una plataforma tecnológica desarrollada como proyecto de tesis, orientada a mitigar el desperdicio de alimentos en el sector gastronómico mediante logística de proximidad. Conecta de forma eficiente a comercios donantes con conductores voluntarios y organizaciones receptoras, priorizando la seguridad bromatológica y la reducción de la huella de carbono.
+**EcoNexo** es una plataforma tecnológica desarrollada como proyecto de tesis para la **Tecnicatura en Programación (UTN FRC)**. El objetivo es mitigar el desperdicio de alimentos en el sector gastronómico de la ciudad de **Córdoba** mediante logística de proximidad, conectando comercios donantes con organizaciones receptoras mediante conductores voluntarios, priorizando la seguridad bromatológica y la reducción de la huella de carbono.
 
-El proyecto inicia su fase piloto enfocada en la ciudad de Córdoba.
+## 🛠️ Stack Tecnológico
 
-🛠️ Stack Tecnológico
+* **Backend:** Java 17 + Spring Boot 3.x + Hibernate 6
+* **Base de Datos:** PostgreSQL + PostGIS (Gestión de geolocalización y datos espaciales)
+* **Infraestructura Local:** Docker (Contenerización de servicios)
+* **Frontend:** Angular 19 + Tailwind CSS v4
+* **Seguridad:** Spring Security + JWT (JSON Web Tokens)
 
-La plataforma está construida utilizando una arquitectura moderna y escalable:
+---
 
-Backend: Java 17 + Spring Boot 3.5.11
+## 🏗️ Estructura del Proyecto (Scaffolding)
 
-Base de Datos: PostgreSQL con extensión PostGIS (Manejo de datos espaciales y geolocalización)
+El sistema está dividido en dos aplicaciones independientes que se comunican mediante una API REST, aplicando el patrón de transformación de casos (el Backend y Frontend operan en `camelCase`, pero la transferencia de red se realiza en `snake_case`).
 
-Infraestructura Local: Docker
+### Backend (Spring Boot - Arquitectura en Capas)
+```text
+src/main/java/com/utn/econexo
+├── config/       # Configuraciones globales (Swagger, CORS, Jackson)
+├── controller/   # Endpoints de la API REST (@RestController)
+├── dto/          # Objetos de transferencia (Request/Response)
+├── exception/    # Manejo global de errores (@ControllerAdvice)
+├── mapper/       # Conversión entre Entidades y DTOs
+├── model/        # Entidades JPA y Enums (@Entity)
+├── repository/   # Acceso a base de datos (Spring Data JPA)
+├── security/     # Lógica de autenticación, filtros y JwtUtils
+└── service/      # Interfaces de negocio y sus implementaciones
+```
 
-Seguridad: Spring Security + JWT (JSON Web Tokens)
+### Frontend (Angular - Feature-Driven Architecture)
+```text
+src/
+├── environments/   # Variables de entorno (Desarrollo y Producción)
+├── app/
+│   ├── core/       # Guards, Interceptors (Case Transform) y Servicios Singletons
+│   ├── shared/     # Componentes UI reutilizables, Pipes y Modelos (Interfaces)
+│   └── features/   # Módulos de negocio aislados:
+│       ├── auth/          # Login y Registro
+│       ├── donations/     # Publicación y listado de excedentes
+│       ├── organizations/ # Perfiles de ONGs y Comercios
+│       └── map/           # Vista interactiva de proximidad
+```
+***
+## 🚀 Instalación y Ejecución Local
+### 1. Requisitos Previos
+* Java Development Kit (JDK) 17
+* Node.js (v22+) y Angular CLI
+* Docker Desktop
 
-Frontend (Próximamente): Angular 19 + Tailwind CSS
+### 2. Levantar la Base de Datos Espacial
+El proyecto requiere PostgreSQL con PostGIS. Ejecutá este comando en tu terminal reemplazando ```<tu_usuario>``` y ```<tu_password>``` por las credenciales que desees usar localmente:
 
-🚀 Características Principales (Roadmap)
+```text
+docker run --name econexo-db -e POSTGRES_USER=<tu_usuario> -e POSTGRES_PASSWORD=<tu_password> -e POSTGRES_DB=econexo_db -p 5432:5432 -d postgis/postgis:16-3.4
+```
 
-[x] Diseño de Arquitectura y Base de Datos.
+(Este comando levanta el motor, crea la base de datos ```econexo_db``` y le inyecta las capacidades espaciales automáticamente).
 
-[x] Diseño UX/UI (Handoff).
+### 3. Configuración del Backend
+Por seguridad, las credenciales no están versionadas. Debés inyectar las siguientes variables de entorno en la configuración de ejecución de tu IDE (Run/Debug Configurations) para que coincidan con las de tu contenedor Docker:
 
-[x] Configuración inicial del servidor y bases de datos espaciales.
+* ```DB_USER```: ```<tu_usuario>```
+* ```DB_PASSWORD```: ```<tu_password>```
 
-[ ] Módulo de Autenticación: Registro de perfiles (Comercio, Conductor, ONG) y Login.
+Una vez seteadas, ejecutá la clase ```EconexoApplication.java```.
 
-[ ] Core de Donaciones: Publicación de excedentes, asignación basada en proximidad y confirmación de recepción.
+### 4. Ejecución del Frontend
+Posicionate en el directorio del frontend, instalá las dependencias y levantá el servidor de desarrollo:
 
-[ ] Motor de Geolocalización: Cálculo de distancias y rutas usando PostGIS.
+```text
+npm install
+ng serve
+```
+***
+## 📅 Roadmap de Desarrollo (Sprints)
+El ciclo de vida del proyecto está estructurado en 6 Sprints incrementales:
 
-[ ] Trazabilidad Bromatológica: Registro de temperatura y cadena de frío.
-
-[ ] Módulo de Impacto Ambiental: Dashboard de Kgs salvados y CO2 evitado.
-
-[ ] Cumplimiento Legal (Ley Donal): Emisión de certificados fiscales.
-
-⚙️ Requisitos Previos (Para desarrollo local)
-
-Para ejecutar este proyecto en tu entorno local, necesitas tener instalado:
-
-Java Development Kit (JDK) 17
-
-Docker Desktop
-
-🏗️ Instalación y Ejecución
-
-1. Levantar la Base de Datos
-
-El proyecto requiere una instancia de PostgreSQL con la extensión PostGIS habilitada. Puedes levantarla rápidamente mediante Docker ejecutando:
-
-docker run --name econexo-db -e POSTGRES_PASSWORD=tu_password_local -p 5432:5432 -d postgis/postgis:16-3.4
-
-
-(Nota: Asegúrate de crear la base de datos econexo_db y ejecutar CREATE EXTENSION postgis; en tu consola SQL inicial).
-
-2. Configurar Variables de Entorno
-
-Por seguridad, las credenciales no están versionadas en el código. Debes inyectar las siguientes variables de entorno en la configuración de ejecución de tu IDE antes de arrancar la aplicación:
-
-DB_USER: (ej. postgres)
-
-DB_PASSWORD: (el password configurado en tu contenedor Docker)
-
-3. Ejecutar la Aplicación
-
-Una vez configuradas las variables y con el contenedor corriendo, ejecuta la clase principal EconexoApplication.java. El servidor arrancará por defecto en el puerto 8080.
+* [x] **Sprint 0: Setup y Arquitectura**. Configuración inicial, despliegue de base de datos con PostGIS, variables de entorno y scaffolding completo de Backend y Frontend.
+* [ ] **Sprint 1: Identidad y Seguridad**. Implementación del módulo de autenticación (Spring Security + JWT) y gestión de perfiles (Comercios, ONGs, Conductores).
+* [ ] **Sprint 2: Core de Donaciones**. Flujo completo de publicación de excedentes alimentarios, catálogo, actualización de estados y panel de gestión.
+* [ ] **Sprint 3: Motor Espacial**. Integración de mapas, uso de PostGIS para el cálculo de distancias y lógicas de asignación por proximidad.
+* [ ] **Sprint 4: Trazabilidad e Impacto**. Registro bromatológico, control de estados de entrega y dashboard de métricas ambientales (Kg salvados, CO2 evitado).
+* [ ] **Sprint 5: Cumplimiento Legal y Certificación.** Implementación de la lógica para la Ley Donal, generación de comprobantes y emisión de certificados fiscales de donación.
+* [ ] **Sprint 6: Cierre, Refinamiento y Despliegue.** Pruebas integrales E2E, auditoría de código, correcciones finales de UI/UX, y despliegue a producción (Deploy).

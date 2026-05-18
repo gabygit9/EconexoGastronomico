@@ -1,9 +1,9 @@
 package com.tfi.econexo.config;
 
-import com.tfi.econexo.entities.location.City;
-import com.tfi.econexo.entities.location.Neighborhood;
-import com.tfi.econexo.repositories.location.CityRepository;
-import com.tfi.econexo.repositories.location.NeighborhoodRepository;
+import com.tfi.econexo.entity.location.City;
+import com.tfi.econexo.entity.location.Neighborhood;
+import com.tfi.econexo.repository.location.CityRepository;
+import com.tfi.econexo.repository.location.NeighborhoodRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
