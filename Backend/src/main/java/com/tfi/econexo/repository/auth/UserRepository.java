@@ -1,13 +1,13 @@
 package com.tfi.econexo.repository.auth;
 
-import com.tfi.econexo.entity.auth.User;
+import com.tfi.econexo.entity.security.UserSec;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<UserSec, Long> {
 
-    Optional<User> findByEmail(String email);
+    Optional<UserSec> findUserEntityByEmail(String email);
 }

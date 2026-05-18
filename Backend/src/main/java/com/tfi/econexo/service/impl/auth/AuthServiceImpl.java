@@ -16,6 +16,7 @@ import com.tfi.econexo.entity.logistics.Driver;
 import com.tfi.econexo.entity.logistics.Vehicle;
 import com.tfi.econexo.entity.logistics.VehicleType;
 import com.tfi.econexo.entity.organization.Organization;
+import com.tfi.econexo.entity.security.UserSec;
 import com.tfi.econexo.mappers.DonorMapper;
 import com.tfi.econexo.mappers.DriverMapper;
 import com.tfi.econexo.mappers.OrganizationMapper;
@@ -55,8 +56,8 @@ public class AuthServiceImpl implements AuthService {
         if(donorRegistrationDTO == null){throw new IllegalArgumentException("Donor registration data cannot be null");}
         validateCredentials(donorRegistrationDTO.email(), donorRegistrationDTO.password());
 
-        User user = createUser(donorRegistrationDTO.email(), donorRegistrationDTO.password(), Role.DONOR.name());
-        User savedUser = userRepository.save(user);
+        UserSec user = createUser(donorRegistrationDTO.email(), donorRegistrationDTO.password(), Role.DONOR.name());
+        UserSec savedUser = userRepository.save(user);
 
         Neighborhood neighborhood = neighborhoodRepository.findById(donorRegistrationDTO.neighborhoodId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid neighborhood ID"));
@@ -80,8 +81,8 @@ public class AuthServiceImpl implements AuthService {
         if(driverRegistrationDTO == null){throw new IllegalArgumentException("Driver registration data cannot be null");}
         validateCredentials(driverRegistrationDTO.email(), driverRegistrationDTO.password());
 
-        User user = createUser(driverRegistrationDTO.email(), driverRegistrationDTO.password(), Role.DRIVER.name());
-        User savedUser = userRepository.save(user);
+        UserSec user = createUser(driverRegistrationDTO.email(), driverRegistrationDTO.password(), Role.DRIVER.name());
+        UserSec savedUser = userRepository.save(user);
 
         Neighborhood neighborhood = neighborhoodRepository.findById(driverRegistrationDTO.neighborhoodId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid neighborhood ID"));
@@ -126,8 +127,8 @@ public class AuthServiceImpl implements AuthService {
         if(organizationRegistrationDTO == null){throw new IllegalArgumentException("Organization registration data cannot be null");}
         validateCredentials(organizationRegistrationDTO.email(), organizationRegistrationDTO.password());
 
-        User user = createUser(organizationRegistrationDTO.email(), organizationRegistrationDTO.password(), Role.ORGANIZATION.name());
-        User savedUser = userRepository.save(user);
+        UserSec user = createUser(organizationRegistrationDTO.email(), organizationRegistrationDTO.password(), Role.ORGANIZATION.name());
+        UserSec savedUser = userRepository.save(user);
 
         Neighborhood neighborhood = neighborhoodRepository.findById(organizationRegistrationDTO.neighborhoodId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid neighborhood ID"));
@@ -147,7 +148,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginResponseDTO login(LoginRequestDTO request) {
-        User user = userRepository.findByEmail(request.email())
+        UserSec user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid credentials"));
         if (!user.getPassword().equals(request.password())) {
             throw new IllegalArgumentException("Invalid credentials");
@@ -155,8 +156,8 @@ public class AuthServiceImpl implements AuthService {
         return new LoginResponseDTO(user.getId(), user.getEmail(), user.getRole().name());
     }
 
-    private User createUser(String email,String password, String role) {
-        User user = new User();
+    private UserSec createUser(String email,String password, String role) {
+        UserSec user = new UserSec();
         user.setEmail(email);
         //TODO encrypt password
         user.setPassword(password);
