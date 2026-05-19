@@ -8,8 +8,6 @@ import com.tfi.econexo.dto.auth.login.LoginRequestDTO;
 import com.tfi.econexo.dto.auth.login.LoginResponseDTO;
 import com.tfi.econexo.dto.auth.organization.OrganizationRegistrationDTO;
 import com.tfi.econexo.dto.auth.organization.OrganizationResponseDTO;
-import com.tfi.econexo.entity.auth.Role;
-import com.tfi.econexo.entity.auth.User;
 import com.tfi.econexo.entity.donation.Donor;
 import com.tfi.econexo.entity.location.Neighborhood;
 import com.tfi.econexo.entity.logistics.Driver;
