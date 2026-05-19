@@ -25,10 +25,14 @@ public class JwtUtils {
     @Value("${security.jwt.user.generator}")
     private String userGenerator;
 
+    @Value("${security.jwt.expiration.minutes}")
+    private Long expirationMinutes;
+
     //Creación de tokens
     public String createToken(Authentication authentication) {
 
         Algorithm algorithm = Algorithm.HMAC256(privateKey);
+        long expirationMillis = expirationMinutes * 60 * 1000;
 
         //nombre del usuario principal autenticado. Queda en el context holder.
         String username = authentication.getPrincipal().toString();
@@ -43,7 +47,7 @@ public class JwtUtils {
                 .withSubject(username)
                 .withClaim("authorities", authorities)
                 .withIssuedAt(new Date())
-                .withExpiresAt(new Date(System.currentTimeMillis() + (30*60000))) //30'
+                .withExpiresAt(new Date(System.currentTimeMillis() + expirationMillis)) //30'
                 .withJWTId(UUID.randomUUID().toString())
                 .withNotBefore(new Date(System.currentTimeMillis()))
                 .sign(algorithm);
