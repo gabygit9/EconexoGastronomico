@@ -1,41 +1,29 @@
 package com.tfi.econexo.config;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-
-import java.lang.reflect.Method;
-import java.util.Map;
+import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Optional;
 
 @Configuration
-public class AuditorAwareImpl {
+public class AuditorAwareImpl implements AuditorAware<String>{
 
-    @Bean
-    public AuditorAware<Long> auditorProvider() {
-        return () -> {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    @Override
+    public Optional<String> getCurrentAuditor() {
 
-            // Si no hay nadie logueado
-            if (auth == null || !auth.isAuthenticated() || auth.getPrincipal().equals("anonymousUser")) {
-                return Optional.of(0L);
-            }
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-            try {
+        if (auth == null || !auth.isAuthenticated() || auth.getPrincipal().equals("anonymousUser")) {
+            return Optional.of("SYSTEM");
+        }
 
-                // TODO: Descomentar esto cuando se cree la clase UserDetailsImpl
-                /*
-                UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
-                return Optional.of(userDetails.getId());
-                */
+        Object principal = auth.getPrincipal();
+        if (principal instanceof UserDetails) {
+            return Optional.of(((UserDetails) principal).getUsername());
+        }
 
-                return Optional.of(1L); // Temporal hasta que hagamos el UserDetailsImpl
-
-            } catch (Exception e) {
-                return Optional.of(0L);
-            }
-        };
+        return Optional.of("SYSTEM");
     }
 }
