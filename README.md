@@ -60,14 +60,22 @@ docker run --name econexo-db -e POSTGRES_USER=<tu_usuario> -e POSTGRES_PASSWORD=
 (Este comando levanta el motor, crea la base de datos ```econexo_db``` y le inyecta las capacidades espaciales automáticamente).
 
 ### 3. Configuración del Backend
-Por seguridad, las credenciales no están versionadas. Debés inyectar las siguientes variables de entorno en la configuración de ejecución de tu IDE (Run/Debug Configurations) para que coincidan con las de tu contenedor Docker:
+Por seguridad, las credenciales no están versionadas. Debés inyectar las siguientes variables de entorno en la configuración de ejecución de tu IDE (Run/Debug Configurations) para que el proyecto pueda levantar correctamente:
 
 * ```DB_USER```: ```<tu_usuario>```
 * ```DB_PASSWORD```: ```<tu_password>```
+* ```PRIVATE_KEY```: ```<tu_clave_secreta_para_firmar_jwts>``` (Ej: una cadena alfanumérica segura)
+* ```USER_GENERATOR```: ```<tu_generador>```
+* ```JWT_EXPIRATION_MINUTES```: ```<tu_expiracion>```
+*
 
-Una vez seteadas, ejecutá la clase ```EconexoApplication.java```.
+Una vez seteadas, ejecutá la clase ```EconexoApplication.java```. El sistema creará automáticamente un usuario administrador por defecto (admin@econexo.com / admin1234).
 
-### 4. Ejecución del Frontend
+### 4. Documentación de la API (Swagger)
+El backend cuenta con documentación interactiva generada con OpenAPI. Con la aplicación en ejecución, podés visualizar y probar los endpoints ingresando a:
+http://localhost:8080/swagger-ui/index.html
+
+### 5. Ejecución del Frontend
 Posicionate en el directorio del frontend, instalá las dependencias y levantá el servidor de desarrollo:
 
 ```text
