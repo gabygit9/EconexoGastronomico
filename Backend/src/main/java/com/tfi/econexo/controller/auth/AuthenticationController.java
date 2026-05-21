@@ -2,9 +2,13 @@ package com.tfi.econexo.controller.auth;
 
 import com.tfi.econexo.dto.auth.AuthLoginRequestDTO;
 import com.tfi.econexo.dto.auth.AuthResponseDTO;
+import com.tfi.econexo.dto.auth.donor.DonorRegistrationDTO;
+import com.tfi.econexo.dto.auth.donor.DonorResponseDTO;
+import com.tfi.econexo.service.auth.AuthService;
 import com.tfi.econexo.service.impl.auth.UserDetailsServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,12 +28,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationController {
 
     private final UserDetailsServiceImpl userDetailsService;
+    private final AuthService authService;
 
+    @PostMapping("/login")
     @Operation(summary = "User login",
             description = "Authenticate user credentials (email and password). If correct, generates and returns a JWT token along with the corresponding roles.")
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "200",
+                    responseCode = "201",
                     description = "Successfully authentication. Returns a valid JWT token",
                     content = @Content
             ),
@@ -44,10 +50,27 @@ public class AuthenticationController {
                     content = @Content
             )
     })
-    @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login (@RequestBody @Valid AuthLoginRequestDTO userRequest) {
-        return new ResponseEntity<>(this.userDetailsService.loginUser(userRequest), HttpStatus.OK);
+        return new ResponseEntity<>(this.userDetailsService.loginUser(userRequest), HttpStatus.CREATED);
+    }
 
+    @PostMapping("/register/donor")
+    @Operation(summary = "Register a new donor",
+            description = "Post a new business in the platform. Create its access credentials with DONOR rol and link its business profile with geolocalization data.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Donor successfully created.",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = DonorResponseDTO.class)) }
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid credentials. Or email/taxId already exists. Returns an error message.",
+                    content = @Content
+            )
+    })
+    public ResponseEntity<DonorResponseDTO> registerDonor(@RequestBody @Valid DonorRegistrationDTO donorDTO) {
+        return new ResponseEntity<>(this.authService.registerDonor(donorDTO), HttpStatus.CREATED);
     }
 
 }
