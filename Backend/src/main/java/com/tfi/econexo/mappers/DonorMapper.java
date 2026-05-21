@@ -19,7 +19,7 @@ public interface DonorMapper {
     @Mapping(target = "user", source = "user")
     @Mapping(target = "neighborhood", source = "neighborhood")
     @Mapping(target = "donorType", source = "dto.donorType")
-    @Mapping(target = "location", expression = "java(createPoint(dot.longitude(), dto.latitude()))")
+    @Mapping(target = "location", expression = "java(createPoint(dto.longitude(), dto.latitude()))")
     Donor toEntity(DonorRegistrationDTO dto, UserSec user, Neighborhood neighborhood);
 
     @Mapping(target = "neighborhoodId", source = "donor.neighborhood.id")
