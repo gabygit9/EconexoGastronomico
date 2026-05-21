@@ -34,7 +34,7 @@ public class Donor extends BaseEntity {
     private String streetNumber;
 
     @Column(nullable = true)
-    private int floor;
+    private String floor;
 
     @Column(nullable = true)
     private String apartment;

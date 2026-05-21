@@ -16,6 +16,12 @@ import org.mapstruct.Mapping;
 public interface DonorMapper {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "version", ignore = true)
+    @Mapping(target = "createdDate", ignore = true)
+    @Mapping(target = "updatedDate", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "updatedBy", ignore = true)
+    @Mapping(target = "active", ignore = true)
     @Mapping(target = "user", source = "user")
     @Mapping(target = "neighborhood", source = "neighborhood")
     @Mapping(target = "donorType", source = "dto.donorType")
