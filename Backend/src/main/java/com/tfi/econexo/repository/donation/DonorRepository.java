@@ -6,4 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DonorRepository extends JpaRepository<Donor, Long> {
+    Boolean existsByTaxId(String taxId);
+
+    Boolean existsByUser_Email(String email);
 }

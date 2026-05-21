@@ -1,43 +1,43 @@
 package com.tfi.econexo.entity.donation;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tfi.econexo.entity.base.BaseEntity;
 import com.tfi.econexo.entity.location.Neighborhood;
-import com.tfi.econexo.entity.auth.User;
+import com.tfi.econexo.entity.security.UserSec;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.locationtech.jts.geom.Point;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "donors")
-@Data
-@EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor
-@AllArgsConstructor
 public class Donor extends BaseEntity {
 
-    @JsonProperty("business_name")
-    @Column(nullable = false)
-    private String businessName;
+    @Column(name = "trade_name", nullable = false)
+    private String tradeName;
 
-    @JsonProperty("legal_name")
-    @Column(nullable = false)
+    @Column(name = "legal_name", nullable = false)
     private String legalName;
 
-    @Column(unique = true, nullable = false)
-    private String taxIdentification;
+    @Column(name = "tax_id", unique = true, nullable = false)
+    private String taxId;
 
-    private String phone;
+    @Column(name = "phone_number")
+    private String phoneNumber;
 
     @Column(nullable = false)
     private String street;
 
-    @JsonProperty("street_number")
-    @Column(nullable = false)
+    @Column(name = "street_number", nullable = false)
     private String streetNumber;
+
+    @Column(nullable = true)
+    private int floor;
+
+    @Column(nullable = true)
+    private String apartment;
 
     @ManyToOne(fetch =  FetchType.LAZY)
     @JoinColumn(name = "neighborhood_id", nullable = false)
@@ -48,11 +48,11 @@ public class Donor extends BaseEntity {
     @Column(columnDefinition = "geometry(Point, 4326)")
     private Point location;
 
-    @OneToOne(fetch =  FetchType.LAZY)
+    @OneToOne(fetch =  FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private UserSec user;
 
-    @JsonProperty("commerce_type")
     @Enumerated(EnumType.STRING)
+    @Column(name = "donor_type")
     private DonorType donorType;
 }

@@ -1,39 +1,42 @@
 package com.tfi.econexo.dto.auth.donor;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record DonorRegistrationDTO(
-        @NotNull
+        @NotBlank
         @Email
         String email,
 
-        @NotNull
+        @NotBlank
         @Size(min = 8, message = "Password must be at least 8 characters long")
         String password,
 
-        @JsonProperty("business_name")
-        @NotNull
-        String businessName,
+        @NotBlank
+        String tradeName,
 
-        @JsonProperty("legal_name")
+        @NotBlank
         String legalName,
 
-        @JsonProperty("tax_identification")
-        @NotNull
-        String taxIdentification,
+        @NotBlank
+        String taxId,
 
-        @NotNull
-        String phone,
+        @NotBlank
+        String phoneNumber,
 
-        @NotNull
+        @NotBlank
         String street,
 
-        @JsonProperty("street_number")
-        @NotNull
+        @NotBlank
         String streetNumber,
+
+        Integer floor,
+        String apartment,
+
+        @NotBlank
+        String donorType,
 
         @NotNull
         Double latitude,
@@ -41,12 +44,7 @@ public record DonorRegistrationDTO(
         @NotNull
         Double longitude,
 
-        @JsonProperty("neighborhood_id")
         @NotNull
-        Long neighborhoodId,
-
-        @JsonProperty("donor_type")
-        @NotNull
-        String donorType
+        Long neighborhoodId
 )
 {}
