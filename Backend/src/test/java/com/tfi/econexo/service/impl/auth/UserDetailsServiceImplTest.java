@@ -1,6 +1,6 @@
 package com.tfi.econexo.service.impl.auth;
 
-import com.tfi.econexo.dto.auth.AuthLoginRequestDTO;
+import com.tfi.econexo.dto.auth.login.AuthLoginRequestDTO;
 import com.tfi.econexo.entity.security.Permission;
 import com.tfi.econexo.entity.security.Role;
 import com.tfi.econexo.entity.security.UserSec;

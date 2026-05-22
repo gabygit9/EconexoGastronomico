@@ -2,8 +2,11 @@ package com.tfi.econexo.controller.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tfi.econexo.config.AuditorAwareImpl;
-import com.tfi.econexo.dto.auth.AuthLoginRequestDTO;
-import com.tfi.econexo.dto.auth.AuthResponseDTO;
+import com.tfi.econexo.dto.auth.login.AuthLoginRequestDTO;
+import com.tfi.econexo.dto.auth.login.AuthResponseDTO;
+import com.tfi.econexo.dto.auth.donor.DonorRegistrationDTO;
+import com.tfi.econexo.dto.auth.donor.DonorResponseDTO;
+import com.tfi.econexo.service.auth.AuthService;
 import com.tfi.econexo.service.auth.PermissionService;
 import com.tfi.econexo.service.auth.RoleService;
 import com.tfi.econexo.service.auth.UserService;
@@ -19,7 +22,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -45,6 +47,9 @@ class AuthenticationControllerTest {
 
     @MockitoBean
     private UserService userService;
+
+    @MockitoBean
+    private AuthService authService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -92,6 +97,48 @@ class AuthenticationControllerTest {
 
         mockMvc.perform(
                         post("/api/v1/auth/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json)
+                )
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void registerDonor_ReturnCreated_WhenPayloadIsValid() throws Exception {
+        String json = objectMapper.writeValueAsString(new DonorRegistrationDTO("test@mail.com", "12345678",
+                "Hornito Santiagueño", "Hornito Alimentos SRL", "30712345678",
+                "351155123456", "Av. Hipólito Yrigoyen", "450", "PB", "A",
+                "RESTAURANT", -31.533333, -57.533333, 1L));
+
+        when(authService.registerDonor(any(DonorRegistrationDTO.class)))
+                .thenReturn(new DonorResponseDTO(1L, "test@mail.com",
+                        "Hornito Santiagueño", "Hornito Alimentos SRL",
+                        "30712345678", "351155123456", "Av. Hipólito Yrigoyen",
+                        "450", "PB", "A", 1L));
+
+        mockMvc.perform(
+                        post("/api/v1/auth/register/donor")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json)
+                )
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.trade_name").value("Hornito Santiagueño"))
+                .andExpect(jsonPath("$.email").value("test@mail.com"));
+    }
+
+    @Test
+    void registerDonor_ReturnBadRequest_WhenPayloadIsInvalid() throws Exception {
+        String json = """
+                {
+                 "email": "test@mail.com",
+                 "password": "123456",
+                 "trade_name": "Hornito Santiagueño"
+                }
+                """;
+
+        mockMvc.perform(
+                        post("/api/v1/auth/register/donor")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(json)
                 )

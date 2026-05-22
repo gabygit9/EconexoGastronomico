@@ -4,8 +4,6 @@ import com.tfi.econexo.dto.auth.donor.DonorRegistrationDTO;
 import com.tfi.econexo.dto.auth.donor.DonorResponseDTO;
 import com.tfi.econexo.dto.auth.driver.DriverRegistrationDTO;
 import com.tfi.econexo.dto.auth.driver.DriverResponseDTO;
-import com.tfi.econexo.dto.auth.login.LoginRequestDTO;
-import com.tfi.econexo.dto.auth.login.LoginResponseDTO;
 import com.tfi.econexo.dto.auth.organization.OrganizationRegistrationDTO;
 import com.tfi.econexo.dto.auth.organization.OrganizationResponseDTO;
 import com.tfi.econexo.entity.donation.Donor;

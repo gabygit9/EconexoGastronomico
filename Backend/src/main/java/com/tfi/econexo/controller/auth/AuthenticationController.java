@@ -1,7 +1,7 @@
 package com.tfi.econexo.controller.auth;
 
-import com.tfi.econexo.dto.auth.AuthLoginRequestDTO;
-import com.tfi.econexo.dto.auth.AuthResponseDTO;
+import com.tfi.econexo.dto.auth.login.AuthLoginRequestDTO;
+import com.tfi.econexo.dto.auth.login.AuthResponseDTO;
 import com.tfi.econexo.dto.auth.donor.DonorRegistrationDTO;
 import com.tfi.econexo.dto.auth.donor.DonorResponseDTO;
 import com.tfi.econexo.service.auth.AuthService;
