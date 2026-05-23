@@ -28,3 +28,13 @@ export interface DonorResponse {
   apartment?: string | null;
   neighborhoodId: number;
 }
+
+export interface NeighborhoodLookup {
+  id: number;
+  name: string;
+}
+
+export interface DonorTypeLookup {
+  value: number;
+  label: string;
+}

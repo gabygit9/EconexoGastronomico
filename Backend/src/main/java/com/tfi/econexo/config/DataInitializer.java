@@ -65,6 +65,12 @@ public class DataInitializer implements CommandLineRunner {
             gralPaz.setName("General Paz");
             gralPaz.setCity(cordoba);
 
+            Neighborhood centro = new Neighborhood();
+            centro.setName("Centro");
+
+            Neighborhood altaCordoba = new Neighborhood();
+            altaCordoba.setName("Alta Córdoba");
+
             neighborhoodRepository.saveAll(List.of(nvaCba, gralPaz));
             System.out.println("[DataInitializer] Ciudades y Barrios base creados con éxito.");
         }
