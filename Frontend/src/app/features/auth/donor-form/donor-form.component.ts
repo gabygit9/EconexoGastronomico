@@ -1,14 +1,18 @@
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, DestroyRef, inject, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {AuthService} from '../../../core/services/auth.service';
 import {DonorTypeLookup, NeighborhoodLookup} from '../../../shared/models/donor.model';
 import {DonorTypeTranslatePipe} from '../../../shared/pipes/donor-type-translate.pipe';
+import {catchError, forkJoin, of} from 'rxjs';
+import {NgClass} from '@angular/common';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-donor-form',
   imports: [
     ReactiveFormsModule,
-    DonorTypeTranslatePipe
+    DonorTypeTranslatePipe,
+    NgClass
   ],
   templateUrl: './donor-form.component.html',
   styleUrl: './donor-form.component.css'
@@ -17,6 +21,7 @@ export class DonorFormComponent implements OnInit {
 
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
+  private readonly destroyRef = inject(DestroyRef);
 
   donorForm!: FormGroup;
   isSubmitting = false;
@@ -72,7 +77,7 @@ export class DonorFormComponent implements OnInit {
           return of([] as NeighborhoodLookup[]);
         })
       )
-    }).subscribe({
+    }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: ({types, neighborhoods}) => {
         this.donorTypes = types;
         this.neighborhoods = neighborhoods;
@@ -111,18 +116,45 @@ export class DonorFormComponent implements OnInit {
 
     console.log("Datos listos para enviar al back:",formData);
 
-    this.authService.registerDonor(formData).subscribe({
-      next: (response) => {
-        console.log("Success response:", response);
-        //todo redirigir al login o dashboard
-      },
-      error: (error) => {
-        console.error("Error response:", error);
-        this.isSubmitting = false;
-        //todo toast
-      }
-    })
+    this.authService.registerDonor(formData).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          console.log("Success response:", response);
+          //todo redirigir al login o dashboard
+        },
+        error: (error) => {
+          console.error("Error response:", error);
+          this.isSubmitting = false;
+          //todo toast
+        }
+      })
   }
+
+  /**
+   * Check if a form control is invalid and has been interacted with
+   * @param field
+   */
+  isInvalidField(field: string) {
+    const control = this.donorForm.get(field);
+    return !!(control && control.invalid && (control.dirty || control.touched));
+  }
+
+  /**
+   * Get error message for a form control
+   * @param field
+   */
+  getErrorMessage(field:string){
+    const control = this.donorForm.get(field);
+    if(control && control.errors && (control.dirty || control.touched)){
+      if(control.errors['required']) return 'Este campo es obligatorio';
+      if(control.errors['email']) return 'El formato del email no es válido';
+      if(control.errors['minlength']) return `Mínimo ${control.errors['minlength'].requiredLength} caracteres`;
+      if(control.errors['pattern']) return 'Formato inválido (ingrese sólo números sin guiones ni espacio)';
+    }
+    return '';
+  }
+
+
 
   /**
    * Handle neighborhood change temporary until Google Geocoding API is implemented

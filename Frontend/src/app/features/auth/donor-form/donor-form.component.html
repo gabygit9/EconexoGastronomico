@@ -34,12 +34,30 @@
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
-            <label class="block text-sm font-bold text-gray-700 mb-2">Email</label>
-            <input formControlName="email" type="email" class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 focus:bg-white focus:border-[#eb5c0c] focus:ring-2 focus:ring-[#eb5c0c]/20 outline-none transition-all" placeholder="comercio@email.com">
+            <label class="label-form">Email</label>
+            <input formControlName="email" type="email"
+                   [ngClass]="{'input-error' : isInvalidField('email')}"
+                   class="input-form"
+                   placeholder="comercio@email.com">
+
+            @if (isInvalidField('email')){
+              <p class="text-error">
+                {{ getErrorMessage('email') }}
+              </p>
+            }
           </div>
           <div>
-            <label class="block text-sm font-bold text-gray-700 mb-2">Contraseña</label>
-            <input formControlName="password" type="password" class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 focus:bg-white focus:border-[#eb5c0c] focus:ring-2 focus:ring-[#eb5c0c]/20 outline-none transition-all" placeholder="Mínimo 8 caracteres">
+            <label class="label-form">Contraseña</label>
+            <input formControlName="password" type="password"
+                   [ngClass]="{'input-error' : isInvalidField('password')}"
+                   class="input-form"
+                   placeholder="Mínimo 8 caracteres">
+
+            @if (isInvalidField('password')){
+              <p class="text-error">
+                {{ getErrorMessage('password') }}
+              </p>
+            }
           </div>
         </div>
       </div>
@@ -50,25 +68,59 @@
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           <div class="lg:col-span-2">
-            <label class="block text-sm font-bold text-gray-700 mb-2">Nombre de Fantasía</label>
-            <input formControlName="tradeName" type="text" class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 focus:bg-white focus:border-[#eb5c0c] focus:ring-2 focus:ring-[#eb5c0c]/20 outline-none transition-all" placeholder="Ej: El Hornito">
+            <label class="label-form">Nombre de Fantasía</label>
+            <input formControlName="tradeName" type="text"
+                   [ngClass]="{'input-error' : isInvalidField('tradeName')}"
+                   class=" input-form"
+                   placeholder="Ej: El Hornito">
+
+            @if (isInvalidField('tradeName')){
+              <p class="text-error">
+                {{ getErrorMessage('tradeName') }}
+              </p>
+            }
           </div>
           <div>
-            <label class="block text-sm font-bold text-gray-700 mb-2">Rubro</label>
-            <select formControlName="donorType" class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 focus:bg-white focus:border-[#eb5c0c] focus:ring-2 focus:ring-[#eb5c0c]/20 outline-none transition-all cursor-pointer">
-              <option value="" disabled selected>Seleccioná...</option>
+            <label class="label-form">Rubro</label>
+            <select formControlName="donorType"
+                    [ngClass]="{'input-error' : isInvalidField('donorType')}"
+                    class="input-form cursor-pointer">
               @for (type of donorTypes; track type.value){
                 <option [value]="type.value"> {{type.label | donorTypeTranslatePipe}}</option>
               }
             </select>
+
+            @if (isInvalidField('donorType')){
+              <p class="text-error">
+                {{ getErrorMessage('donorType') }}
+              </p>
+            }
           </div>
           <div class="lg:col-span-2">
-            <label class="block text-sm font-bold text-gray-700 mb-2">Razón Social</label>
-            <input formControlName="legalName" type="text" class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 focus:bg-white focus:border-[#eb5c0c] focus:ring-2 focus:ring-[#eb5c0c]/20 outline-none transition-all" placeholder="Ej: Hornito SRL">
+            <label class="label-form">Razón Social</label>
+            <input formControlName="legalName" type="text"
+                   [ngClass]="{'input-error' : isInvalidField('legalName')}"
+                   class="input-form"
+                   placeholder="Ej: Hornito SRL">
+
+            @if (isInvalidField('legalName')){
+              <p class="text-error">
+                {{ getErrorMessage('legalName') }}
+              </p>
+            }
           </div>
           <div>
-            <label class="block text-sm font-bold text-gray-700 mb-2">CUIT</label>
-            <input formControlName="taxId" type="text" class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 focus:bg-white focus:border-[#eb5c0c] focus:ring-2 focus:ring-[#eb5c0c]/20 outline-none transition-all" placeholder="Sin guiones">
+            <label class="label-form">CUIT</label>
+            <input formControlName="taxId" type="text"
+                   [ngClass]="{'input-error' : isInvalidField('taxId')}"
+                   class="input-form"
+                   placeholder="Sin guiones">
+
+            @if (isInvalidField('taxId')){
+              <p class="text-error">
+                {{ getErrorMessage('taxId') }}
+              </p>
+            }
           </div>
         </div>
       </div>
@@ -79,32 +131,69 @@
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
           <div class="md:col-span-3">
-            <label class="block text-sm font-bold text-gray-700 mb-2">Calle</label>
-            <input formControlName="street" type="text" class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 focus:bg-white focus:border-[#eb5c0c] focus:ring-2 focus:ring-[#eb5c0c]/20 outline-none transition-all">
+            <label class="label-form">Calle</label>
+            <input formControlName="street" type="text"
+                   [ngClass]="{'input-error' : isInvalidField('street')}"
+                   class="input-form">
+
+            @if (isInvalidField('street')){
+              <p class="text-error">
+                {{ getErrorMessage('street') }}
+              </p>
+            }
           </div>
           <div class="md:col-span-1">
-            <label class="block text-sm font-bold text-gray-700 mb-2">Número</label>
-            <input formControlName="streetNumber" (blur)="onAddressBlur()" type="text" class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 focus:bg-white focus:border-[#eb5c0c] focus:ring-2 focus:ring-[#eb5c0c]/20 outline-none transition-all">
+            <label class="label-form">Número</label>
+            <input formControlName="streetNumber" (blur)="onAddressBlur()" type="text"
+                   [ngClass]="{'input-error' : isInvalidField('streetNumber')}"
+                   class="input-form">
+
+            @if (isInvalidField('streetNumber')){
+              <p class="text-error">
+                {{ getErrorMessage('streetNumber') }}
+              </p>
+            }
           </div>
           <div class="md:col-span-2">
-            <label class="block text-sm font-bold text-gray-700 mb-2">Barrio</label>
-            <select formControlName="neighborhoodId" (change)="onNeighborhoodChange()" class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 focus:bg-white focus:border-[#eb5c0c] focus:ring-2 focus:ring-[#eb5c0c]/20 outline-none transition-all cursor-pointer">
+            <label class="label-form">Barrio</label>
+            <select formControlName="neighborhoodId" (change)="onNeighborhoodChange()"
+                    [ngClass]="{'input-error' : isInvalidField('neighborhoodId')}"
+                    class="input-form cursor-pointer">
               @for (neighborhood of neighborhoods; track neighborhood.id){
                 <option [value]="neighborhood.id"> {{neighborhood.name}}</option>
               }
             </select>
+
+            @if (isInvalidField('neighborhoodId')){
+              <p class="text-error">
+                {{ getErrorMessage('neighborhoodId') }}
+              </p>
+            }
           </div>
           <div class="md:col-span-1">
-            <label class="block text-sm font-bold text-gray-700 mb-2">Piso</label>
-            <input formControlName="floor" type="number" class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 focus:bg-white focus:border-[#eb5c0c] focus:ring-2 focus:ring-[#eb5c0c]/20 outline-none transition-all" placeholder="Opcional">
+            <label class="label-form">Piso</label>
+            <input formControlName="floor" type="number"
+                   class="input-form"
+                   placeholder="Opcional">
           </div>
           <div class="md:col-span-1">
-            <label class="block text-sm font-bold text-gray-700 mb-2">Depto</label>
-            <input formControlName="apartment" type="text" class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 focus:bg-white focus:border-[#eb5c0c] focus:ring-2 focus:ring-[#eb5c0c]/20 outline-none transition-all" placeholder="Opcional">
+            <label class="label-form">Depto</label>
+            <input formControlName="apartment" type="text"
+                   class="input-form"
+                   placeholder="Opcional">
           </div>
           <div class="md:col-span-4 mt-2">
-            <label class="block text-sm font-bold text-gray-700 mb-2">Teléfono de Contacto</label>
-            <input formControlName="phoneNumber" type="text" class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 focus:bg-white focus:border-[#eb5c0c] focus:ring-2 focus:ring-[#eb5c0c]/20 outline-none transition-all md:w-1/2" placeholder="Cod. área + número">
+            <label class="label-form">Teléfono de Contacto</label>
+            <input formControlName="phoneNumber" type="text"
+                   [ngClass]="{'input-error' : isInvalidField('phoneNumber')}"
+                   class="input-form"
+                   placeholder="Cod. área + número">
+
+            @if (isInvalidField('phoneNumber')){
+              <p class="text-error">
+                {{ getErrorMessage('phoneNumber') }}
+              </p>
+            }
           </div>
         </div>
       </div>
