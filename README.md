@@ -39,6 +39,7 @@ src/
 │   ├── shared/     # Componentes UI reutilizables, Pipes y Modelos (Interfaces)
 │   └── features/   # Módulos de negocio aislados:
 │       ├── auth/          # Login y Registro
+│       ├── dashboard/     # Paneles de control por perfil
 │       ├── donations/     # Publicación y listado de excedentes
 │       ├── organizations/ # Perfiles de ONGs y Comercios
 │       └── map/           # Vista interactiva de proximidad
@@ -67,7 +68,6 @@ Por seguridad, las credenciales no están versionadas. Debés inyectar las sigui
 * ```PRIVATE_KEY```: ```<tu_clave_secreta_para_firmar_jwts>``` (Ej: una cadena alfanumérica segura)
 * ```USER_GENERATOR```: ```<tu_generador>```
 * ```JWT_EXPIRATION_MINUTES```: ```<tu_expiracion>```
-*
 
 Una vez seteadas, ejecutá la clase ```EconexoApplication.java```. El sistema creará automáticamente un usuario administrador por defecto (admin@econexo.com / admin1234).
 

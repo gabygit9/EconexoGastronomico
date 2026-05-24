@@ -1,0 +1,60 @@
+<div class="min-h-screen bg-gray-50 flex flex-col">
+
+  <div class="bg-[#161c28] text-white pt-12 pb-16 px-6 relative shadow-md">
+    <button routerLink="/login" class="absolute top-6 left-6 md:left-12 w-10 h-10 bg-[#252c39] rounded-full flex items-center justify-center hover:bg-[#323a49] transition-colors cursor-pointer z-30">
+      <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+    </button>
+
+    <div class="max-w-7xl mx-auto text-center mt-4 relative z-10">
+      <h2 class="text-3xl md:text-5xl font-extrabold tracking-wide mb-4">¿Cómo querés unirte a la red?</h2>
+      <p class="text-lg md:text-xl text-gray-400">Elegí el tipo de cuenta que mejor se adapta a tu rol en EcoNexo</p>
+    </div>
+  </div>
+
+  <div class="flex-1 max-w-7xl mx-auto w-full px-6 md:px-12 mt-10 relative z-20 pb-16">
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+
+      <div routerLink="/register/donor" class="group bg-white rounded-3xl p-8 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 border-2 border-transparent hover:border-[#eb5c0c] flex flex-col items-center text-center h-full shadow-sm">
+        <div class="w-20 h-20 rounded-2xl bg-orange-50 text-[#eb5c0c] flex items-center justify-center mb-6 group-hover:bg-[#eb5c0c] group-hover:text-white transition-colors">
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+          </svg>
+        </div>
+        <h3 class="text-2xl font-bold text-[#161c28] group-hover:text-[#eb5c0c] transition-colors mb-2">Comercio</h3>
+        <p class="text-sm font-bold text-[#eb5c0c] mb-4 uppercase tracking-wider">Donante de alimentos</p>
+        <p class="text-gray-500 flex-1 leading-relaxed">Hoteles, panaderías, restaurantes, supermercados y empresas que quieran donar su excedente diario.</p>
+      </div>
+
+      <div class="group bg-white rounded-3xl p-8 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 border-2 border-transparent hover:border-blue-500 flex flex-col items-center text-center h-full shadow-sm">
+        <div class="w-20 h-20 rounded-2xl bg-blue-50 text-blue-500 flex items-center justify-center mb-6 group-hover:bg-blue-500 group-hover:text-white transition-colors">
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+        </div>
+        <h3 class="text-2xl font-bold text-[#161c28] group-hover:text-blue-500 transition-colors mb-2">Conductor</h3>
+        <p class="text-sm font-bold text-blue-500 mb-4 uppercase tracking-wider">Delivery Voluntario</p>
+        <p class="text-gray-500 flex-1 leading-relaxed">Personas con vehículo propio dispuestas a retirar donaciones y acercarlas a las organizaciones.</p>
+      </div>
+
+      <div class="group bg-white rounded-3xl p-8 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 border-2 border-transparent hover:border-green-500 flex flex-col items-center text-center h-full shadow-sm">
+        <div class="w-20 h-20 rounded-2xl bg-green-50 text-green-500 flex items-center justify-center mb-6 group-hover:bg-green-500 group-hover:text-white transition-colors">
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+          </svg>
+        </div>
+        <h3 class="text-2xl font-bold text-[#161c28] group-hover:text-green-500 transition-colors mb-2">ONG / Merendero</h3>
+        <p class="text-sm font-bold text-green-500 mb-4 uppercase tracking-wider">Receptor Solidario</p>
+        <p class="text-gray-500 flex-1 leading-relaxed">Organizaciones sociales, merenderos, fundaciones y comedores que necesitan abastecimiento.</p>
+      </div>
+
+    </div>
+
+    <div class="text-center mt-12">
+      <p class="text-base text-gray-500">¿Ya tenés tu cuenta aprobada? <a routerLink="/login" class="font-bold text-[#eb5c0c] hover:underline cursor-pointer">Iniciá sesión acá</a></p>
+    </div>
+
+  </div>
+</div>

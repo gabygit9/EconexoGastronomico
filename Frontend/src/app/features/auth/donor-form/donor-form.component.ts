@@ -6,13 +6,16 @@ import {DonorTypeTranslatePipe} from '../../../shared/pipes/donor-type-translate
 import {catchError, forkJoin, of} from 'rxjs';
 import {NgClass} from '@angular/common';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {Router, RouterLink} from '@angular/router';
+import {ToastrService} from 'ngx-toastr';
 
 @Component({
   selector: 'app-donor-form',
   imports: [
     ReactiveFormsModule,
     DonorTypeTranslatePipe,
-    NgClass
+    NgClass,
+    RouterLink
   ],
   templateUrl: './donor-form.component.html',
   styleUrl: './donor-form.component.css'
@@ -22,6 +25,8 @@ export class DonorFormComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly toastr = inject(ToastrService);
+  private readonly router = inject(Router);
 
   donorForm!: FormGroup;
   isSubmitting = false;
@@ -108,24 +113,29 @@ export class DonorFormComponent implements OnInit {
   onSubmit():void{
     if(this.donorForm.invalid){
       this.donorForm.markAllAsTouched();
-      //todo toast
+      this.toastr.warning('Por favor, completá los campos obligatorios.', 'Formulario incompleto.')
       return;
     }
     this.isSubmitting = true;
     const formData = this.donorForm.value;
 
-    console.log("Datos listos para enviar al back:",formData);
-
     this.authService.registerDonor(formData).pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
-          console.log("Success response:", response);
-          //todo redirigir al login o dashboard
+          this.toastr.success('Tu cuenta ha sido creada exitosamente.', '¡Bienvenido a EcoNexo!')
+
+          setTimeout(() => {
+            this.router.navigate(['/login']);
+          }, 1500);
         },
         error: (error) => {
-          console.error("Error response:", error);
           this.isSubmitting = false;
-          //todo toast
+          const backendMessage = error.error.message || '';
+          if(error.status === 409 || backendMessage.includes('Donor already exists')){
+            this.toastr.error('El email o CUIT ya se encuentra registrado.', 'Error de registro.')
+          } else {
+            this.toastr.error('Ocurrió un problema en el servidor. Intente de nuevo.', 'Error.')
+          }
         }
       })
   }

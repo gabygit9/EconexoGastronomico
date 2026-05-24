@@ -6,10 +6,15 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { caseTransformInterceptor } from './shared/interceptors/case-transform.interceptors';
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideZoneChangeDetection({ eventCoalescing: true }), 
+  providers: [provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideHttpClient(
-      withInterceptors([caseTransformInterceptor])
-    ),
+    provideHttpClient(withInterceptors([caseTransformInterceptor])),
+    provideAnimations(),
+    provideToastr({
+      timeOut: 3000,
+      positionClass: 'toast-bottom-right',
+      preventDuplicates: true,
+      progressBar: true
+    })
   ]
 };

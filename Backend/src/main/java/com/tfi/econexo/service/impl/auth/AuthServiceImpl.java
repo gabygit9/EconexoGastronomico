@@ -4,12 +4,15 @@ import com.tfi.econexo.dto.auth.donor.DonorRegistrationDTO;
 import com.tfi.econexo.dto.auth.donor.DonorResponseDTO;
 import com.tfi.econexo.dto.auth.driver.DriverRegistrationDTO;
 import com.tfi.econexo.dto.auth.driver.DriverResponseDTO;
+import com.tfi.econexo.dto.auth.login.AuthLoginRequestDTO;
+import com.tfi.econexo.dto.auth.login.AuthResponseDTO;
 import com.tfi.econexo.dto.auth.organization.OrganizationRegistrationDTO;
 import com.tfi.econexo.dto.auth.organization.OrganizationResponseDTO;
 import com.tfi.econexo.entity.donation.Donor;
 import com.tfi.econexo.entity.location.Neighborhood;
 import com.tfi.econexo.entity.security.Role;
 import com.tfi.econexo.entity.security.UserSec;
+import com.tfi.econexo.exception.ConflictException;
 import com.tfi.econexo.mappers.DonorMapper;
 import com.tfi.econexo.mappers.DriverMapper;
 import com.tfi.econexo.mappers.OrganizationMapper;
@@ -49,7 +52,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
         if (donorService.findByEmail(donorDTO.email()) || donorService.findByTaxId(donorDTO.taxId())) {
-            throw new IllegalArgumentException("Donor already exists");
+            throw new ConflictException("Donor already exists");
         }
 
         Role role = roleService.findByName("DONOR").orElseThrow(() -> new EntityNotFoundException("Role DONOR not found"));
@@ -150,7 +153,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public LoginResponseDTO login(LoginRequestDTO request) {
+    public AuthResponseDTO login(AuthLoginRequestDTO request) {
 //        UserSec user = userRepository.findByEmail(request.email())
 //                .orElseThrow(() -> new IllegalArgumentException("Invalid credentials"));
 //        if (!user.getPassword().equals(request.password())) {

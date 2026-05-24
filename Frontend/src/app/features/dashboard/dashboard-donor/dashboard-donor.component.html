@@ -1,0 +1,45 @@
+<div class="min-h-screen bg-gray-50 flex flex-col">
+
+  <nav class="bg-[#161c28] text-white px-6 py-4 flex justify-between items-center shadow-lg">
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 bg-[#eb5c0c] rounded-lg flex items-center justify-center">
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+      </div>
+      <span class="text-xl font-bold tracking-tight">EcoNexo</span>
+    </div>
+    <button (click)="logout()" class="text-sm font-bold text-gray-400 hover:text-white transition-colors flex items-center gap-2">
+      Cerrar sesión
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+    </button>
+  </nav>
+
+  <main class="flex-1 flex items-center justify-center p-6">
+    <div class="max-w-2xl w-full text-center space-y-8">
+
+      <div class="relative inline-block">
+        <div class="absolute inset-0 bg-orange-100 rounded-full animate-ping opacity-20"></div>
+        <div class="relative bg-white p-10 rounded-full shadow-xl border-2 border-orange-50">
+          <svg class="w-24 h-24 text-[#eb5c0c]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+          </svg>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-[#161c28] tracking-tight">
+          ¡Hola, Donante! <br>
+          <span class="text-[#eb5c0c]">Estamos en construcción.</span>
+        </h1>
+        <p class="text-lg text-gray-500 max-w-lg mx-auto leading-relaxed">
+          Tu panel de control para gestionar excedentes de alimentos está siendo preparado.
+          Pronto podrás cargar donaciones y ver tu impacto social en tiempo real.
+        </p>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="p-8 text-center text-gray-400 text-sm">
+    &copy; 2024 EcoNexo - Red de Donación de Alimentos. Córdoba, Argentina.
+  </footer>
+</div>
