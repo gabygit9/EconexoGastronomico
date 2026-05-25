@@ -8,6 +8,7 @@ import {NgClass} from '@angular/common';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {Router, RouterLink} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
+import {BaseFormComponent} from "../../../shared/utils/base-form.component";
 
 @Component({
   selector: 'app-donor-form',
@@ -20,7 +21,7 @@ import {ToastrService} from 'ngx-toastr';
   templateUrl: './donor-form.component.html',
   styleUrl: './donor-form.component.css'
 })
-export class DonorFormComponent implements OnInit {
+export class DonorFormComponent extends BaseFormComponent implements OnInit {
 
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
@@ -31,6 +32,9 @@ export class DonorFormComponent implements OnInit {
   donorForm!: FormGroup;
   isSubmitting = false;
 
+  get form() {
+    return this.donorForm;
+  }
 
   donorTypes: DonorTypeLookup[] = [];
   neighborhoods: NeighborhoodLookup[] = [];
@@ -139,32 +143,6 @@ export class DonorFormComponent implements OnInit {
         }
       })
   }
-
-  /**
-   * Check if a form control is invalid and has been interacted with
-   * @param field
-   */
-  isInvalidField(field: string) {
-    const control = this.donorForm.get(field);
-    return !!(control && control.invalid && (control.dirty || control.touched));
-  }
-
-  /**
-   * Get error message for a form control
-   * @param field
-   */
-  getErrorMessage(field:string){
-    const control = this.donorForm.get(field);
-    if(control && control.errors && (control.dirty || control.touched)){
-      if(control.errors['required']) return 'Este campo es obligatorio';
-      if(control.errors['email']) return 'El formato del email no es válido';
-      if(control.errors['minlength']) return `Mínimo ${control.errors['minlength'].requiredLength} caracteres`;
-      if(control.errors['pattern']) return 'Formato inválido (ingrese sólo números sin guiones ni espacio)';
-    }
-    return '';
-  }
-
-
 
   /**
    * Handle neighborhood change temporary until Google Geocoding API is implemented
