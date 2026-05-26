@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,4 +20,8 @@ public class NeighborhoodServiceImpl implements NeighborhoodService {
         return neighborhoodRepository.findAll();
     }
 
+    @Override
+    public Optional<Neighborhood> findById(Long id) {
+        return neighborhoodRepository.findById(id);
+    }
 }

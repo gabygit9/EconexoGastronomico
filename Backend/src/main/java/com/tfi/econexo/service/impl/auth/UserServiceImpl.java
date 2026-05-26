@@ -45,4 +45,9 @@ public class UserServiceImpl implements UserService {
     public String encryptPassword(String password) {
         return new BCryptPasswordEncoder().encode(password);
     }
+
+    @Override
+    public Optional<UserSec> findByEmail(String email) {
+        return userRepository.findUserEntityByEmail(email);
+    }
 }
