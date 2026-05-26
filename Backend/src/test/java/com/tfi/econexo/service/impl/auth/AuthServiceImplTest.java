@@ -1,14 +1,23 @@
 package com.tfi.econexo.service.impl.auth;
 
+import com.tfi.econexo.dto.NgoRegistrationDTO;
+import com.tfi.econexo.dto.NgoResponseDTO;
 import com.tfi.econexo.dto.auth.donor.DonorRegistrationDTO;
 import com.tfi.econexo.dto.auth.donor.DonorResponseDTO;
 import com.tfi.econexo.entity.donation.Donor;
 import com.tfi.econexo.entity.location.Neighborhood;
+import com.tfi.econexo.entity.ngo.Ngo;
 import com.tfi.econexo.entity.security.Role;
+import com.tfi.econexo.exception.ConflictException;
 import com.tfi.econexo.mappers.DonorMapper;
+import com.tfi.econexo.mappers.NgoMapper;
+import com.tfi.econexo.mappers.UserMapper;
 import com.tfi.econexo.repository.location.NeighborhoodRepository;
 import com.tfi.econexo.service.DonorService;
+import com.tfi.econexo.service.NeighborhoodService;
+import com.tfi.econexo.service.NgoService;
 import com.tfi.econexo.service.auth.RoleService;
+import com.tfi.econexo.service.auth.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,8 +30,8 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceImplTest {
@@ -34,10 +43,22 @@ class AuthServiceImplTest {
     private RoleService roleService;
 
     @Mock
-    private NeighborhoodRepository neighborhoodRepository;
+    private UserService userService;
+
+    @Mock
+    private NgoService ngoService;
+
+    @Mock
+    private NeighborhoodService neighborhoodService;
 
     @Mock
     private DonorMapper donorMapper;
+
+    @Mock
+    private UserMapper userMapper;
+
+    @Mock
+    private NgoMapper ngoMapper;
 
     @InjectMocks
     private AuthServiceImpl authService;
@@ -47,6 +68,9 @@ class AuthServiceImplTest {
     DonorRegistrationDTO donorDTO;
     DonorResponseDTO donorResponseDTO;
     Donor donor;
+    NgoRegistrationDTO ngoDTO;
+    NgoResponseDTO ngoResponseDTO;
+    Ngo ngo;
 
     @BeforeEach
     void setUp() {
@@ -89,6 +113,42 @@ class AuthServiceImplTest {
         donor = new Donor();
         donor.setTaxId("30712345678");
         donor.setLegalName("Hornito Alimentos SRL");
+
+        ngoDTO = new NgoRegistrationDTO(
+                "Comedor Caritas Felices",
+                "22589875879",
+                "87889987",
+                "María Gómez",
+                "Bv. San Juan",
+                "111",
+                "1",
+                "A",
+                "3542343455",
+                1L,
+                40.444,
+                23.000,
+                "test@mail.com",
+                "12345678",
+                "SHELTER");
+
+        ngoResponseDTO = new NgoResponseDTO(
+                1L,
+                "test@email.com",
+                "Comedor Caritas Felices",
+                "87889987",
+                "22589875879",
+                "María Gómez",
+                "3542343455",
+                "Bv. San Juan",
+                "111",
+                "1",
+                "A",
+                1L
+        );
+
+        ngo = new Ngo();
+        ngo.setTaxId(ngoResponseDTO.taxId());
+        ngo.setLegalPersonalityNumber(ngoResponseDTO.legalPersonalityNumber());
     }
 
     @Test
@@ -96,7 +156,7 @@ class AuthServiceImplTest {
         when(donorService.findByEmail(anyString())).thenReturn(false);
         when(donorService.findByTaxId(anyString())).thenReturn(false);
         when(roleService.findByName(anyString())).thenReturn(Optional.of(role));
-        when(neighborhoodRepository.findById(anyLong())).thenReturn(Optional.of(alberdi));
+        when(neighborhoodService.findById(anyLong())).thenReturn(Optional.of(alberdi));
         when(donorMapper.toEntity(any(), any(), any())).thenReturn(donor);
         when(donorMapper.toResponseDTO(any())).thenReturn(donorResponseDTO);
 
@@ -134,8 +194,56 @@ class AuthServiceImplTest {
         when(donorService.findByEmail(anyString())).thenReturn(false);
         when(donorService.findByTaxId(anyString())).thenReturn(false);
         when(roleService.findByName(anyString())).thenReturn(Optional.of(role));
-        when(neighborhoodRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(neighborhoodService.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> authService.registerDonor(donorDTO));
+    }
+
+    @Test
+    void registerNgo_success() {
+        when(ngoService.existsEmail(anyString())).thenReturn(false);
+        when(ngoService.findByTaxId(anyString())).thenReturn(Optional.empty());
+        when(ngoService.findByLegalPersonalityNumber(anyString())).thenReturn(Optional.empty());
+        when(neighborhoodService.findById(anyLong())).thenReturn(Optional.of(alberdi));
+        when(roleService.findByName(anyString())).thenReturn(Optional.of(role));
+        when(ngoMapper.toEntity(any(), any(), any())).thenReturn(ngo);
+        when(ngoMapper.toResponseDTO(any())).thenReturn(ngoResponseDTO);
+
+
+        NgoResponseDTO response = authService.registerNgo(ngoDTO);
+
+        verify(ngoService).save(any(Ngo.class));
+        assertNotNull(response);
+        assertEquals(ngoResponseDTO.legalPersonalityNumber(), response.legalPersonalityNumber());
+        assertEquals(ngoResponseDTO.taxId(), response.taxId());
+    }
+
+    @Test
+    void registerNgo_ThrowsException_WhenEmailExists() {
+        when(ngoService.existsEmail(anyString())).thenReturn(true);
+
+        assertThrows(ConflictException.class, () -> authService.registerNgo(ngoDTO));
+
+        verify(userService, never()).save(any());
+        verify(ngoService, never()).save(any());
+    }
+
+    @Test
+    void registerNgo_WhenTaxIdExists_ThrowsConflictException(){
+        when(ngoService.findByTaxId(anyString())).thenReturn(Optional.of(ngo));
+
+        assertThrows(ConflictException.class, () -> authService.registerNgo(ngoDTO));
+
+        verify(userService, never()).save(any());
+    }
+
+    @Test
+    void registerNgo_WhenLegalPersonalityNumberExists_ThrowsConflictException(){
+        when(ngoService.findByLegalPersonalityNumber(anyString())).thenReturn(Optional.of(ngo));
+
+        assertThrows(ConflictException.class, () -> authService.registerNgo(ngoDTO));
+
+        verify(userService, never()).save(any());
+        verify(ngoService, never()).save(any());
     }
 }

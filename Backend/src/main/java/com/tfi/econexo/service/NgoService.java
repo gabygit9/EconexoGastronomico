@@ -9,4 +9,5 @@ public interface NgoService {
     Optional<Ngo> findByTaxId(String taxId);
     Optional<Ngo> findByLegalPersonalityNumber(String legalPersonalityNumber);
     Ngo save(Ngo ngo);
+    boolean existsEmail(String email);
 }

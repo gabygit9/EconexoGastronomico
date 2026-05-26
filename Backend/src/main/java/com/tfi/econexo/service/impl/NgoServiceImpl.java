@@ -28,4 +28,9 @@ public class NgoServiceImpl implements NgoService {
     public Ngo save(Ngo ngo) {
         return ngoRepository.save(ngo);
     }
+
+    @Override
+    public boolean existsEmail(String email) {
+        return ngoRepository.existsByUser_Email(email);
+    }
 }
