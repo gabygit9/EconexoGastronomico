@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tfi.econexo.entity.base.BaseEntity;
 import com.tfi.econexo.entity.logistics.Driver;
-import com.tfi.econexo.entity.organization.Organization;
+import com.tfi.econexo.entity.ngo.Ngo;
 import com.tfi.econexo.entity.logistics.Vehicle;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -44,7 +44,7 @@ public class Donation extends BaseEntity {
 
     @ManyToOne(fetch =  FetchType.LAZY)
     @JoinColumn(name = "organization_id")
-    private Organization organization;
+    private Ngo ngo;
 
     @ManyToOne(fetch =   FetchType.LAZY)
     @JoinColumn(name = "driver_id")

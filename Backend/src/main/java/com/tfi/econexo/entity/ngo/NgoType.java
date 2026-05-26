@@ -1,6 +1,6 @@
-package com.tfi.econexo.entity.organization;
+package com.tfi.econexo.entity.ngo;
 
-public enum OrganizationType {
+public enum NgoType {
     SOUP_KITCHEN,
     COMMUNITY_SNACK_BAR,
     FOOD_BANK,

@@ -21,7 +21,7 @@ public class Donor extends BaseEntity {
     @Column(name = "legal_name", nullable = false)
     private String legalName;
 
-    @Column(name = "tax_id", unique = true, nullable = false)
+    @Column(name = "tax_id", unique = true, nullable = false, length = 11)
     private String taxId;
 
     @Column(name = "phone_number")

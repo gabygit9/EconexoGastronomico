@@ -18,7 +18,7 @@ import com.tfi.econexo.mappers.DriverMapper;
 import com.tfi.econexo.mappers.OrganizationMapper;
 import com.tfi.econexo.repository.location.NeighborhoodRepository;
 import com.tfi.econexo.repository.logistics.DriverRepository;
-import com.tfi.econexo.repository.organization.OrganizationRepository;
+import com.tfi.econexo.repository.ngo.NgoRepository;
 import com.tfi.econexo.service.DonorService;
 import com.tfi.econexo.service.auth.AuthService;
 import com.tfi.econexo.service.auth.RoleService;
@@ -41,7 +41,7 @@ public class AuthServiceImpl implements AuthService {
     private final DonorMapper donorMapper;
 
     private final DriverRepository driverRepository;
-    private final OrganizationRepository organizationRepository;
+    private final NgoRepository ngoRepository;
     private final DriverMapper driverMapper;
     private final OrganizationMapper organizationMapper;
 
