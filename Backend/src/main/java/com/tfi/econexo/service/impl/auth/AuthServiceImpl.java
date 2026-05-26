@@ -56,6 +56,7 @@ public class AuthServiceImpl implements AuthService {
         String password = userService.encryptPassword(donorDTO.password());
 
         UserSec user = userMapper.toEntity(donorDTO.email(), password, role);
+        user = userService.save(user);
 
         Neighborhood neighborhood = neighborhoodService.findById(donorDTO.neighborhoodId())
                 .orElseThrow(() -> new EntityNotFoundException("Neighborhood not found"));
@@ -89,6 +90,7 @@ public class AuthServiceImpl implements AuthService {
         String password = userService.encryptPassword(ngoDTO.password());
 
         UserSec user = userMapper.toEntity(ngoDTO.email(), password, role);
+        user = userService.save(user);
 
         Ngo ngo = ngoMapper.toEntity(ngoDTO, user, neighborhood);
 

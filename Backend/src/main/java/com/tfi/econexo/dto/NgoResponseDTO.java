@@ -2,6 +2,7 @@ package com.tfi.econexo.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Data transfer object representing the profile response returned after a successful ngo registration")
 public record NgoResponseDTO(
         @Schema(description = "Unique identifier of the organization", example = "1")
         Long id,
@@ -20,6 +21,7 @@ public record NgoResponseDTO(
 
         @Schema(description = "Legal representative name", example = "Juan Perez")
         String responsibleName,
+
         @Schema(description = "Registered contact telephone line", example = "351155123456")
         String phoneNumber,
 
