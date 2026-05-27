@@ -76,7 +76,7 @@ public abstract class BaseEntity {
     @JsonProperty("created_by")
     @CreatedBy
     @Column(name = "created_by", nullable = false, updatable = false)
-    protected Long createdBy;
+    protected String createdBy;
 
     /**
      * Represents the identifier of the last user who updated this entity.
@@ -88,7 +88,7 @@ public abstract class BaseEntity {
     @JsonProperty("updated_by")
     @LastModifiedBy
     @Column(name = "updated_by", nullable = false)
-    protected Long updatedBy;
+    protected String updatedBy;
 
     private boolean isActive = true;
 }

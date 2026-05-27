@@ -135,8 +135,10 @@ export class DonorFormComponent extends BaseFormComponent implements OnInit {
         error: (error) => {
           this.isSubmitting = false;
           const backendMessage = error.error.message || '';
-          if(error.status === 409 || backendMessage.includes('Donor already exists')){
+          if(error.status === 409 || backendMessage.includes('Donor already exists')) {
             this.toastr.error('El email o CUIT ya se encuentra registrado.', 'Error de registro.')
+          } else if(error.status === 400){
+              this.toastr.warning('Asegúrese de ingresar todos los datos obligatorios. Intente de nuevo.', 'Error de registro.');
           } else {
             this.toastr.error('Ocurrió un problema en el servidor. Intente de nuevo.', 'Error.')
           }
