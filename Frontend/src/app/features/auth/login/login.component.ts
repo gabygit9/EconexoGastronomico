@@ -50,11 +50,27 @@ export class LoginComponent extends BaseFormComponent implements OnInit{
       next: data => {
         if(data.status){
           localStorage.setItem('econexo_token', data.jwt);
-          this.toastr.success(data.message || 'Ingreso exitoso', '¡Bienvenido de nuevo!');
-          //todo crear perfiles dashboard
-          this.router.navigate(['/dashboard/donor']);
+
+          try{
+            const tokenPayload = JSON.parse(atob(data.jwt.split('.')[1]));
+
+            const authoritiesString = tokenPayload.authorities || '';
+
+            if(authoritiesString.includes('ROLE_NGO')){
+              this.router.navigate(['/dashboard/ngo']);
+            }else if(authoritiesString.includes('ROLE_DONOR')){
+              this.router.navigate(['/dashboard/donor']);
+            }else if(authoritiesString.includes('ROLE_DRIVER')){
+              this.router.navigate(['/dashboard/driver']);
+            }else{
+              this.router.navigate(['/']);
+            }
+          }catch (e){
+            console.error('Error decodifying token', e);
+            this.router.navigate(['/']);
+          }
         }else{
-          this.toastr.error(data.message || 'Error al iniciar sesión', 'Error');
+          this.toastr.error('Error al iniciar sesión', 'Error');
           this.isSubmitting = false;
         }
       },

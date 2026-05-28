@@ -1,6 +1,7 @@
 package com.tfi.econexo.controller;
 
 import com.tfi.econexo.entity.donation.DonorType;
+import com.tfi.econexo.utils.EnumUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -11,8 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,14 +31,6 @@ public class DonorController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<List<Map<String, String>>> getDonorTypes() {
-        List<Map<String, String>> types = Arrays.stream(DonorType.values())
-                .map(type -> {
-                    Map<String, String> map = new HashMap<>();
-                    map.put("value", type.name());
-                    map.put("label", type.name().charAt(0) + type.name().substring(1).toLowerCase().replace("_", " "));
-                    return map;
-                })
-                .toList();
-        return ResponseEntity.ok(types);
+        return ResponseEntity.ok(EnumUtils.toDropdownList(DonorType.class));
     }
 }
