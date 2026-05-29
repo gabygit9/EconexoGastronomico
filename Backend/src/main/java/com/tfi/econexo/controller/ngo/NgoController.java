@@ -1,6 +1,7 @@
-package com.tfi.econexo.controller;
+package com.tfi.econexo.controller.ngo;
 
-import com.tfi.econexo.entity.donation.DonorType;
+import com.tfi.econexo.entity.ngo.NgoType;
+import com.tfi.econexo.service.NgoService;
 import com.tfi.econexo.utils.EnumUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -16,21 +17,23 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/donors")
+@RequestMapping("/api/v1/organizations")
 @RequiredArgsConstructor
-@Tag(name = "Donors", description = "Endpoints for donor types")
-public class DonorController {
+@Tag(name = "Organizations", description = "Endpoints for ngo types")
+public class NgoController {
 
-    @GetMapping("/public/donor-types")
+    private final NgoService ngoService;
+
+    @GetMapping("public/ngo-types")
     @Operation(
-            summary = "Get donor types",
-            description = "Return a Donor types List with its value and label."
+            summary = "Get ngo types",
+            description = "Return a Ngo types List with its value and label."
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Donor type List successfully retrieved"),
+            @ApiResponse(responseCode = "200", description = "Ngo type List successfully retrieved"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public ResponseEntity<List<Map<String, String>>> getDonorTypes() {
-        return ResponseEntity.ok(EnumUtils.toDropdownList(DonorType.class));
+    public ResponseEntity<List<Map<String, String>>> getNgoTypes (){
+        return ResponseEntity.ok(EnumUtils.toDropdownList(NgoType.class));
     }
 }
