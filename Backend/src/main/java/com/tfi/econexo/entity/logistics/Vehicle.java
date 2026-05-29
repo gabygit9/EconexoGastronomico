@@ -16,17 +16,17 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Vehicle extends BaseEntity {
 
-    @JsonProperty("number_plate")
-    @Column(unique = true)
+    @Column(name = "number_plate", unique = true)
     private String numberPlate;
 
-    @JsonProperty("has_refrigeration")
+    @Column(name = "has_refrigeration")
     private boolean hasRefrigeration;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "vehicle_type")
     private VehicleType vehicleType;
 
-    @JsonProperty("capacity_kg")
+    @Column(name = "capacity_kg" )
     private int capacityKg;
 
     @ManyToOne(fetch = FetchType.LAZY)
