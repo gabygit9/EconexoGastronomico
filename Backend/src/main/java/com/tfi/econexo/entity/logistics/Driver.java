@@ -35,16 +35,6 @@ public class Driver extends BaseEntity {
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     private LocalDate birthDate;
 
-    @Column(name = "drivers_license_front_url")
-    private String driversLicenseFrontUrl;
-
-    @Column(name = "drivers_license_back_url")
-    private String driversLicenseBackUrl;
-
-    @Column(name = "drivers_license_expiration")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    private LocalDate driversLicenseExpiration;
-
     @Column(name = "health_booklet_url")
     private String healthBookletUrl;
 

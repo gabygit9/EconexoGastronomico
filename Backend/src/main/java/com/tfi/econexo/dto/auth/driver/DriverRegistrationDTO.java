@@ -1,65 +1,68 @@
 package com.tfi.econexo.dto.auth.driver;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.tfi.econexo.utils.validation.ValidVehicleRequirements;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
+@Schema(description = "Driver registration data")
+@ValidVehicleRequirements
 public record DriverRegistrationDTO(
-        @NotNull
-        @Email
-        String email,
 
-        @NotNull
-        @Size(min = 8, message = "Password must be at least 8 characters long")
-        String password,
+        @Schema(description = "First name of the driver", example = "John")
+        @NotBlank String firstName,
 
-        @NotNull
-        @JsonProperty("first_name")
-        String firstName,
+        @Schema(description = "Last name of the driver", example = "Doe")
+        @NotBlank String lastName,
 
-        @NotNull
-        @JsonProperty("last_name")
-        String lastName,
+        @Schema(description = "Unique national tax identification number (CUIT)", example = "30712345678")
+        @NotBlank String taxId,
 
-        @NotNull
-        @JsonProperty("license_driver")
-        String licenseDriver,
+        @Schema(description = "Date of birth of the driver", example = "31-12-2025")
+        @NotNull LocalDate birthDate,
 
-        @JsonProperty("tax_identification")
-        @NotNull
-        String taxIdentification,
+        @Schema(description = "Authentication email address, must be unique within the platform", example = "contacto@elhornito.com")
+        @NotBlank @Email String email,
 
-        @NotNull
-        String phone,
+        @Schema(description = "Secure password for account authentication, minimum length of 8 characters", example = "PasswordSegura123!", minLength = 8)
+        @NotBlank @Size(min = 8) String password,
 
-        @NotNull
-        @JsonProperty("date_of_birth")
-        LocalDate dateOfBirth,
+        @Schema(description = "URL link to the driver's health booklet", example = "https://example.com/health-booklet.pdf")
+        @NotBlank String healthBookletUrl,
 
-        @NotNull
-        Double latitude,
+        @Schema(description = "Date of expiration of the driver's health booklet", example = "31-12-2025")
+        @NotNull LocalDate healthBookletExpiration,
 
-        @NotNull
-        Double longitude,
+        @Schema(description = "Vehicle registration data")
+        @NotNull @Valid VehicleRegistrationDTO vehicle,
 
-        @JsonProperty("neighborhood_id")
-        @NotNull
-        Long neighborhoodId,
+        @Schema(description = "Contact phone number including area code, without spaces or hyphens", example = "351155123456", requiredMode = Schema.RequiredMode.REQUIRED)
+        @NotBlank String phoneNumber,
 
-        @JsonProperty("number_plate")
-        String numberPlate,
+        @Schema(description = "Street name of the physical location of the commerce", example = "Av. Hipólito Yrigoyen", requiredMode = Schema.RequiredMode.REQUIRED)
+        @NotBlank String street,
 
-        @JsonProperty("has_refrigeration")
-        boolean hasRefrigeration,
+        @Schema(description = "Street height number of the physical location", example = "450", requiredMode = Schema.RequiredMode.REQUIRED)
+        @NotBlank String streetNumber,
 
-        @JsonProperty("vehicle_type")
-        @NotNull
-        String vehicleType,
+        @Schema(description = "Floor number inside the building structure, if applicable", example = "2", nullable = true)
+        String floor,
 
-        @NotNull
-        Integer capacity
+        @Schema(description = "Apartment or office indicator letter/number, if applicable", example = "B", nullable = true)
+        String apartment,
+
+        @Schema(description = "Geographical latitude coordinate using WGS 84 GPS standard", example = "-31.4233", requiredMode = Schema.RequiredMode.REQUIRED)
+        @NotNull Double latitude,
+
+        @Schema(description = "Geographical longitude coordinate using WGS 84 GPS standard", example = "-64.1865", requiredMode = Schema.RequiredMode.REQUIRED)
+        @NotNull Double longitude,
+
+        @Schema(description = "Database unique identifier of the predefined neighborhood", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
+        @NotNull Long neighborhoodId
 ) {
 }

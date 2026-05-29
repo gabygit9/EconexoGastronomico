@@ -1,7 +1,5 @@
 package com.tfi.econexo.mappers;
 
-import com.tfi.econexo.dto.auth.driver.DriverRegistrationDTO;
-import com.tfi.econexo.dto.auth.driver.DriverResponseDTO;
 import com.tfi.econexo.entity.logistics.Driver;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
