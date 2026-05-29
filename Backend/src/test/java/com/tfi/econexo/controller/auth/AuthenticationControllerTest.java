@@ -2,8 +2,8 @@ package com.tfi.econexo.controller.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tfi.econexo.config.AuditorAwareImpl;
-import com.tfi.econexo.dto.NgoRegistrationDTO;
-import com.tfi.econexo.dto.NgoResponseDTO;
+import com.tfi.econexo.dto.auth.ngo.NgoRegistrationDTO;
+import com.tfi.econexo.dto.auth.ngo.NgoResponseDTO;
 import com.tfi.econexo.dto.auth.login.AuthLoginRequestDTO;
 import com.tfi.econexo.dto.auth.login.AuthResponseDTO;
 import com.tfi.econexo.dto.auth.donor.DonorRegistrationDTO;

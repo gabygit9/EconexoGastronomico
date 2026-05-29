@@ -9,3 +9,5 @@ export interface AuthResponse {
   jwt: string;
   status: boolean;
 }
+
+export type Status = 'PENDING' | 'APPROVED' | 'REJECTED' | 'SUSPENDED' | 'CANCELED';

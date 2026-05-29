@@ -1,5 +1,6 @@
 package com.tfi.econexo.entity.ngo;
 
+import com.tfi.econexo.entity.RegistrationStatus;
 import com.tfi.econexo.entity.base.BaseEntity;
 import com.tfi.econexo.entity.location.Neighborhood;
 import com.tfi.econexo.entity.security.UserSec;
@@ -57,4 +58,8 @@ public class Ngo extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private NgoType ngoType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private RegistrationStatus status = RegistrationStatus.PENDING;
 }

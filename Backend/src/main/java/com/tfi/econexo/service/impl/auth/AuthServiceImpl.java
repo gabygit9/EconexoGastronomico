@@ -1,9 +1,10 @@
 package com.tfi.econexo.service.impl.auth;
 
-import com.tfi.econexo.dto.NgoRegistrationDTO;
-import com.tfi.econexo.dto.NgoResponseDTO;
+import com.tfi.econexo.dto.auth.ngo.NgoRegistrationDTO;
+import com.tfi.econexo.dto.auth.ngo.NgoResponseDTO;
 import com.tfi.econexo.dto.auth.donor.DonorRegistrationDTO;
 import com.tfi.econexo.dto.auth.donor.DonorResponseDTO;
+import com.tfi.econexo.entity.RegistrationStatus;
 import com.tfi.econexo.entity.donation.Donor;
 import com.tfi.econexo.entity.location.Neighborhood;
 import com.tfi.econexo.entity.ngo.Ngo;
@@ -62,6 +63,7 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new EntityNotFoundException("Neighborhood not found"));
 
         Donor donor = donorMapper.toEntity(donorDTO, user, neighborhood);
+        donor.setStatus(RegistrationStatus.APPROVED);
 
         donorService.save(donor);
 
@@ -93,6 +95,7 @@ public class AuthServiceImpl implements AuthService {
         user = userService.save(user);
 
         Ngo ngo = ngoMapper.toEntity(ngoDTO, user, neighborhood);
+        ngo.setStatus(RegistrationStatus.PENDING);
 
         ngoService.save(ngo);
 

@@ -1,4 +1,4 @@
-package com.tfi.econexo.dto;
+package com.tfi.econexo.dto.auth.ngo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -38,6 +38,9 @@ public record NgoResponseDTO(
         String apartment,
 
         @Schema(description = "Database unique identifier of the designated neighborhood entity", example = "1")
-        Long neighborhoodId
+        Long neighborhoodId,
+
+        @Schema(description = "Registration status", example = "PENDING")
+        String status
 ) {
 }

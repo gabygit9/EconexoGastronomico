@@ -1,3 +1,5 @@
+import {Status} from './login.model';
+
 export interface DonorRegistrationRequest {
   email: string;
   password?:string;
@@ -27,6 +29,7 @@ export interface DonorResponse {
   floor?: string | null;
   apartment?: string | null;
   neighborhoodId: number;
+  status: Status
 }
 
 export interface NeighborhoodLookup {

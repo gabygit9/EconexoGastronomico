@@ -35,6 +35,9 @@ public record DonorResponseDTO(
         String apartment,
 
         @Schema(description = "Database unique identifier of the designated neighborhood entity", example = "1")
-        Long neighborhoodId
+        Long neighborhoodId,
+
+        @Schema(description = "Registration status", example = "PENDING")
+        String status
 ) {
 }

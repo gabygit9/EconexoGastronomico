@@ -1,3 +1,5 @@
+import {Status} from './login.model';
+
 export interface NgoRegistrationDTO {
   ngoName: string,
   taxId: string,
@@ -28,7 +30,8 @@ export interface NgoResponseDTO {
   streetNumber: string,
   floor: string,
   apartment: string,
-  neighborhoodId: number
+  neighborhoodId: number,
+  status: Status
 }
 
 export interface NgoTypeLookup {

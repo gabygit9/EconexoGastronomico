@@ -66,4 +66,9 @@ export class AuthService {
   registerNgo(ngoData:NgoRegistrationDTO): Observable<NgoResponseDTO>{
     return this.http.post<NgoResponseDTO>(`${this.apiUrl}/register/ngo`, ngoData);
   }
+
+  //TODO implementar en el backend
+  getNgoProfile(): Observable<NgoResponseDTO>{
+    return this.http.get<NgoResponseDTO>(`${this.apiUrl}/profile`);
+  }
 }
