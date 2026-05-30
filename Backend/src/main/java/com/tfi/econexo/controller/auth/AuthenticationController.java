@@ -97,6 +97,20 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register/driver")
+    @Operation(summary = "Register a new Driver",
+            description = "Post a new driver in the platform. Create its access credentials with DRIVER rol and link its driver profile with geolocalization data.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Driver successfully created",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = DriverResponseDTO.class))}
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "Invalid credentials. Or email/taxId already exists. Returns an error message.",
+                    content = @Content
+            )
+    })
     public ResponseEntity<DriverResponseDTO> registerDriver(@RequestBody @Valid DriverRegistrationDTO driverDTO) {
         return new ResponseEntity<>(this.authService.registerDriver(driverDTO), HttpStatus.CREATED);
     }
