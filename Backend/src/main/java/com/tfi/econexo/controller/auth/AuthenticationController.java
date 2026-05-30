@@ -1,5 +1,7 @@
 package com.tfi.econexo.controller.auth;
 
+import com.tfi.econexo.dto.auth.driver.DriverRegistrationDTO;
+import com.tfi.econexo.dto.auth.driver.DriverResponseDTO;
 import com.tfi.econexo.dto.auth.ngo.NgoRegistrationDTO;
 import com.tfi.econexo.dto.auth.ngo.NgoResponseDTO;
 import com.tfi.econexo.dto.auth.login.AuthLoginRequestDTO;
@@ -93,5 +95,11 @@ public class AuthenticationController {
     public ResponseEntity<NgoResponseDTO> registerNgo(@RequestBody @Valid NgoRegistrationDTO ngoDTO) {
         return new ResponseEntity<>(this.authService.registerNgo(ngoDTO), HttpStatus.CREATED);
     }
+
+    @PostMapping("/register/driver")
+    public ResponseEntity<DriverResponseDTO> registerDriver(@RequestBody @Valid DriverRegistrationDTO driverDTO) {
+        return new ResponseEntity<>(this.authService.registerDriver(driverDTO), HttpStatus.CREATED);
+    }
+
 
 }

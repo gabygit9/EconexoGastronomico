@@ -11,7 +11,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.locationtech.jts.geom.Point;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -31,16 +30,14 @@ public class Driver extends BaseEntity {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Column(name = "birth_date", nullable = false)
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    @Column(name = "date_of_birth", nullable = false)
     private LocalDate birthDate;
 
-    @Column(name = "health_booklet_url")
-    private String healthBookletUrl;
+    @Column(name = "food_handler_certificate_url")
+    private String foodHandlerCertificateUrl;
 
-    @Column(name = "health_booklet_expiration")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    private LocalDate healthBookletExpiration;
+    @Column(name = "food_handler_certificate_expiration")
+    private LocalDate foodHandlerCertificateExpiration;
 
     @Column(name = "tax_id", unique = true, nullable = false, length = 11)
     private String taxId;

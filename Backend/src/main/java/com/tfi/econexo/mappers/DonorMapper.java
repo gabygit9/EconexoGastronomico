@@ -30,6 +30,7 @@ public interface DonorMapper {
 
     @Mapping(target = "neighborhoodId", source = "donor.neighborhood.id")
     @Mapping(target = "email", source = "donor.user.email")
+    @Mapping(target = "status", source = "status")
     DonorResponseDTO toResponseDTO(Donor donor);
 
     default Point createPoint(Double longitude, Double latitude) {

@@ -1,13 +1,11 @@
 package com.tfi.econexo.entity.logistics;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tfi.econexo.entity.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -43,6 +41,5 @@ public class Vehicle extends BaseEntity {
     private String driversLicenseBackUrl;
 
     @Column(name = "drivers_license_expiration")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
     private LocalDate driversLicenseExpiration;
 }

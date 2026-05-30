@@ -33,7 +33,7 @@ public record DriverResponseDTO(
         String status,
 
         @Schema(description = "Date of expiration of the driver's health booklet", example = "31-12-2025")
-        LocalDate healthBookletExpiration,
+        LocalDate foodHandlerCertificateExpiration,
 
         @Schema(description = "Street name of the physical location of the commerce", example = "Av. Hipólito Yrigoyen")
         String street,

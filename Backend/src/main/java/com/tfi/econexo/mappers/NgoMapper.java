@@ -35,6 +35,7 @@ public interface NgoMapper {
 
     @Mapping(target = "email", source = "ngo.user.email")
     @Mapping(target = "neighborhoodId", source = "ngo.neighborhood.id")
+    @Mapping(target = "status", source = "status")
     NgoResponseDTO toResponseDTO(Ngo ngo);
 
 }
