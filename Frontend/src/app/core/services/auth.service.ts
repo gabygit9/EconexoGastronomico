@@ -67,6 +67,15 @@ export class AuthService {
     return this.http.post<NgoResponseDTO>(`${this.apiUrl}/register/ngo`, ngoData);
   }
 
+  /**
+   * Register a new Driver
+   * @param driverData - The driver data to register
+   * @returns An Observable of the registered driver
+   */
+  registerDriver(driverData:DriverRegistrationDTO): Observable<DriverResponse>{
+    return this.http.post<DriverResponse>(`${this.apiUrl}/register/driver`, driverData);
+  }
+  
   //TODO implementar en el backend
   getNgoProfile(): Observable<NgoResponseDTO>{
     return this.http.get<NgoResponseDTO>(`${this.apiUrl}/profile`);
