@@ -21,7 +21,7 @@ public interface DriverMapper {
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "user", source = "user")
     @Mapping(target = "neighborhood", source = "neighborhood")
-    @Mapping(target = "location", expression = "java(com.tfi.Econexo.utils.GeometryUtils.createPoint(dto.longitude(), dto.latitude()))")
+    @Mapping(target = "location", expression = "java(com.tfi.econexo.utils.GeometryUtils.createPoint(dto.longitude(), dto.latitude()))")
     Driver toEntity(DriverRegistrationDTO dto, UserSec user, Neighborhood neighborhood);
 
     @Mapping(target = "neighborhoodName", source = "driver.neighborhood.name")

@@ -29,7 +29,7 @@ public interface NgoMapper {
     @Mapping(target = "floor", source = "dto.floor")
     @Mapping(target = "apartment", source = "dto.apartment")
     @Mapping(target = "phoneNumber", source = "dto.phoneNumber")
-    @Mapping(target = "ngoType", expression = "java(com.tfi.econexo.entity.ngo.NgoType.valueOf(dto.ngoType().toUpperCase()))")
+    @Mapping(target = "ngoType", expression = "java(com.tfi.econexo.model.ngo.NgoType.valueOf(dto.ngoType().toUpperCase()))")
     @Mapping(target = "location", expression = "java(com.tfi.econexo.utils.GeometryUtils.createPoint(dto.longitude(), dto.latitude()))")
     Ngo toEntity(NgoRegistrationDTO dto, UserSec user, Neighborhood neighborhood);
 

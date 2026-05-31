@@ -18,10 +18,7 @@ import com.tfi.econexo.exception.ConflictException;
 import com.tfi.econexo.service.DriverService;
 import com.tfi.econexo.service.NeighborhoodService;
 import com.tfi.econexo.service.NgoService;
-import com.tfi.econexo.service.auth.AuthService;
-import com.tfi.econexo.service.auth.PermissionService;
-import com.tfi.econexo.service.auth.RoleService;
-import com.tfi.econexo.service.auth.UserService;
+import com.tfi.econexo.service.auth.*;
 import com.tfi.econexo.service.impl.auth.UserDetailsServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,6 +72,9 @@ class AuthenticationControllerTest {
 
     @MockitoBean
     private DriverService driverService;
+
+    @MockitoBean
+    private BlacklistedTokenService blacklistedTokenService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -321,5 +321,24 @@ class AuthenticationControllerTest {
                                 .content(json)
                 )
                 .andExpect(status().isConflict());
+    }
+
+    @Test
+    void logout_success() throws Exception {
+        mockMvc.perform(
+                        post("/api/v1/auth/logout")
+                                .header("Authorization", "Bearer token")
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void logout_InvalidRequest_400_WhenThereAreNoHeader() throws Exception {
+        mockMvc.perform(
+                        post("/api/v1/auth/logout")
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isBadRequest());
     }
 }
