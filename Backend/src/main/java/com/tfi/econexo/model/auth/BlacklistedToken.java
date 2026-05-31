@@ -25,4 +25,9 @@ public class BlacklistedToken {
 
     @Column(name = "expires_at", nullable = false)
     private Date expiresAt;
+
+    public BlacklistedToken(String token, Date expirationDate) {
+        this.token = token;
+        this.expiresAt = expirationDate;
+    }
 }

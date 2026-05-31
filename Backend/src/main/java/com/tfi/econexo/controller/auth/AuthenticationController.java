@@ -9,6 +9,7 @@ import com.tfi.econexo.dto.auth.login.AuthResponseDTO;
 import com.tfi.econexo.dto.auth.donor.DonorRegistrationDTO;
 import com.tfi.econexo.dto.auth.donor.DonorResponseDTO;
 import com.tfi.econexo.service.auth.AuthService;
+import com.tfi.econexo.service.auth.BlacklistedTokenService;
 import com.tfi.econexo.service.impl.auth.UserDetailsServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -16,6 +17,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -33,6 +35,7 @@ public class AuthenticationController {
 
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthService authService;
+    private final BlacklistedTokenService blacklistedTokenService;
 
     @PostMapping("/login")
     @Operation(summary = "User login",
@@ -115,5 +118,30 @@ public class AuthenticationController {
         return new ResponseEntity<>(this.authService.registerDriver(driverDTO), HttpStatus.CREATED);
     }
 
+    @PostMapping("/logout")
+    @Operation(summary = "Logout user",
+            description = "Invalidates the user's JWT token by adding it to the blacklist.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Logout successful",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid request",
+                    content = @Content
+            )
+    })
+    public ResponseEntity<String> logout(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            blacklistedTokenService.blacklistToken(token);
+            return ResponseEntity.ok("Logout successful");
+        }
+        return ResponseEntity.badRequest().body("No token provided");
+    }
 
 }

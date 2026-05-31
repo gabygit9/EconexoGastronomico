@@ -1,11 +1,13 @@
 package com.tfi.econexo.security.config.filter;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.tfi.econexo.service.auth.BlacklistedTokenService;
 import com.tfi.econexo.utils.JwtUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,13 +21,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Collection;
 
+@AllArgsConstructor
 public class JwtTokenValidator extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
-
-    public JwtTokenValidator(JwtUtils jwtUtils) {
-        this.jwtUtils = jwtUtils;
-    }
+    private final BlacklistedTokenService blacklistedTokenService;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -37,6 +37,12 @@ public class JwtTokenValidator extends OncePerRequestFilter {
         if(jwtToken != null && jwtToken.startsWith("Bearer ")){
             //borrar bearer + espacio
             jwtToken = jwtToken.substring(7);
+
+            if(blacklistedTokenService.isTokenBlacklisted(jwtToken)){
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token is invalidated");
+                return;
+            }
+
             DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
 
             String username = jwtUtils.extractUsername(decodedJWT);
