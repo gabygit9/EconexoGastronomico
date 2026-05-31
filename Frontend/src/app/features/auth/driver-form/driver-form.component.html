@@ -1,0 +1,248 @@
+<div class="min-h-screen bg-gray-100 flex items-center justify-center p-4 md:p-8">
+
+  <div class="w-full max-w-5xl bg-white shadow-2xl rounded-[2rem] overflow-hidden border border-gray-100 flex flex-col">
+
+    <div class="bg-[#161c28] text-white px-6 py-8 md:px-12 md:py-10 relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+
+      <div class="flex items-center gap-5">
+        <div class="w-14 h-14 bg-[#eb5c0c] rounded-2xl flex items-center justify-center shrink-0 shadow-lg shadow-orange-500/30">
+          <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-2xl md:text-3xl font-bold tracking-wide">Alta Conductor</h2>
+          <p class="text-sm md:text-base text-gray-400 mt-1">Unite a la red de conductores de EcoNexo</p>
+        </div>
+      </div>
+
+      <div class="hidden md:flex bg-[#252c39] rounded-xl p-4 items-start gap-3 max-w-xs border border-gray-700">
+        <svg class="w-5 h-5 text-[#eb5c0c] shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+        </svg>
+        <p class="text-xs text-gray-300 leading-tight">
+          Datos protegidos bajo la Ley 25.326 de Protección de Datos Personales.
+        </p>
+      </div>
+    </div>
+
+    <form [formGroup]="driverForm" (ngSubmit)="onSubmit()" class="p-6 md:p-12 space-y-10">
+
+      <div>
+        <h3 class="text-lg font-bold text-[#161c28] mb-4 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-[#eb5c0c]"></span> Datos de Acceso
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div>
+            <label class="label-form">Email</label>
+            <input formControlName="email" type="email"
+                   [ngClass]="{'input-error' : isInvalidField('email')}"
+                   class="input-form"
+                   placeholder="conductor@email.com">
+
+            @if (isInvalidField('email')){
+              <p class="text-error">
+                {{ getErrorMessage('email') }}
+              </p>
+            }
+          </div>
+          <div>
+            <label class="label-form">Contraseña</label>
+            <input formControlName="password" type="password"
+                   [ngClass]="{'input-error' : isInvalidField('password')}"
+                   class="input-form"
+                   placeholder="Mínimo 8 caracteres">
+
+            @if (isInvalidField('password')){
+              <p class="text-error">
+                {{ getErrorMessage('password') }}
+              </p>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="text-lg font-bold text-[#161c28] mb-4 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-[#eb5c0c]"></span> Perfil del Conductor
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div class="lg:col-span-2">
+            <label class="label-form">Nombre/s</label>
+            <input formControlName="firstName" type="text"
+                   [ngClass]="{'input-error' : isInvalidField('firstName')}"
+                   class=" input-form"
+                   placeholder="Ej: El Hornito">
+
+            @if (isInvalidField('firstName')){
+              <p class="text-error">
+                {{ getErrorMessage('firstName') }}
+              </p>
+            }
+          </div>
+
+          <div class="lg:col-span-2">
+            <label class="label-form">Apellido/s</label>
+            <input formControlName="lastName" type="text"
+                   [ngClass]="{'input-error' : isInvalidField('lastName')}"
+                   class=" input-form"
+                   placeholder="Ej: El Hornito">
+
+            @if (isInvalidField('lastName')){
+              <p class="text-error">
+                {{ getErrorMessage('lastName') }}
+              </p>
+            }
+          </div>
+
+          <div>
+            <label class="label-form">CUIT</label>
+            <input formControlName="taxId" type="text"
+                   [ngClass]="{'input-error' : isInvalidField('taxId')}"
+                   class="input-form"
+                   placeholder="Sin guiones">
+
+            @if (isInvalidField('taxId')){
+              <p class="text-error">
+                {{ getErrorMessage('taxId') }}
+              </p>
+            }
+          </div>
+
+          <div>
+            <label class="label-form">Fecha de Nacimiento</label>
+            <input formControlName="birthDate" type="date"
+                   [ngClass]="{'input-error' : isInvalidField('birthDate')}"
+                   class="input-form">
+
+            @if (isInvalidField('birthDate')){
+              <p class="text-error">
+                {{ getErrorMessage('birthDate') }}
+              </p>
+            }
+          </div>
+
+          <div>
+            <label class="label-form">Carnet de Manipulador de Alimentos</label>
+            <input formControlName="foodHandlerCertificateUrl" type="text"
+                   [ngClass]="{'input-error' : isInvalidField('foodHandlerCertificateUrl')}"
+                   class="input-form">
+
+            @if (isInvalidField('foodHandlerCertificateUrl')){
+              <p class="text-error">
+                {{ getErrorMessage('foodHandlerCertificateUrl') }}
+              </p>
+            }
+          </div>
+
+          <div>
+            <label class="label-form">Carnet de Manipulador de Alimentos</label>
+            <input formControlName="foodHandlerCertificateExpiration" type="text"
+                   [ngClass]="{'input-error' : isInvalidField('foodHandlerCertificateExpiration')}"
+                   class="input-form">
+
+            @if (isInvalidField('foodHandlerCertificateExpiration')){
+              <p class="text-error">
+                {{ getErrorMessage('foodHandlerCertificateExpiration') }}
+              </p>
+            }
+          </div>
+
+        </div>
+      </div>
+
+      <div>
+        <h3 class="text-lg font-bold text-[#161c28] mb-4 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-[#eb5c0c]"></span> Contacto
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
+          <div class="md:col-span-3">
+            <label class="label-form">Calle</label>
+            <input formControlName="street" type="text"
+                   [ngClass]="{'input-error' : isInvalidField('street')}"
+                   class="input-form">
+
+            @if (isInvalidField('street')){
+              <p class="text-error">
+                {{ getErrorMessage('street') }}
+              </p>
+            }
+          </div>
+          <div class="md:col-span-1">
+            <label class="label-form">Número</label>
+            <input formControlName="streetNumber" (blur)="onAddressBlur()" type="text"
+                   [ngClass]="{'input-error' : isInvalidField('streetNumber')}"
+                   class="input-form">
+
+            @if (isInvalidField('streetNumber')){
+              <p class="text-error">
+                {{ getErrorMessage('streetNumber') }}
+              </p>
+            }
+          </div>
+          <div class="md:col-span-2">
+            <label class="label-form">Barrio</label>
+            <select formControlName="neighborhoodId" (change)="onNeighborhoodChange()"
+                    [ngClass]="{'input-error' : isInvalidField('neighborhoodId')}"
+                    class="input-form cursor-pointer">
+              @for (neighborhood of neighborhoods; track neighborhood.id){
+                <option [value]="neighborhood.id"> {{neighborhood.name}}</option>
+              }
+            </select>
+
+            @if (isInvalidField('neighborhoodId')){
+              <p class="text-error">
+                {{ getErrorMessage('neighborhoodId') }}
+              </p>
+            }
+          </div>
+          <div class="md:col-span-1">
+            <label class="label-form">Piso</label>
+            <input formControlName="floor" type="number"
+                   class="input-form"
+                   placeholder="Opcional">
+          </div>
+          <div class="md:col-span-1">
+            <label class="label-form">Depto</label>
+            <input formControlName="apartment" type="text"
+                   class="input-form"
+                   placeholder="Opcional">
+          </div>
+          <div class="md:col-span-4 mt-2">
+            <label class="label-form">Teléfono de Contacto</label>
+            <input formControlName="phoneNumber" type="text"
+                   [ngClass]="{'input-error' : isInvalidField('phoneNumber')}"
+                   class="input-form"
+                   placeholder="Cod. área + número">
+
+            @if (isInvalidField('phoneNumber')){
+              <p class="text-error">
+                {{ getErrorMessage('phoneNumber') }}
+              </p>
+            }
+          </div>
+        </div>
+
+      </div>
+
+      <div class="md:hidden bg-[#fff6ef] border border-[#ffe4ce] rounded-xl p-4 flex items-start gap-3 mt-4">
+        <svg class="w-4 h-4 text-[#eb5c0c] shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+        </svg>
+        <p class="text-[11px] text-[#c04a08] leading-tight font-medium">
+          Tus datos están protegidos bajo la Ley 25.326.
+        </p>
+      </div>
+
+      <div class="pt-6 border-t border-gray-100 flex flex-col md:flex-row justify-end items-center gap-4">
+        <button type="button" routerLink="/register/role" class="w-full md:w-auto px-8 py-4 text-gray-500 font-bold hover:bg-gray-50 rounded-xl transition-all">
+          Cancelar
+        </button>
+        <button type="submit" [disabled]="isSubmitting" class="w-full md:w-auto bg-[#eb5c0c] hover:bg-[#d4530b] text-white font-bold px-10 py-4 rounded-xl transition-all shadow-md shadow-orange-200 active:scale-[0.98]">
+          Registrar
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
