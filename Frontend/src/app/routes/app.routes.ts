@@ -8,6 +8,7 @@ export const routes: Routes = [
   { path: 'register/ngo', component: NgoFormComponent },
   { path: 'dashboard/donor', component: DashboardDonorComponent },
   { path: 'dashboard/ngo', component: DashboardNgoComponent },
+  { path: 'dashboard/driver', component: DashboardDriverComponent },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: 'login' }
 ];

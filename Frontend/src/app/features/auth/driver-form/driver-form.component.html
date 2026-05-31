@@ -136,8 +136,8 @@
           </div>
 
           <div>
-            <label class="label-form">Carnet de Manipulador de Alimentos</label>
-            <input formControlName="foodHandlerCertificateExpiration" type="text"
+            <label class="label-form">Vencimiento del Carnet</label>
+            <input formControlName="foodHandlerCertificateExpiration" type="date"
                    [ngClass]="{'input-error' : isInvalidField('foodHandlerCertificateExpiration')}"
                    class="input-form">
 
@@ -221,6 +221,91 @@
               </p>
             }
           </div>
+        </div>
+      </div>
+
+      <div formGroupName="vehicle">
+        <h3 class="text-lg font-bold text-[#161c28] mb-4 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-[#eb5c0c]"></span>Datos del Vehículo
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div>
+            <label class="label-form">Tipo de Vehículo</label>
+            <select formControlName="vehicleType"
+                    [ngClass]="{'input-error' : isInvalidField('vehicle.vehicleType')}"
+                    class="input-form cursor-pointer">
+              <option value="" disabled selected>Selecciona un tipo</option>
+              <option value="CAR">Auto</option>
+              <option value="TRUCK">Camión</option>
+              <option value="BICYCLE">Bicicleta</option>
+              <option value="MOTORCYCLE">Moto</option>
+              <option value="KICK_SCOOTER">Monopatín</option>
+              <option value="PICKUP">Camioneta</option>
+            </select>
+            @if (isInvalidField('vehicle.vehicleType')){
+              <p class="text-error">
+                {{ getErrorMessage('vehicle.vehicleType') }}
+              </p>
+            }
+          </div>
+
+          <div>
+            <label class="label-form">Capacidad (Kg)</label>
+            <input formControlName="capacityKg" type="number"
+                   [ngClass]="{'input-error' : isInvalidField('vehicle.capacityKg')}"
+                   class="input-form"
+                   placeholder="Ej: 300">
+            @if (isInvalidField('vehicle.capacityKg')){
+              <p class="text-error">
+                {{ getErrorMessage('vehicle.capacityKg') }}
+              </p>
+            }
+          </div>
+
+          <div class="flex items-center mt-2 lg:mt-8">
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input formControlName="hasRefrigeration" type="checkbox"
+                     class="w-5 h-5 text-[#eb5c0c] rounded border-gray-300 focus:ring-[#eb5c0c]">
+              <span class="text-sm font-medium text-gray-700">¿Tiene caja térmica / refrigeración?</span>
+            </label>
+          </div>
+
+          @if (driverForm.get('vehicle.vehicleType')?.value !== 'BICYCLE' && driverForm.get('vehicle.vehicleType')?.value !== 'KICK_SCOOTER') {
+            <div>
+              <label class="label-form">Patente</label>
+              <input formControlName="numberPlate" type="text"
+                     [ngClass]="{'input-error' : isInvalidField('vehicle.numberPlate')}"
+                     class="input-form"
+                     placeholder="Ej: AB123CD">
+              @if (isInvalidField('vehicle.numberPlate')){
+                <p class="text-error">
+                  {{ getErrorMessage('vehicle.numberPlate') }}
+                </p>
+              }
+            </div>
+
+            <div>
+              <label class="label-form">Vencimiento de Licencia</label>
+              <input formControlName="driverLicenseExpiration" type="date"
+                     [ngClass]="{'input-error' : isInvalidField('vehicle.driverLicenseExpiration')}"
+                     class="input-form">
+              @if (isInvalidField('vehicle.driverLicenseExpiration')){
+                <p class="text-error">
+                  {{ getErrorMessage('vehicle.driverLicenseExpiration') }}
+                </p>
+              }
+            </div>
+
+            <div>
+              <label class="label-form">Foto Licencia Frente (URL)</label>
+              <input formControlName="driverLicenseFrontUrl" type="text" class="input-form" placeholder="URL temporal">
+            </div>
+
+            <div>
+              <label class="label-form">Foto Licencia Dorso (URL)</label>
+              <input formControlName="driverLicenseBackUrl" type="text" class="input-form" placeholder="URL temporal">
+            </div>
+          }
         </div>
 
       </div>
