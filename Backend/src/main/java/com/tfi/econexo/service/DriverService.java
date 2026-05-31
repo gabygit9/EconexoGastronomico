@@ -1,6 +1,6 @@
 package com.tfi.econexo.service;
 
-import com.tfi.econexo.entity.logistics.Driver;
+import com.tfi.econexo.model.logistics.Driver;
 
 import java.util.Optional;
 

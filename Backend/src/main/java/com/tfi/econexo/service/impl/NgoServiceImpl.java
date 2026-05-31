@@ -1,6 +1,6 @@
 package com.tfi.econexo.service.impl;
 
-import com.tfi.econexo.entity.ngo.Ngo;
+import com.tfi.econexo.model.ngo.Ngo;
 import com.tfi.econexo.repository.ngo.NgoRepository;
 import com.tfi.econexo.service.NgoService;
 import lombok.RequiredArgsConstructor;

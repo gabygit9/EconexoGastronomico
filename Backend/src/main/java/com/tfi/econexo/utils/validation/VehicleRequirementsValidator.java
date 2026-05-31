@@ -1,8 +1,8 @@
 package com.tfi.econexo.utils.validation;
 
-import com.tfi.econexo.dto.auth.driver.DriverRegistrationDTO;
-import com.tfi.econexo.dto.auth.driver.VehicleRegistrationDTO;
-import com.tfi.econexo.entity.logistics.VehicleType;
+import com.tfi.econexo.dto.auth.logistics.DriverRegistrationDTO;
+import com.tfi.econexo.dto.auth.logistics.VehicleRegistrationDTO;
+import com.tfi.econexo.model.logistics.VehicleType;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

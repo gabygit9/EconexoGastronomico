@@ -1,7 +1,7 @@
 package com.tfi.econexo.service.auth;
 
 
-import com.tfi.econexo.entity.security.UserSec;
+import com.tfi.econexo.model.auth.UserSec;
 
 import java.util.List;
 import java.util.Optional;

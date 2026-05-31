@@ -1,6 +1,6 @@
 package com.tfi.econexo.repository.logistics;
 
-import com.tfi.econexo.entity.logistics.Vehicle;
+import com.tfi.econexo.model.logistics.Vehicle;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

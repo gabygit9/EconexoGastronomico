@@ -1,6 +1,6 @@
 package com.tfi.econexo.service.impl.auth;
 
-import com.tfi.econexo.entity.security.Permission;
+import com.tfi.econexo.model.auth.Permission;
 import com.tfi.econexo.repository.auth.PermissionRepository;
 import com.tfi.econexo.service.auth.PermissionService;
 import lombok.RequiredArgsConstructor;

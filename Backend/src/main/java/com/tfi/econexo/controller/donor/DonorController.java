@@ -1,6 +1,6 @@
 package com.tfi.econexo.controller.donor;
 
-import com.tfi.econexo.entity.donation.DonorType;
+import com.tfi.econexo.model.donation.DonorType;
 import com.tfi.econexo.utils.EnumUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

@@ -1,7 +1,7 @@
 package com.tfi.econexo.controller.auth;
 
-import com.tfi.econexo.entity.security.Permission;
-import com.tfi.econexo.entity.security.Role;
+import com.tfi.econexo.model.auth.Permission;
+import com.tfi.econexo.model.auth.Role;
 import com.tfi.econexo.service.auth.PermissionService;
 import com.tfi.econexo.service.auth.RoleService;
 import io.swagger.v3.oas.annotations.Operation;

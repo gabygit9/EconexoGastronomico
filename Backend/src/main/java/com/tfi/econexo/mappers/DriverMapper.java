@@ -1,10 +1,10 @@
 package com.tfi.econexo.mappers;
 
-import com.tfi.econexo.dto.auth.driver.DriverRegistrationDTO;
-import com.tfi.econexo.dto.auth.driver.DriverResponseDTO;
-import com.tfi.econexo.entity.location.Neighborhood;
-import com.tfi.econexo.entity.logistics.Driver;
-import com.tfi.econexo.entity.security.UserSec;
+import com.tfi.econexo.dto.auth.logistics.DriverRegistrationDTO;
+import com.tfi.econexo.dto.auth.logistics.DriverResponseDTO;
+import com.tfi.econexo.model.location.Neighborhood;
+import com.tfi.econexo.model.logistics.Driver;
+import com.tfi.econexo.model.auth.UserSec;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

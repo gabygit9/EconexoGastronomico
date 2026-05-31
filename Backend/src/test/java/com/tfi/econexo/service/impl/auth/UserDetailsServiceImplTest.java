@@ -1,9 +1,9 @@
 package com.tfi.econexo.service.impl.auth;
 
 import com.tfi.econexo.dto.auth.login.AuthLoginRequestDTO;
-import com.tfi.econexo.entity.security.Permission;
-import com.tfi.econexo.entity.security.Role;
-import com.tfi.econexo.entity.security.UserSec;
+import com.tfi.econexo.model.auth.Permission;
+import com.tfi.econexo.model.auth.Role;
+import com.tfi.econexo.model.auth.UserSec;
 import com.tfi.econexo.repository.auth.UserRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

@@ -2,9 +2,9 @@ package com.tfi.econexo.mappers;
 
 import com.tfi.econexo.dto.auth.ngo.NgoRegistrationDTO;
 import com.tfi.econexo.dto.auth.ngo.NgoResponseDTO;
-import com.tfi.econexo.entity.security.UserSec;
-import com.tfi.econexo.entity.location.Neighborhood;
-import com.tfi.econexo.entity.ngo.Ngo;
+import com.tfi.econexo.model.auth.UserSec;
+import com.tfi.econexo.model.location.Neighborhood;
+import com.tfi.econexo.model.ngo.Ngo;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

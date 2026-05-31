@@ -1,7 +1,7 @@
 package com.tfi.econexo.mappers;
 
-import com.tfi.econexo.entity.security.Role;
-import com.tfi.econexo.entity.security.UserSec;
+import com.tfi.econexo.model.auth.Role;
+import com.tfi.econexo.model.auth.UserSec;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

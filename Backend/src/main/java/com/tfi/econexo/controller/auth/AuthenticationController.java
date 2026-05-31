@@ -1,7 +1,7 @@
 package com.tfi.econexo.controller.auth;
 
-import com.tfi.econexo.dto.auth.driver.DriverRegistrationDTO;
-import com.tfi.econexo.dto.auth.driver.DriverResponseDTO;
+import com.tfi.econexo.dto.auth.logistics.DriverRegistrationDTO;
+import com.tfi.econexo.dto.auth.logistics.DriverResponseDTO;
 import com.tfi.econexo.dto.auth.ngo.NgoRegistrationDTO;
 import com.tfi.econexo.dto.auth.ngo.NgoResponseDTO;
 import com.tfi.econexo.dto.auth.login.AuthLoginRequestDTO;

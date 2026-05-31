@@ -1,9 +1,9 @@
 package com.tfi.econexo.config;
 
-import com.tfi.econexo.entity.location.City;
-import com.tfi.econexo.entity.location.Neighborhood;
-import com.tfi.econexo.entity.security.Role;
-import com.tfi.econexo.entity.security.UserSec;
+import com.tfi.econexo.model.location.City;
+import com.tfi.econexo.model.location.Neighborhood;
+import com.tfi.econexo.model.auth.Role;
+import com.tfi.econexo.model.auth.UserSec;
 import com.tfi.econexo.repository.auth.RoleRepository;
 import com.tfi.econexo.repository.auth.UserRepository;
 import com.tfi.econexo.repository.location.CityRepository;

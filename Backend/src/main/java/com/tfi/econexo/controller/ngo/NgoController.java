@@ -1,6 +1,6 @@
 package com.tfi.econexo.controller.ngo;
 
-import com.tfi.econexo.entity.ngo.NgoType;
+import com.tfi.econexo.model.ngo.NgoType;
 import com.tfi.econexo.service.NgoService;
 import com.tfi.econexo.utils.EnumUtils;
 import io.swagger.v3.oas.annotations.Operation;

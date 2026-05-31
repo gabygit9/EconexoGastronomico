@@ -1,6 +1,6 @@
 package com.tfi.econexo.service.impl.auth;
 
-import com.tfi.econexo.entity.security.Role;
+import com.tfi.econexo.model.auth.Role;
 import com.tfi.econexo.repository.auth.RoleRepository;
 import com.tfi.econexo.service.auth.RoleService;
 import lombok.RequiredArgsConstructor;

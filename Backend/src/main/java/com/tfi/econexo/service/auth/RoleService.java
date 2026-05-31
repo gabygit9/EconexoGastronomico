@@ -1,6 +1,6 @@
 package com.tfi.econexo.service.auth;
 
-import com.tfi.econexo.entity.security.Role;
+import com.tfi.econexo.model.auth.Role;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,8 +1,8 @@
 package com.tfi.econexo.mappers;
 
-import com.tfi.econexo.dto.auth.driver.VehicleRegistrationDTO;
-import com.tfi.econexo.dto.auth.driver.VehicleResponseDTO;
-import com.tfi.econexo.entity.logistics.Vehicle;
+import com.tfi.econexo.dto.auth.logistics.VehicleRegistrationDTO;
+import com.tfi.econexo.dto.auth.logistics.VehicleResponseDTO;
+import com.tfi.econexo.model.logistics.Vehicle;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

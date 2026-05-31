@@ -1,6 +1,6 @@
 package com.tfi.econexo.service;
 
-import com.tfi.econexo.entity.location.Neighborhood;
+import com.tfi.econexo.model.location.Neighborhood;
 
 import java.util.List;
 import java.util.Optional;

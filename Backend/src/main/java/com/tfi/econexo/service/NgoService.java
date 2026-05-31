@@ -1,6 +1,6 @@
 package com.tfi.econexo.service;
 
-import com.tfi.econexo.entity.ngo.Ngo;
+import com.tfi.econexo.model.ngo.Ngo;
 
 import java.util.Optional;
 

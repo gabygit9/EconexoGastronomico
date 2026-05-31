@@ -1,6 +1,6 @@
 package com.tfi.econexo.service.impl.auth;
 
-import com.tfi.econexo.entity.security.UserSec;
+import com.tfi.econexo.model.auth.UserSec;
 import com.tfi.econexo.repository.auth.UserRepository;
 import com.tfi.econexo.service.auth.UserService;
 import lombok.RequiredArgsConstructor;
