@@ -112,6 +112,7 @@
           <div>
             <label class="label-form">Fecha de Nacimiento</label>
             <input formControlName="birthDate" type="date"
+                   [max]="maxBirthDateStr"
                    [ngClass]="{'input-error' : isInvalidField('birthDate')}"
                    class="input-form">
 
@@ -138,6 +139,7 @@
           <div>
             <label class="label-form">Vencimiento del Carnet</label>
             <input formControlName="foodHandlerCertificateExpiration" type="date"
+                   [min]="todayStr"
                    [ngClass]="{'input-error' : isInvalidField('foodHandlerCertificateExpiration')}"
                    class="input-form">
 
@@ -287,6 +289,7 @@
             <div>
               <label class="label-form">Vencimiento de Licencia</label>
               <input formControlName="driverLicenseExpiration" type="date"
+                     [min]="todayStr"
                      [ngClass]="{'input-error' : isInvalidField('vehicle.driverLicenseExpiration')}"
                      class="input-form">
               @if (isInvalidField('vehicle.driverLicenseExpiration')){

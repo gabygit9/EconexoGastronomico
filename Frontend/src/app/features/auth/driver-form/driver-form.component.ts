@@ -30,6 +30,8 @@ export class DriverFormComponent extends BaseFormComponent implements OnInit{
 
   driverForm!: FormGroup;
   isSubmitting = false;
+  todayStr = '';
+  maxBirthDateStr = '';
 
   get form(){
     return this.driverForm;
@@ -41,9 +43,18 @@ export class DriverFormComponent extends BaseFormComponent implements OnInit{
    * Initialize form and load initial data
    */
   ngOnInit(): void {
+    this.calculateDateLimits();
     this.initForm();
     this.setupVehicleValidation();
     this.loadInitialData();
+  }
+
+  private calculateDateLimits(){
+    const today = new Date();
+    this.todayStr = today.toISOString().split('T')[0];
+    const maxBirth = new Date;
+    maxBirth.setFullYear(maxBirth.getFullYear() - 18);
+    this.maxBirthDateStr = maxBirth.toISOString().split('T')[0];
   }
 
   private initForm(){
@@ -113,12 +124,15 @@ export class DriverFormComponent extends BaseFormComponent implements OnInit{
       },
       error: (error) => {
         this.isSubmitting = false;
-        const backendMessage = error.error.message || '';
-        if(error.status === 409 || backendMessage.includes('Driver already exists')){
+        const backendMessage = error.error.message || error.error || '';
+
+        if(backendMessage.includes("18 years")){
+          this.toastr.error("Debes ser mayor de 18 años para registrarte.", "Edad no permitida.")
+        }else if(error.status === 409 || backendMessage.includes('Driver already exists')){
           this.toastr.error('El email o CUIT ya se encuentra registrado.', 'Error de registro.')
-        } else if(error.status === 400){
+        }else if(error.status === 400){
           this.toastr.warning('Asegúrese de ingresar todos los datos obligatorios. Intente de nuevo.', 'Error de registro.');
-        } else {
+        }else {
           this.toastr.error('Ocurrió un problema en el servidor. Intente de nuevo.', 'Error.')
         }
       }
