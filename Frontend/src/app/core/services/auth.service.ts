@@ -16,6 +16,17 @@ export class AuthService {
   private readonly donorsUrl =`${environment.apiUrl}/v1/donors/public/donor-types`;
   private readonly ngosUrl = `${environment.apiUrl}/v1/organizations/public/ngo-types`;
 
+  private currentUserSubject = new BehaviorSubject<boolean>(this.hasToken());
+  public isAuthenticated$ = this.currentUserSubject.asObservable();
+
+  /**
+   * Checks if there is a token in localStorage
+   * @returns {boolean} - True if there is a token, false otherwise
+   */
+  private hasToken(): boolean{
+    return !!localStorage.getItem('econexo_token');
+  }
+
   /**
    * Register a new donor
    * @param donorData - The donor data to register
@@ -50,12 +61,17 @@ export class AuthService {
   }
 
   /**
-   * Login a user
+   * Login a user and store the token in localStorage
    * @param credentials - The user credentials
    * @returns An Observable of the login response
    */
   login(credentials: AuthLoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials);
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
+      tap((response) => {
+        localStorage.setItem('econexo_token', response.jwt);
+        this.currentUserSubject.next(true);
+      })
+    );
   }
 
   /**
@@ -76,8 +92,34 @@ export class AuthService {
     return this.http.post<DriverResponse>(`${this.apiUrl}/register/driver`, driverData);
   }
 
+  /**
+   * Logout the current user
+   * @param request - The logout request
+   * @returns An Observable of the logout response
+   */
+  logout(): Observable<any> {
+    return this.http.post<void>(`${this.apiUrl}/logout`, {}).pipe(
+      tap(() => {
+        this.clearLocalSession();
+      }),
+      catchError((error) => {
+        this.clearLocalSession();
+        return throwError(() => error);
+      })
+    );
+  }
+
   //TODO implementar en el backend
   getNgoProfile(): Observable<NgoResponseDTO>{
     return this.http.get<NgoResponseDTO>(`${this.apiUrl}/profile`);
   }
+
+  /**
+   * Clears the local session by removing the token and updating the authentication state
+   */
+  private clearLocalSession(){
+    localStorage.removeItem('econexo_token');
+    this.currentUserSubject.next(false);
+  }
+
 }
