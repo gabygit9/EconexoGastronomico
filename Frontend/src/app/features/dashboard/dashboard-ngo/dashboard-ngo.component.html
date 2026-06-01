@@ -1,67 +1,77 @@
-@if (isLoading){
-  <div class="flex items-center justify-center min-h-screen">
-    <p class="text-gray-500 font-medium">Cargando dashboard...</p>
-  </div>
-} @else if (ngoProfile) {
+<div class="min-h-screen bg-gray-50 flex flex-col">
 
-  @if (ngoProfile.status === 'PENDING') {
-    <div class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div class="max-w-md w-full bg-white shadow-xl rounded-2xl p-8 border border-gray-100 text-center space-y-6">
-        <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto shadow-sm">
-          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-        </div>
-        <div>
-          <h2 class="text-2xl font-bold text-gray-900">Cuenta en revisión</h2>
-          <p class="text-gray-500 mt-2 text-sm leading-relaxed">
-            ¡Gracias por registrarte en EcoNexo! Estamos verificando tu Número de Personería Jurídica y datos fiscales.
-          </p>
-        </div>
-        <div class="bg-amber-50 rounded-xl p-4 border border-amber-100">
-          <p class="text-xs text-amber-800 font-medium leading-tight">
-            Te notificaremos por email cuando tu cuenta sea aprobada para empezar a publicar necesidades de alimentos.
-          </p>
-        </div>
-        <button routerLink="/login" class="text-sm font-semibold text-gray-500 hover:text-gray-700 transition-colors">
-          Volver al Inicio
-        </button>
+  <app-navbar [userName]="ngoProfile?.ngoName || ''"></app-navbar>
+
+  <main class="flex-1 flex flex-col justify-center p-4 md:p-8 w-full max-w-7xl mx-auto">
+
+    @if (isLoading) {
+      <div class="flex flex-col items-center justify-center gap-4 h-full">
+        <p class="text-gray-500 font-medium animate-pulse">Cargando perfil de la ONG...</p>
       </div>
-    </div>
-  }
+    }
 
-  @else if (ngoProfile.status === 'SUSPENDED' || ngoProfile.status === 'CANCELED') {
-    <div class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div class="max-w-md w-full bg-white shadow-xl rounded-2xl p-8 border border-gray-100 text-center space-y-6">
-        <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto">
-          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.657 5.657m12.728 12.728A9 9 0 015.657 5.657m12.728 12.728L5.657 5.657"></path>
-          </svg>
+    @else if (ngoProfile) {
+
+      @if (ngoProfile.status === 'PENDING') {
+        <div class="max-w-md w-full bg-white shadow-xl rounded-2xl p-8 border border-gray-100 text-center space-y-6 mx-auto">
+          <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto shadow-sm">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-2xl font-bold text-gray-900">Cuenta en revisión</h2>
+            <p class="text-gray-500 mt-2 text-sm leading-relaxed">
+              ¡Gracias por registrarte en EcoNexo! Estamos verificando tu Número de Personería Jurídica y datos fiscales.
+            </p>
+          </div>
+          <div class="bg-amber-50 rounded-xl p-4 border border-amber-100">
+            <p class="text-xs text-amber-800 font-medium leading-tight">
+              Te notificaremos por email cuando tu cuenta sea aprobada para empezar a publicar necesidades de alimentos.
+            </p>
+          </div>
         </div>
-        <div>
-          <h2 class="text-2xl font-bold text-gray-900">Cuenta Inactiva</h2>
-          <p class="text-gray-500 mt-2 text-sm">
-            Tu acceso a la plataforma ha sido suspendido o cancelado por la administración.
-          </p>
+      }
+
+      @else if (ngoProfile.status === 'SUSPENDED' || ngoProfile.status === 'CANCELED') {
+        <div class="max-w-md w-full bg-white shadow-xl rounded-2xl p-8 border border-gray-100 text-center space-y-6 mx-auto">
+          <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.657 5.657m12.728 12.728A9 9 0 015.657 5.657m12.728 12.728L5.657 5.657"></path>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-2xl font-bold text-gray-900">Cuenta Inactiva</h2>
+            <p class="text-gray-500 mt-2 text-sm">
+              Tu acceso a la plataforma ha sido suspendido o cancelado por la administración.
+            </p>
+          </div>
+          <p class="text-xs text-gray-400">Por favor, ponete en contacto con el soporte de EcoNexo.</p>
         </div>
-        <p class="text-xs text-gray-400">Por favor, ponete en contacto con el soporte de EcoNexo.</p>
-      </div>
-    </div>
-  }
+      }
 
-  @else if (ngoProfile.status === 'APPROVED') {
-    <div class="min-h-screen bg-gray-100 p-6">
-      <header class="mb-6">
-        <h1 class="text-3xl font-bold text-gray-900">Panel de {{ ngoProfile.ngoName }}</h1>
-        <p class="text-gray-600">Bienvenido al espacio de gestión de donaciones.</p>
-      </header>
+      @else if (ngoProfile.status === 'APPROVED') {
+        <div class="w-full h-full flex flex-col justify-start mt-4">
+          <header class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Panel de {{ ngoProfile.ngoName }}</h1>
+            <p class="text-gray-600 mt-1">Bienvenido al espacio de gestión de donaciones.</p>
+          </header>
 
-      <main class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-          <h3 class="font-bold text-gray-800">Publicar Necesidad</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer">
+              <h3 class="font-bold text-gray-800 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-[#eb5c0c]"></span>
+                Publicar Necesidad
+              </h3>
+              <p class="text-sm text-gray-500 mt-2">Solicitá alimentos o insumos a la red de donantes.</p>
+            </div>
+          </div>
         </div>
-      </main>
-    </div>
-  }
+      }
 
-}
+    }
+  </main>
+
+  <app-footer></app-footer>
+
+</div>

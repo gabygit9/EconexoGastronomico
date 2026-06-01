@@ -114,6 +114,16 @@ export class AuthService {
     return this.http.get<NgoResponseDTO>(`${this.apiUrl}/profile`);
   }
 
+  //TODO implementar en el backend
+  getDriverProfile(): Observable<DriverResponse>{
+    return this.http.get<DriverResponse>(`${this.apiUrl}/profile`);
+  }
+
+  //TODO implementar en el backend
+  getDonorProfile(): Observable<DonorResponse>{
+    return this.http.get<DonorResponse>(`${this.apiUrl}/profile`);
+  }
+
   /**
    * Clears the local session by removing the token and updating the authentication state
    */
