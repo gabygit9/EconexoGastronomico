@@ -1,59 +1,50 @@
 package com.tfi.econexo.model.donation;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tfi.econexo.model.base.BaseEntity;
+import com.tfi.econexo.model.donation.donor.Donor;
+import com.tfi.econexo.model.enums.DonationStatus;
 import com.tfi.econexo.model.logistics.Driver;
 import com.tfi.econexo.model.ngo.Ngo;
-import com.tfi.econexo.model.logistics.Vehicle;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "donations")
-@Data
-@EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor
-@AllArgsConstructor
+@Builder
 public class Donation extends BaseEntity {
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private DonationState state;
+    private DonationStatus status = DonationStatus.AVAILABLE;
 
-    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
-    @JsonProperty("start_date_time")
-    @Column(nullable = false)
-    private LocalDateTime startDateTime;
+    @Column(name = "pickup_start_time", nullable = false)
+    private LocalDateTime pickupStartTime;
 
-    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
-    @JsonProperty("end_date_time")
-    @Column(nullable = false)
-    private LocalDateTime endDateTime;
+    @Column(name = "pickup_end_time", nullable = false)
+    private LocalDateTime pickupEndTime;
 
-    @ManyToOne(fetch =  FetchType.LAZY)
-    @JoinColumn(name = "donor_id", nullable = false)
-    private Donor donor;
-
-    @ManyToOne(fetch =  FetchType.LAZY)
-    @JoinColumn(name = "organization_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ngo_id", nullable = false)
     private Ngo ngo;
 
-    @ManyToOne(fetch =   FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "donor_id")
+    private Donor donor;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "driver_id")
     private Driver driver;
 
-    @ManyToOne(fetch =  FetchType.LAZY)
-    @JoinColumn(name = "vehicle_id")
-    private Vehicle vehicle;
+    @OneToMany(mappedBy = "donation", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    private List<DonationItem> donationItems = new ArrayList<>();
 
-    @OneToMany(mappedBy = "donation", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<DonationDetail> details = new ArrayList<>();
 }

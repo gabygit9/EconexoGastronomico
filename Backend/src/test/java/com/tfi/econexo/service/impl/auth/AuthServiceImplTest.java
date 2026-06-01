@@ -12,7 +12,7 @@ import com.tfi.econexo.exception.ConflictException;
 import com.tfi.econexo.mappers.*;
 import com.tfi.econexo.model.auth.Role;
 import com.tfi.econexo.model.auth.UserSec;
-import com.tfi.econexo.model.donation.Donor;
+import com.tfi.econexo.model.donation.donor.Donor;
 import com.tfi.econexo.model.enums.RegistrationStatus;
 import com.tfi.econexo.model.location.Neighborhood;
 import com.tfi.econexo.model.logistics.Driver;

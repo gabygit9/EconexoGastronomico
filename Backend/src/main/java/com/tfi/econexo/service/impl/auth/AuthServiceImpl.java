@@ -7,7 +7,7 @@ import com.tfi.econexo.dto.auth.ngo.NgoResponseDTO;
 import com.tfi.econexo.dto.auth.donor.DonorRegistrationDTO;
 import com.tfi.econexo.dto.auth.donor.DonorResponseDTO;
 import com.tfi.econexo.model.enums.RegistrationStatus;
-import com.tfi.econexo.model.donation.Donor;
+import com.tfi.econexo.model.donation.donor.Donor;
 import com.tfi.econexo.model.location.Neighborhood;
 import com.tfi.econexo.model.logistics.Driver;
 import com.tfi.econexo.model.logistics.Vehicle;

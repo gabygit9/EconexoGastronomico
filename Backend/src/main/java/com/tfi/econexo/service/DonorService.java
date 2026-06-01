@@ -1,6 +1,6 @@
 package com.tfi.econexo.service;
 
-import com.tfi.econexo.model.donation.Donor;
+import com.tfi.econexo.model.donation.donor.Donor;
 
 public interface DonorService {
     Boolean findByTaxId(String taxId);
