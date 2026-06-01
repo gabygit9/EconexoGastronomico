@@ -1,8 +1,9 @@
 package com.tfi.econexo.repository.donation;
 
+import com.tfi.econexo.model.donation.catalog.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface DonationDetailRepository extends JpaRepository<DonationDetail, Long> {
+public interface ProductRepository extends JpaRepository<Product, Long> {
 }
