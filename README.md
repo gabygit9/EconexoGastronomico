@@ -87,7 +87,7 @@ ng serve
 El ciclo de vida del proyecto está estructurado en 6 Sprints incrementales:
 
 * [x] **Sprint 0: Setup y Arquitectura**. Configuración inicial, despliegue de base de datos con PostGIS, variables de entorno y scaffolding completo de Backend y Frontend.
-* [ ] **Sprint 1: Identidad y Seguridad**. Implementación del módulo de autenticación (Spring Security + JWT) y gestión de perfiles (Comercios, ONGs, Conductores).
+* [x] **Sprint 1: Identidad y Seguridad**. Implementación del módulo de autenticación (Spring Security + JWT) y gestión de perfiles (Comercios, ONGs, Conductores).
 * [ ] **Sprint 2: Core de Donaciones**. Flujo completo de publicación de excedentes alimentarios, catálogo, actualización de estados y panel de gestión.
 * [ ] **Sprint 3: Motor Espacial**. Integración de mapas, uso de PostGIS para el cálculo de distancias y lógicas de asignación por proximidad.
 * [ ] **Sprint 4: Trazabilidad e Impacto**. Registro bromatológico, control de estados de entrega y dashboard de métricas ambientales (Kg salvados, CO2 evitado).
