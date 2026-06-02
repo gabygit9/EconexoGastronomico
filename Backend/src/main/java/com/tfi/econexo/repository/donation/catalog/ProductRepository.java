@@ -1,4 +1,4 @@
-package com.tfi.econexo.repository.donation;
+package com.tfi.econexo.repository.donation.catalog;
 
 import com.tfi.econexo.model.donation.catalog.Product;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -26,13 +25,13 @@ public class DonationItem extends BaseEntity {
     private String batchNumber;
 
     @Column(name = "donation_date")
-    private LocalDate donationDate;
+    private LocalDateTime donationDate;
 
     @Column(name = "production_date")
     private LocalDateTime productionDate;
 
     @Column(name = "expiration_date", nullable = false)
-    private LocalDate expirationDate;
+    private LocalDateTime expirationDate;
 
     @Column(name = "delivery_temperature")
     private String deliveryTemperature;

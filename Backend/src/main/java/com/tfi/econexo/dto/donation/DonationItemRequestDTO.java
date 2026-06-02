@@ -5,7 +5,6 @@ import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Schema(description = "Donation item request")
@@ -24,7 +23,7 @@ public record DonationItemRequestDTO(
         LocalDateTime productionDate,
 
         @Schema(description = "Expiration date", example = "2023-01-01")
-        @NotNull @Future LocalDate expirationDate,
+        @NotNull @Future LocalDateTime expirationDate,
 
         @Schema(description = "Delivery temperature", example = "10")
         String deliveryTemperature,

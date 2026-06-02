@@ -9,7 +9,7 @@ import com.tfi.econexo.model.donation.catalog.Product;
 import com.tfi.econexo.model.donation.donor.Donor;
 import com.tfi.econexo.model.enums.DonationStatus;
 import com.tfi.econexo.repository.donation.DonationRepository;
-import com.tfi.econexo.repository.donation.ProductRepository;
+import com.tfi.econexo.repository.donation.catalog.ProductRepository;
 import com.tfi.econexo.service.DonationService;
 import com.tfi.econexo.service.DonorService;
 import com.tfi.econexo.utils.GeometryUtils;

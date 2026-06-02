@@ -12,6 +12,8 @@ public interface DonationMapper {
 
     @Mapping(target = "businessName", source = "donor.tradeName")
     @Mapping(target = "status", expression = "java(donation.getStatus().name())")
+    @Mapping(target = "items", source = "donationItems")
+    @Mapping(target = "createdAt", source = "createdDate")
     DonationResponseDTO toResponseDTO(Donation donation);
 
     @Mapping(target = "productName", source = "product.name")
