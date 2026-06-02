@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 public record DonationItemResponseDTO(
         Long id,
         String productName,
+        String category,
+        String productType,
         Double quantity,
         String unitOfMeasure,
         String batchNumber,

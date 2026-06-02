@@ -6,6 +6,8 @@ import com.tfi.econexo.service.DonorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class DonorServiceImpl implements DonorService {
@@ -19,12 +21,17 @@ public class DonorServiceImpl implements DonorService {
     }
 
     @Override
-    public Boolean findByEmail(String email) {
+    public Boolean existsEmail(String email) {
         return donorRepository.existsByUser_Email(email);
     }
 
     @Override
     public Donor save(Donor donor) {
         return donorRepository.save(donor);
+    }
+
+    @Override
+    public Optional<Donor> findByUserEmail(String email) {
+        return donorRepository.findByUser_Email(email);
     }
 }

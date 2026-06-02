@@ -2,8 +2,11 @@ package com.tfi.econexo.service;
 
 import com.tfi.econexo.model.donation.donor.Donor;
 
+import java.util.Optional;
+
 public interface DonorService {
     Boolean findByTaxId(String taxId);
-    Boolean findByEmail(String email);
+    Boolean existsEmail(String email);
     Donor save(Donor donor);
+    Optional<Donor> findByUserEmail(String email);
 }
