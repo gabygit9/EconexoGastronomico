@@ -66,16 +66,9 @@ public class DonationServiceImpl implements DonationService {
             Product product = productRepository.findById(itemDto.productId())
                     .orElseThrow(() -> new EntityNotFoundException("Product not found"));
 
-            DonationItem item = new DonationItem();
+            DonationItem item = donationMapper.toItemEntity(itemDto);
             item.setDonation(donation);
             item.setProduct(product);
-            item.setQuantity(itemDto.quantity());
-            item.setBatchNumber(itemDto.batchNumber());
-            item.setProductionDate(itemDto.productionDate());
-            item.setExpirationDate(itemDto.expirationDate());
-            item.setDeliveryTemperature(itemDto.deliveryTemperature());
-            item.setAllergenWarning(itemDto.allergenWarning());
-            item.setObservations(itemDto.observations());
 
             return  item;
         }).toList();

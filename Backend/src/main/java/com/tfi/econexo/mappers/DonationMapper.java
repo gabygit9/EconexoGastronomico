@@ -1,5 +1,6 @@
 package com.tfi.econexo.mappers;
 
+import com.tfi.econexo.dto.donation.DonationItemRequestDTO;
 import com.tfi.econexo.dto.donation.DonationItemResponseDTO;
 import com.tfi.econexo.dto.donation.DonationResponseDTO;
 import com.tfi.econexo.model.donation.Donation;
@@ -15,6 +16,11 @@ public interface DonationMapper {
     @Mapping(target = "items", source = "donationItems")
     @Mapping(target = "createdAt", source = "createdDate")
     DonationResponseDTO toResponseDTO(Donation donation);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "donation", ignore = true)
+    @Mapping(target = "product", ignore = true)
+    DonationItem toItemEntity(DonationItemRequestDTO itemRequestDTO);
 
     @Mapping(target = "productName", source = "product.name")
     @Mapping(target = "unitOfMeasure", source = "product.unitOfMeasure.description")
