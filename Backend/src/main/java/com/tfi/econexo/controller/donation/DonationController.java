@@ -32,7 +32,7 @@ public class DonationController {
             @ApiResponse(responseCode = "400", description = "Invalid request"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public ResponseEntity<DonationResponseDTO> donate(@RequestBody @Valid DonationRequestDTO request){
+    public ResponseEntity<DonationResponseDTO> donate(@Valid @RequestBody DonationRequestDTO request){
         return new ResponseEntity<>(this.donationService.donate(request), HttpStatus.CREATED);
     }
 }
