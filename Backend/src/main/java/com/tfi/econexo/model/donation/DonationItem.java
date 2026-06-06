@@ -2,6 +2,7 @@ package com.tfi.econexo.model.donation;
 
 import com.tfi.econexo.model.base.BaseEntity;
 import com.tfi.econexo.model.donation.catalog.Product;
+import com.tfi.econexo.model.donation.catalog.UnitOfMeasure;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,6 +18,8 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "donation_items")
 public class DonationItem extends BaseEntity {
+
+    private String description;
 
     @Column(nullable = false)
     private Double quantity;
@@ -49,4 +52,8 @@ public class DonationItem extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "unit_of_measure_id", nullable = false)
+    private UnitOfMeasure unitOfMeasure;
 }

@@ -32,6 +32,12 @@ public record DonationItemRequestDTO(
         String allergenWarning,
 
         @Schema(description = "Observations", example = "This product is organic")
-        String observations
+        String observations,
+
+        @Schema(description = "Description", example = "Lasagna")
+        String description,
+
+        @Schema(description = "Unit of measure ID", example = "1L")
+        @NotNull Long unitOfMeasureId
 ) {
 }

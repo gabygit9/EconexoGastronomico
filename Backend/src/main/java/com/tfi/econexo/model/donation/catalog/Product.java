@@ -31,9 +31,4 @@ public class Product extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "unit_of_measure_id", nullable = false)
-    private UnitOfMeasure unitOfMeasure;
-
 }

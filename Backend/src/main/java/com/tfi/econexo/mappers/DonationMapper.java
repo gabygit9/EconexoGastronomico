@@ -20,11 +20,13 @@ public interface DonationMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "donation", ignore = true)
     @Mapping(target = "product", ignore = true)
+    @Mapping(target = "unitOfMeasure", ignore = true)
     DonationItem toItemEntity(DonationItemRequestDTO itemRequestDTO);
 
     @Mapping(target = "productName", source = "product.name")
     @Mapping(target = "unitOfMeasure", source = "product.unitOfMeasure.description")
     @Mapping(target = "category", source = "product.category.description")
     @Mapping(target = "productType", source = "product.productType.description")
+    @Mapping(source = "unitOfMeasure.description", target = "unitOfMeasure")
     DonationItemResponseDTO toItemResponseDTO(DonationItem item);
 }

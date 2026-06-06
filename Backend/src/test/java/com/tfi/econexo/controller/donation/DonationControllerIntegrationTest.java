@@ -5,6 +5,7 @@ import com.tfi.econexo.dto.donation.DonationItemRequestDTO;
 import com.tfi.econexo.dto.donation.DonationRequestDTO;
 import com.tfi.econexo.model.auth.UserSec;
 import com.tfi.econexo.model.donation.catalog.Product;
+import com.tfi.econexo.model.donation.catalog.UnitOfMeasure;
 import com.tfi.econexo.model.donation.donor.Donor;
 import com.tfi.econexo.model.location.City;
 import com.tfi.econexo.model.location.Neighborhood;
@@ -53,9 +54,13 @@ class DonationControllerIntegrationTest {
     @MockitoBean private GeocodingService geocodingService;
 
     private Long productId;
+    UnitOfMeasure uom;
 
     @BeforeEach
     void setUp(){
+        uom  = new UnitOfMeasure("Test");
+        uom.setId(1L);
+
         UserSec testUser = new UserSec();
         testUser.setEmail("test@donor.com");
         testUser.setPassword("password");
@@ -90,7 +95,7 @@ class DonationControllerIntegrationTest {
     void donate_ValidRequest_ShouldReturn201Created() throws Exception{
         DonationItemRequestDTO itemDto = new DonationItemRequestDTO(productId, 10.00,
                 "LOTE-123", LocalDateTime.now(), LocalDateTime.now().plusDays(2),
-                "10", "Ninguna", "Test");
+                "10", "Ninguna", "Test", "Test",uom.getId());
         DonationRequestDTO requestDTO = new DonationRequestDTO(LocalDateTime.now(),
                 LocalDateTime.now().plusHours(3), List.of(itemDto));
 
@@ -99,8 +104,8 @@ class DonationControllerIntegrationTest {
         when(geocodingService.getCoordinates(anyString())).thenReturn(new GeocodingService.Coordinates(-31.42, -64.18));
 
         mockMvc.perform(post("/api/v1/donations/donate")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonBody))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonBody))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.business_name").value("test"))
                 .andExpect(jsonPath("$.status").value("AVAILABLE"))
@@ -112,15 +117,15 @@ class DonationControllerIntegrationTest {
     void donate_InvalidRequest_ShouldReturn400BadRequest() throws Exception{
         DonationItemRequestDTO invalidItemDto = new DonationItemRequestDTO(null, 10.00,
                 "LOTE-MALO", LocalDateTime.now(), LocalDateTime.now().minusDays(5),
-                "10","Ninguna", "Test");
+                "10","Ninguna", "Test", "Test", uom.getId());
         DonationRequestDTO invalidRequestDTO = new DonationRequestDTO(LocalDateTime.now(),
                 LocalDateTime.now().plusHours(3), List.of(invalidItemDto));
 
         String jsonBody = objectMapper.writeValueAsString(invalidRequestDTO);
 
         mockMvc.perform(post("/api/v1/donations/donate")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonBody))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonBody))
                 .andExpect(status().isBadRequest());
     }
 
