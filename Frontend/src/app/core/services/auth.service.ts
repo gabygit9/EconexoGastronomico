@@ -16,8 +16,11 @@ export class AuthService {
   private readonly donorsUrl =`${environment.apiUrl}/v1/donors/public/donor-types`;
   private readonly ngosUrl = `${environment.apiUrl}/v1/organizations/public/ngo-types`;
 
-  private currentUserSubject = new BehaviorSubject<boolean>(this.hasToken());
-  public isAuthenticated$ = this.currentUserSubject.asObservable();
+  private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasToken());
+  public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
+
+  private currentUserSubject = new BehaviorSubject<DonorResponse | NgoResponseDTO | DriverResponse | null>(null);
+  public currentUser$ = this.currentUserSubject.asObservable();
 
   /**
    * Checks if there is a token in localStorage
@@ -69,7 +72,7 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
       tap((response) => {
         localStorage.setItem('econexo_token', response.jwt);
-        this.currentUserSubject.next(true);
+        this.isAuthenticatedSubject.next(true);
       })
     );
   }
@@ -111,17 +114,26 @@ export class AuthService {
 
   //TODO implementar en el backend
   getNgoProfile(): Observable<NgoResponseDTO>{
-    return this.http.get<NgoResponseDTO>(`${this.apiUrl}/profile`);
+    return this.http.get<NgoResponseDTO>(`${this.apiUrl}/profile`).pipe(
+      tap((profile) => {
+        this.currentUserSubject.next(profile);
+      }));
   }
 
   //TODO implementar en el backend
   getDriverProfile(): Observable<DriverResponse>{
-    return this.http.get<DriverResponse>(`${this.apiUrl}/profile`);
+    return this.http.get<DriverResponse>(`${this.apiUrl}/profile`).pipe(
+      tap((profile) => {
+        this.currentUserSubject.next(profile);
+      }));
   }
 
   //TODO implementar en el backend
   getDonorProfile(): Observable<DonorResponse>{
-    return this.http.get<DonorResponse>(`${this.apiUrl}/profile`);
+    return this.http.get<DonorResponse>(`${this.apiUrl}/profile`).pipe(
+      tap((profile) => {
+        this.currentUserSubject.next(profile);
+      }));
   }
 
   /**
@@ -129,7 +141,7 @@ export class AuthService {
    */
   private clearLocalSession(){
     localStorage.removeItem('econexo_token');
-    this.currentUserSubject.next(false);
+    this.isAuthenticatedSubject.next(false);
   }
 
 }

@@ -9,6 +9,7 @@ export const routes: Routes = [
   { path: 'dashboard/donor', component: DashboardDonorComponent },
   { path: 'dashboard/ngo', component: DashboardNgoComponent },
   { path: 'dashboard/driver', component: DashboardDriverComponent },
+  { path: 'donations/form', component: DonationFormComponent },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: 'login' }
 ];
