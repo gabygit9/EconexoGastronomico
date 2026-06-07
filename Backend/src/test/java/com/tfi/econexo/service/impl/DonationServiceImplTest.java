@@ -1,5 +1,6 @@
 package com.tfi.econexo.service.impl;
 
+import com.tfi.econexo.dto.donation.DonationSummaryResponseDTO;
 import com.tfi.econexo.dto.donation.item.DonationItemRequestDTO;
 import com.tfi.econexo.dto.donation.item.DonationItemResponseDTO;
 import com.tfi.econexo.dto.donation.DonationRequestDTO;
@@ -12,8 +13,10 @@ import com.tfi.econexo.model.donation.catalog.Product;
 import com.tfi.econexo.model.donation.catalog.ProductType;
 import com.tfi.econexo.model.donation.catalog.UnitOfMeasure;
 import com.tfi.econexo.model.donation.donor.Donor;
+import com.tfi.econexo.model.enums.DonationStatus;
 import com.tfi.econexo.model.location.City;
 import com.tfi.econexo.model.location.Neighborhood;
+import com.tfi.econexo.repository.donation.DonationItemRepository;
 import com.tfi.econexo.repository.donation.DonationRepository;
 import com.tfi.econexo.repository.donation.catalog.ProductRepository;
 import com.tfi.econexo.repository.donation.catalog.UnitOfMeasureRepository;
@@ -36,8 +39,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -51,8 +53,8 @@ class DonationServiceImplTest {
     @Mock GeocodingService geocodingService;
     @Mock DonationMapper donationMapper;
     @Mock UnitOfMeasureRepository unitOfMeasureRepository;
-    @InjectMocks
-    DonationServiceImpl donationService;
+    @Mock DonationItemRepository donationItemRepository;
+    @InjectMocks DonationServiceImpl donationService;
 
     @Mock Authentication authentication;
     @Mock SecurityContext securityContext;
@@ -75,8 +77,8 @@ class DonationServiceImplTest {
 
     @BeforeEach
     void setUp(){
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(authentication.getName()).thenReturn("test@donor.com");
+        lenient().when(securityContext.getAuthentication()).thenReturn(authentication);
+        lenient().when(authentication.getName()).thenReturn("test@donor.com");
         SecurityContextHolder.setContext(securityContext);
 
         Neighborhood neighborhood = new Neighborhood();
@@ -91,7 +93,7 @@ class DonationServiceImplTest {
         donationItemRequestDTO = new DonationItemRequestDTO(1L, 10.00, "123456789", LocalDateTime.now(),
                 LocalDateTime.now().plusDays(2), "10", "This product contains peanuts", "This product is organic", "description", uom.getId());
         donationItemResponseDTO = new DonationItemResponseDTO(1L, "Masas finas", "Panadería", "Panificados",
-                10.0, "unidades", "1241", LocalDateTime.now(), LocalDateTime.now().plusDays(2), "24", "This product contains peanuts", "This product is organic");
+                10.0, "unidades", "1241", LocalDateTime.now(), LocalDateTime.now().plusDays(2), "24", "This product contains peanuts", "This product is organic", "None");
         donationRequestDTO = new DonationRequestDTO(LocalDateTime.now(), LocalDateTime.now(), List.of(donationItemRequestDTO));
         donationResponseDTO = new DonationResponseDTO(1L, "AVAILABLE", LocalDateTime.now(), LocalDateTime.now().plusDays(2),
                 LocalDateTime.now(), "El Hornito", List.of(donationItemResponseDTO));
@@ -104,12 +106,13 @@ class DonationServiceImplTest {
         donation.setPickupStartTime(LocalDateTime.now());
         donation.setPickupEndTime(LocalDateTime.now().plusDays(2));
 
-        donationItem = new DonationItem();
-        donationItem.setExpirationDate(LocalDateTime.now().plusDays(2));
-
         productType = new ProductType();
         category = new Category();
         product = new Product("Masas finas", true, true, productType, category);
+
+        donationItem = new DonationItem();
+        donationItem.setExpirationDate(LocalDateTime.now().plusDays(2));
+
     }
 
     @Test
@@ -183,5 +186,36 @@ class DonationServiceImplTest {
         assertNotNull(response);
         verify(donorService, never()).save(any());
         verify(donationRepository, times(1)).save(any(Donation.class));
+    }
+
+    @Test
+    void getAvailableDonationsSummary_WhenDonationsExist_ShouldReturnSummaryDTOs(){
+        DonationSummaryResponseDTO expectedSummary = new DonationSummaryResponseDTO(
+                1L, "Masas Finas", "Panadería", 10, "unidades",
+                LocalDateTime.now().plusDays(2), true);
+
+        when(donationItemRepository.findByDonation_StatusOrderByExpirationDateAsc(DonationStatus.AVAILABLE))
+                .thenReturn(List.of(donationItem, donationItem));
+        when(donationMapper.toSummaryResponseDTO(any(DonationItem.class))).thenReturn(expectedSummary);
+
+        List<DonationSummaryResponseDTO> response = donationService.getAvailableDonationsSummary();
+
+        assertEquals(2, response.size());
+        verify(donationItemRepository, times(1)).findByDonation_StatusOrderByExpirationDateAsc(DonationStatus.AVAILABLE);
+        verify(donationMapper, times(2)).toSummaryResponseDTO(any(DonationItem.class));
+        assertEquals(response.get(0).title(), expectedSummary.title());
+    }
+
+    @Test
+    void getAvailableDonationsSummary_WhenListIsEmpty_ShouldReturnEmptyList(){
+        when(donationItemRepository.findByDonation_StatusOrderByExpirationDateAsc(DonationStatus.AVAILABLE))
+                .thenReturn(List.of());
+
+        List<DonationSummaryResponseDTO> response = donationService.getAvailableDonationsSummary();
+
+        assertNotNull(response);
+        assertTrue(response.isEmpty());
+        verify(donationItemRepository, times(1)).findByDonation_StatusOrderByExpirationDateAsc(DonationStatus.AVAILABLE);
+        verify(donationMapper, never()).toSummaryResponseDTO(any(DonationItem.class));
     }
 }
