@@ -1,4 +1,4 @@
-package com.tfi.econexo.dto.donation;
+package com.tfi.econexo.dto.donation.item;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Future;
