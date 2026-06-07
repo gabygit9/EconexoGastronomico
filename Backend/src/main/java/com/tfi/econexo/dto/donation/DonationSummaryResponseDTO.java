@@ -20,7 +20,7 @@ public record DonationSummaryResponseDTO(
         Integer quantity,
 
         @Schema(description = "Unit of measure", example = "Kg")
-        String UnitOfMeasure,
+        String unitOfMeasure,
 
         @Schema(description = "Expiration date", example = "2023-01-01T00:00:00")
         LocalDateTime expirationDate,
