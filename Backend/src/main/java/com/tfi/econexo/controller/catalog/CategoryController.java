@@ -1,7 +1,7 @@
 package com.tfi.econexo.controller.catalog;
 
-import com.tfi.econexo.model.catalog.Category;
-import com.tfi.econexo.repository.catalog.CategoryRepository;
+import com.tfi.econexo.model.donation.catalog.Category;
+import com.tfi.econexo.repository.donation.catalog.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

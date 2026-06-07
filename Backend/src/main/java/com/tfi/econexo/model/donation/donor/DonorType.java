@@ -1,4 +1,4 @@
-package com.tfi.econexo.model.donation;
+package com.tfi.econexo.model.donation.donor;
 
 
 public enum DonorType {

@@ -1,4 +1,4 @@
-package com.tfi.econexo.model.donation;
+package com.tfi.econexo.model.donation.donor;
 
 import com.tfi.econexo.model.enums.RegistrationStatus;
 import com.tfi.econexo.model.base.BaseEntity;

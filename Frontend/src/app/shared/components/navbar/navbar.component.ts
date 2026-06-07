@@ -12,7 +12,7 @@ export class NavbarComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  @Input() userName: string = '';
+  @Input() userName: DonorResponse | NgoResponseDTO | DriverResponse | string = '';
 
   logout() {
     this.authService.logout().subscribe({

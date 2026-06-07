@@ -2,7 +2,7 @@ package com.tfi.econexo.mappers;
 
 import com.tfi.econexo.dto.auth.donor.DonorRegistrationDTO;
 import com.tfi.econexo.dto.auth.donor.DonorResponseDTO;
-import com.tfi.econexo.model.donation.Donor;
+import com.tfi.econexo.model.donation.donor.Donor;
 import com.tfi.econexo.model.location.Neighborhood;
 import com.tfi.econexo.model.auth.UserSec;
 import org.locationtech.jts.geom.Coordinate;
