@@ -1,6 +1,6 @@
 <div class="min-h-screen bg-gray-50 flex flex-col">
 
-  <app-navbar [userName]="(userName$ | async ) || ''"></app-navbar>
+  <app-navbar [userName]="(userName$ | async ) || '' "></app-navbar>
 
   <main class="flex-1 flex items-center justify-center p-6">
     <div class="max-w-2xl w-full text-center space-y-8">
@@ -23,6 +23,16 @@
           Tu panel de control para gestionar excedentes de alimentos está siendo preparado.
           Pronto podrás cargar donaciones y ver tu impacto social en tiempo real.
         </p>
+      </div>
+
+      <div class="pt-6">
+        <button (click)="goToNewDonation()"
+                class="px-8 py-4 bg-[#eb5c0c] text-white font-extrabold text-lg rounded-2xl hover:bg-[#d65108] transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 flex items-center justify-center gap-3 mx-auto">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path>
+          </svg>
+          Publicar Excedente
+        </button>
       </div>
 
     </div>

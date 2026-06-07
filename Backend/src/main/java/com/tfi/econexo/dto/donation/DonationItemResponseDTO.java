@@ -41,6 +41,9 @@ public record DonationItemResponseDTO(
         String allergenWarning,
 
         @Schema(description = "Observations", example = "This product is organic")
-        String observations
+        String observations,
+
+        @Schema(description = "Description", example = "Lasagna")
+        String description
 ) {
 }

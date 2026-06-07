@@ -20,6 +20,7 @@ import {AsyncPipe} from '@angular/common';
 })
 export class DashboardDonorComponent implements OnInit{
   private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
   userName$ = this.authService.currentUser$.pipe(
     map(profile => {
@@ -32,5 +33,9 @@ export class DashboardDonorComponent implements OnInit{
 
   ngOnInit(){
 
+  }
+
+  goToNewDonation(){
+    this.router.navigate(['/donations/form']);
   }
 }

@@ -113,7 +113,7 @@ public class DataInitializer implements CommandLineRunner {
             Product fineDoughs = new Product();
             fineDoughs.setName("Masas Finas / Macarons");
             fineDoughs.setRequiresRefrigeration(true);
-            fineDoughs.setOriginalPackaging(true);
+            fineDoughs.setOriginalPackaging(false);
             fineDoughs.setProductType(perishable);
             fineDoughs.setCategory(bakery);
 

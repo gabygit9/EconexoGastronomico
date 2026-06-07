@@ -16,7 +16,7 @@ import com.tfi.econexo.model.auth.Role;
 import com.tfi.econexo.model.auth.UserSec;
 import com.tfi.econexo.exception.ConflictException;
 import com.tfi.econexo.mappers.*;
-import com.tfi.econexo.service.DonorService;
+import com.tfi.econexo.service.donation.DonorService;
 import com.tfi.econexo.service.DriverService;
 import com.tfi.econexo.service.NeighborhoodService;
 import com.tfi.econexo.service.NgoService;
