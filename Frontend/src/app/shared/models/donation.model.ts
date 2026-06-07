@@ -64,6 +64,8 @@ export interface Product {
 export interface DonationSummaryResponse {
   id: number,
   title: string,
+  description?: string,
+  allergenWarning?: string,
   businessName: string,
   quantity: number,
   unitOfMeasure: string,

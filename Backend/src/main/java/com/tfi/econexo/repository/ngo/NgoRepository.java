@@ -13,4 +13,6 @@ public interface NgoRepository extends JpaRepository<Ngo, Long> {
     Optional<Ngo> findByLegalPersonalityNumber(String legalPersonalityNumber);
 
     boolean existsByUser_Email(String userEmail);
+
+    Optional<Ngo> findByUser_Email(String userEmail);
 }

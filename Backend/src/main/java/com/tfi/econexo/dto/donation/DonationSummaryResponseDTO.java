@@ -10,8 +10,14 @@ public record DonationSummaryResponseDTO(
         @Schema(description = "Donation ID", example = "1L")
         Long id,
 
-        @Schema(description = "Donation title", example = "Donation of bread")
+        @Schema(description = "Donation title", example = "Bread")
         String title,
+
+        @Schema(description = "Donation description", example = "Lasagna")
+        String description,
+
+        @Schema(description = "Allergen warning", example = "Contains peanuts")
+        String allergenWarning,
 
         @Schema(description = "Business name", example = "El Hornito")
         String businessName,
