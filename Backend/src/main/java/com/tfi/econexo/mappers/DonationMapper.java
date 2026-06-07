@@ -25,7 +25,6 @@ public interface DonationMapper {
     DonationItem toItemEntity(DonationItemRequestDTO itemRequestDTO);
 
     @Mapping(target = "productName", source = "product.name")
-    @Mapping(target = "unitOfMeasure", source = "product.unitOfMeasure.description")
     @Mapping(target = "category", source = "product.category.description")
     @Mapping(target = "productType", source = "product.productType.description")
     @Mapping(source = "unitOfMeasure.description", target = "unitOfMeasure")
