@@ -127,26 +127,6 @@ export class AuthService {
     );
   }
 
-  //TODO implementar en el backend
-  //TODO ajustar url para DRIVER
-  getDriverProfile(): Observable<DriverResponse>{
-    return this.http.get<DriverResponse>(`${this.apiUrl}/profile`).pipe(
-      tap((profile) => {
-        this.currentUserSubject.next(profile);
-      })
-    );
-  }
-
-  //TODO implementar en el backend
-  //TODO ajustar url para DONOR
-  getDonorProfile(): Observable<DonorResponse>{
-    return this.http.get<DonorResponse>(`${this.apiUrl}/profile`).pipe(
-      tap((profile) => {
-        this.currentUserSubject.next(profile);
-      })
-    );
-  }
-
   /**
    * Clears the local session by removing the token and updating the authentication state
    */

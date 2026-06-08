@@ -14,6 +14,7 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {
   DonationConfirmModalComponent
 } from '../../../shared/components/donation-confirm-modal/donation-confirm-modal.component';
+import {AvailableDonationsComponent} from './available-donations/available-donations.component';
 
 @Component({
   selector: 'app-dashboard-ngo',
@@ -22,51 +23,20 @@ import {
     NavbarComponent,
     AsyncPipe,
     DatePipe,
-    DonationConfirmModalComponent
+    DonationConfirmModalComponent,
+    AvailableDonationsComponent
   ],
   templateUrl: './dashboard-ngo.component.html',
   styleUrl: './dashboard-ngo.component.css'
 })
 export class DashboardNgoComponent implements OnInit{
   private readonly authService = inject(AuthService);
-  private readonly donationService = inject(DonationService);
   private readonly ngoService = inject(NgoService);
-  private router = inject(Router);
-
   private readonly destroyRef = inject(DestroyRef);
   private readonly  toastr = inject(ToastrService);
 
   ngoProfile: NgoResponseDTO | null = null;
   isLoading = true;
-  availableDonations = signal<DonationSummaryResponse[]>([]);
-  isLoadingDonations = signal<boolean>(true);
-
-  selectedDonation = signal<DonationSummaryResponse | null>(null);
-
-  openModal(donation: DonationSummaryResponse){
-    this.selectedDonation.set(donation);
-  }
-
-  closeModal(){
-    this.selectedDonation.set(null);
-  }
-
-  confirmDonationRequest(donationId: number){
-    this.donationService.requestDonation(donationId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        this.closeModal();
-        this.toastr.success('Un conductor voluntario pasará a retirarlo pronto.', '¡Lote solicitado con éxito!');
-        this.availableDonations.update(currentDonations =>
-          currentDonations.filter(donation => donation.id !== donationId))
-      },
-      error: (err) => {
-        console.error('Error al solicitar la donación:', err);
-        this.closeModal();
-        this.toastr.error('No se pudo procesar la solicitud. Es posible que el lote ya no esté disponible.', 'Error al solicitar.');
-        this.loadAvailableDonations();
-      }
-    })
-  }
 
   userName$ = this.authService.currentUser$.pipe(
     map(profile => {
@@ -86,29 +56,11 @@ export class DashboardNgoComponent implements OnInit{
       next: (profile) => {
         this.ngoProfile = profile;
         this.isLoading = false;
-        if(profile.status === 'APPROVED'){
-          this.isLoadingDonations.set(true);
-          this.loadAvailableDonations();
-        }
       },
       error: (err) => {
         console.error('Error loading NGO profile:', err);
         this.isLoading = false;
         this.toastr.error('No se pudo cargar la información de tu perfil.', 'Error de conexión')
-      }
-    })
-  }
-
-  private loadAvailableDonations(){
-    this.donationService.getAvailableDonations().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: data => {
-        this.availableDonations.set(data);
-        this.isLoadingDonations.set(false);
-      },
-      error: err => {
-        console.error('Error loading available donations:', err);
-        this.isLoadingDonations.set(false);
-        this.toastr.error('No se pudo cargar la información de las alimentos disponibles en la red.', 'Error al cargar lotes')
       }
     })
   }

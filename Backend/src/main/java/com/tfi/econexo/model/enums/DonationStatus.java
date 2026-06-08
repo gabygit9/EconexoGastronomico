@@ -7,5 +7,6 @@ public enum DonationStatus {
     IN_TRANSIT,
     REJECTED,
     DELIVERED,
-    CANCELED
+    CANCELED,
+    EXPIRED
 }

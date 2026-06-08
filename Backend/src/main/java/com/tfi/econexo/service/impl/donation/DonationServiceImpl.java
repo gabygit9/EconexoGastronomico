@@ -93,7 +93,7 @@ public class DonationServiceImpl implements DonationService {
 
     @Override
     public List<DonationSummaryResponseDTO> getAvailableDonationsSummary() {
-        List<Donation> donations = donationRepository.findByStatus(DonationStatus.AVAILABLE);
+        List<Donation> donations = donationRepository.findByStatusAvailableAndNotExpired();
 
         return donations.stream()
                 .map(donationMapper::toSummaryResponseDTO)

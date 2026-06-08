@@ -15,39 +15,11 @@
 
       @if (ngoProfile.status === 'PENDING') {
         <div class="max-w-md w-full bg-white shadow-md rounded-2xl p-8 border border-gray-100 text-center space-y-6 mx-auto my-auto">
-          <div class="w-16 h-16 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto shadow-sm border border-amber-100">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-          </div>
-          <div>
-            <h2 class="text-2xl font-extrabold text-gray-900">Cuenta en revisión</h2>
-            <p class="text-gray-500 mt-2 text-sm leading-relaxed">
-              ¡Gracias por registrarte en EcoNexo! Estamos verificando tu Número de Personería Jurídica y datos fiscales.
-            </p>
-          </div>
-          <div class="bg-[#fff6f0] rounded-xl p-4 border border-[#fbdabb]">
-            <p class="text-xs text-[#eb5c0c] font-bold leading-tight">
-              Te notificaremos por email cuando tu cuenta sea aprobada para empezar a solicitar donaciones.
-            </p>
-          </div>
         </div>
       }
 
       @else if (ngoProfile.status === 'SUSPENDED' || ngoProfile.status === 'CANCELED') {
         <div class="max-w-md w-full bg-white shadow-md rounded-2xl p-8 border border-gray-100 text-center space-y-6 mx-auto my-auto">
-          <div class="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto border border-red-100">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.657 5.657m12.728 12.728A9 9 0 015.657 5.657m12.728 12.728L5.657 5.657"></path>
-            </svg>
-          </div>
-          <div>
-            <h2 class="text-2xl font-extrabold text-gray-900">Cuenta Inactiva</h2>
-            <p class="text-gray-500 mt-2 text-sm">
-              Tu acceso a la plataforma ha sido suspendido o cancelado por la administración.
-            </p>
-          </div>
-          <p class="text-xs text-gray-400 font-medium">Por favor, ponete en contacto con el soporte de EcoNexo.</p>
         </div>
       }
 
@@ -58,103 +30,18 @@
             <span class="text-xs font-bold text-[#eb5c0c] uppercase tracking-widest">Panel de Control</span>
             <h2 class="text-gray-900 text-2xl md:text-3xl font-extrabold mt-1">Hola, {{ ngoProfile.ngoName }}</h2>
             <p class="text-gray-400 text-sm mt-1">Bienvenido al espacio de gestión de donaciones.</p>
+
           </div>
 
           <div class="p-8">
-            <section>
-              <div class="flex items-center justify-between mb-6">
-                <h3 class="text-gray-900 text-lg font-bold flex items-center gap-2">
-                  <span class="w-2 h-2 rounded-full bg-[#eb5c0c]"></span>
-                  Alimentos Disponibles en la Red
-                </h3>
-
-                <span class="bg-[#fff6f0] text-[#eb5c0c] border border-[#fbdabb] text-xs font-bold px-3 py-1.5 rounded-full">
-                  {{ availableDonations().length }} Lotes
-                </span>
-              </div>
-
-              @if (isLoadingDonations()) {
-                <div class="flex flex-col items-center justify-center py-16 bg-gray-50 rounded-xl border border-gray-200 border-dashed">
-                  <div class="w-8 h-8 border-4 border-[#eb5c0c] border-t-transparent rounded-full animate-spin mb-4"></div>
-                  <p class="text-gray-500 font-medium">Buscando alimentos disponibles...</p>
-                </div>
-              }
-              @else if (availableDonations().length === 0) {
-                <div class="flex flex-col items-center justify-center py-16 bg-gray-50 rounded-xl border border-gray-200 border-dashed">
-                  <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
-                  <p class="text-gray-500 font-medium">En este momento no hay lotes de alimentos disponibles.</p>
-                </div>
-              }
-              @else {
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-                  @for (donation of availableDonations(); track donation.id) {
-                    <article class="bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col hover:shadow-md transition-all duration-200 relative overflow-hidden group">
-
-                      @if (donation.requiresRefrigeration) {
-                        <div class="absolute top-4 right-4 bg-blue-50 border border-blue-100 text-blue-600 text-xs font-bold px-2.5 py-1.5 rounded-md flex items-center gap-1.5 shadow-sm">
-                          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                          Frío Req.
-                        </div>
-                      }
-
-                      <div class="p-6 flex-1 flex flex-col">
-                        <p class="text-[10px] font-extrabold text-[#eb5c0c] uppercase tracking-wider mb-1">{{ donation.businessName }}</p>
-
-                        <h3 class="text-xl font-extrabold text-gray-900 leading-tight mb-4 group-hover:text-[#eb5c0c] transition-colors">
-                          @if (donation.items.length === 1) {
-                            {{ donation.items[0].productName }}
-                            @if (donation.items[0].description) {
-                              <span class="font-medium text-gray-500 text-base block mt-0.5">({{ donation.items[0].description }})</span>
-                            }
-                          } @else {
-                            {{ donation.items[0].productName }} <span class="text-gray-400 font-bold text-lg">y {{ donation.items.length - 1 }} más</span>
-                          }
-                        </h3>
-
-                        <div class="bg-gray-50 rounded-lg p-3 border border-gray-100 mb-5 space-y-1">
-                          <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-1">Contenido del lote:</p>
-                          @for (item of donation.items; track $index) {
-                            <div class="flex justify-between text-xs text-gray-700 font-medium">
-                              <span>• {{ item.productName }}</span>
-                              <span class="font-bold text-gray-900">{{ item.quantity }} {{ item.unitOfMeasure }}</span>
-                            </div>
-                          }
-                        </div>
-
-                        <div class="mt-auto pt-5 border-t border-gray-100 flex items-center justify-between">
-                          <div>
-                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Vence prox.</p>
-                            <p class="text-sm font-bold text-red-600 flex items-center gap-1">
-                              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                              {{ donation.expirationDate | date:'dd/MM/yyyy HH:mm' }}
-                            </p>
-                          </div>
-
-                          <button (click)="openModal(donation)" class="bg-[#eb5c0c] hover:bg-[#d65108] text-white text-sm font-bold py-2.5 px-5 rounded-lg focus:ring-4 focus:ring-[#eb5c0c]/30 transition-all shadow-sm">
-                            Solicitar
-                          </button>
-                        </div>
-                      </div>
-                    </article>
-                  }
-                </div>
-              }
-            </section>
+            <app-available-donations></app-available-donations>
           </div>
+
         </div>
       }
 
     }
   </main>
-
-  @if (selectedDonation()) {
-    <app-donation-confirm-modal
-      [donation]="selectedDonation()!"
-      (close)="closeModal()"
-      (confirm)="confirmDonationRequest($event)">
-    </app-donation-confirm-modal>
-  }
 
   <app-footer></app-footer>
 
