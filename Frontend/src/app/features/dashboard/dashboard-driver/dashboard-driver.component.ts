@@ -25,7 +25,7 @@ export class DashboardDriverComponent implements OnInit{
   userName$ = this.authService.currentUser$.pipe(
     map(profile => {
       if(profile && 'firstName' && 'lastName' in profile){
-        return profile;
+        return profile.firstName + ' ' + profile.lastName;
       }
       return '';
     })

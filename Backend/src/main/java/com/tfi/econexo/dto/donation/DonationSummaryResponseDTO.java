@@ -3,6 +3,7 @@ package com.tfi.econexo.dto.donation;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Schema(description = "Donation summary response")
 public record DonationSummaryResponseDTO(
@@ -10,28 +11,16 @@ public record DonationSummaryResponseDTO(
         @Schema(description = "Donation ID", example = "1L")
         Long id,
 
-        @Schema(description = "Donation title", example = "Bread")
-        String title,
-
-        @Schema(description = "Donation description", example = "Lasagna")
-        String description,
-
-        @Schema(description = "Allergen warning", example = "Contains peanuts")
-        String allergenWarning,
-
         @Schema(description = "Business name", example = "El Hornito")
         String businessName,
-
-        @Schema(description = "Quantity", example = "100")
-        Integer quantity,
-
-        @Schema(description = "Unit of measure", example = "Kg")
-        String unitOfMeasure,
 
         @Schema(description = "Expiration date", example = "2023-01-01T00:00:00")
         LocalDateTime expirationDate,
 
         @Schema(description = "Requires refrigeration", example = "true")
-        boolean requiresRefrigeration
+        boolean requiresRefrigeration,
+
+        @Schema(description = "Donation items", example = "[1L, 2L]")
+        List<DonationItemSummaryDTO> items
 ) {
 }

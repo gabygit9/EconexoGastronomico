@@ -39,7 +39,7 @@ export class DonationFormComponent extends BaseFormComponent implements OnInit{
   userName$ = this.authService.currentUser$.pipe(
     map(profile => {
       if(profile && 'tradeName' in profile){
-        return profile;
+        return profile.tradeName;
       }
       return '';
     })

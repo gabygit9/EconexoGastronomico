@@ -60,4 +60,12 @@ export class DonationService {
   getAvailableDonations(): Observable<DonationSummaryResponse[]> {
     return this.http.get<DonationSummaryResponse[]>(`${this.apiUrl}/available`);
   }
+
+  /**
+   * Request an available donation (Changes status to REQUESTED)
+   * @param donationId - The ID of the donation to request
+   */
+  requestDonation(donationId: number){
+    return this.http.patch<void>(`${this.apiUrl}/${donationId}/request`, {donationId});
+  }
 }

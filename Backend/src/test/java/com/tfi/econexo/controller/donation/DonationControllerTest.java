@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -60,10 +61,10 @@ class DonationControllerTest {
     void getAvailableDonations_Success() throws Exception {
 
         when(donationService.getAvailableDonationsSummary()).thenReturn(List.of(new DonationSummaryResponseDTO(
-                1L, "Other", "El Hornito", 5, "Kg", LocalDateTime.now().plusDays(1), false)));
+                1L, "Business", LocalDateTime.now().plusDays(2),true , List.of())));
 
         mockMvc.perform(
-                get("/api/v1/donations/available"))
+                        get("/api/v1/donations/available"))
                 .andExpect(status().isOk());
     }
 
@@ -72,7 +73,7 @@ class DonationControllerTest {
     void getAvailableDonations_Forbidden_NoNgoRole() throws Exception {
 
         mockMvc.perform(
-                get("/api/v1/donations/available"))
+                        get("/api/v1/donations/available"))
                 .andExpect(status().isForbidden());
     }
 
@@ -80,8 +81,8 @@ class DonationControllerTest {
     void getAvailableDonations_Unauthorized_NoTokenProvided ()throws Exception {
 
         mockMvc.perform(
-                get("/api/v1/donations/available"))
+                        get("/api/v1/donations/available"))
                 .andExpect(status().isUnauthorized()
-        );
+                );
     }
 }

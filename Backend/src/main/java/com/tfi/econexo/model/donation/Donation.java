@@ -33,7 +33,7 @@ public class Donation extends BaseEntity {
     private LocalDateTime pickupEndTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ngo_id", nullable = false)
+    @JoinColumn(name = "ngo_id")
     private Ngo ngo;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -46,5 +46,15 @@ public class Donation extends BaseEntity {
 
     @OneToMany(mappedBy = "donation", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<DonationItem> donationItems = new ArrayList<>();
+
+    public LocalDateTime getMinExpirationDate(){
+        if(donationItems == null || donationItems.isEmpty()) return null;
+        return donationItems.stream().map(DonationItem::getExpirationDate).min(LocalDateTime::compareTo).orElse(null);
+    }
+
+    public boolean isAnyItemRefrigerated(){
+        if(donationItems == null || donationItems.isEmpty()) return false;
+        return donationItems.stream().anyMatch(item -> item.getProduct() != null && item.getProduct().isRequiresRefrigeration());
+    }
 
 }

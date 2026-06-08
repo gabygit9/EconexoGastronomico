@@ -1,8 +1,8 @@
 package com.tfi.econexo.security.config;
 
-import com.tfi.econexo.security.config.filter.JwtTokenValidator;
 import com.tfi.econexo.service.auth.BlacklistedTokenService;
 import com.tfi.econexo.utils.JwtUtils;
+import com.tfi.econexo.security.config.filter.JwtTokenValidator;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

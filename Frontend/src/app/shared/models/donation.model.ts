@@ -61,16 +61,20 @@ export interface Product {
   isOriginalPackaging: boolean
 }
 
-export interface DonationSummaryResponse {
-  id: number,
-  title: string,
-  description?: string,
-  allergenWarning?: string,
-  businessName: string,
-  quantity: number,
-  unitOfMeasure: string,
-  expirationDate: string,
-  requiresRefrigeration: boolean
+export interface DonationItemSummary {
+  productName: string;
+  quantity: number;
+  unitOfMeasure: string;
+  description?: string;
+  allergenWarning?: string;
 }
 
-export type DonationStatus = 'AVAILABLE'| 'ASSIGNED' | 'IN_TRANSIT' | 'REJECTED' | 'DELIVERED' | 'CANCELED'
+export interface DonationSummaryResponse {
+  id: number;
+  businessName: string;
+  expirationDate: string;
+  requiresRefrigeration: boolean;
+  items: DonationItemSummary[];
+}
+
+export type DonationStatus = 'AVAILABLE'| 'REQUESTED' | 'ASSIGNED' | 'IN_TRANSIT' | 'REJECTED' | 'DELIVERED' | 'CANCELED'

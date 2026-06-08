@@ -11,6 +11,9 @@ import {DonationSummaryResponse} from '../../../shared/models/donation.model';
 import {NgoService} from '../../../core/services/ngo.service';
 import {ToastrService} from 'ngx-toastr';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {
+  DonationConfirmModalComponent
+} from '../../../shared/components/donation-confirm-modal/donation-confirm-modal.component';
 
 @Component({
   selector: 'app-dashboard-ngo',
@@ -18,7 +21,8 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
     FooterComponent,
     NavbarComponent,
     AsyncPipe,
-    DatePipe
+    DatePipe,
+    DonationConfirmModalComponent
   ],
   templateUrl: './dashboard-ngo.component.html',
   styleUrl: './dashboard-ngo.component.css'
@@ -36,6 +40,33 @@ export class DashboardNgoComponent implements OnInit{
   isLoading = true;
   availableDonations = signal<DonationSummaryResponse[]>([]);
   isLoadingDonations = signal<boolean>(true);
+
+  selectedDonation = signal<DonationSummaryResponse | null>(null);
+
+  openModal(donation: DonationSummaryResponse){
+    this.selectedDonation.set(donation);
+  }
+
+  closeModal(){
+    this.selectedDonation.set(null);
+  }
+
+  confirmDonationRequest(donationId: number){
+    this.donationService.requestDonation(donationId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.closeModal();
+        this.toastr.success('Un conductor voluntario pasará a retirarlo pronto.', '¡Lote solicitado con éxito!');
+        this.availableDonations.update(currentDonations =>
+          currentDonations.filter(donation => donation.id !== donationId))
+      },
+      error: (err) => {
+        console.error('Error al solicitar la donación:', err);
+        this.closeModal();
+        this.toastr.error('No se pudo procesar la solicitud. Es posible que el lote ya no esté disponible.', 'Error al solicitar.');
+        this.loadAvailableDonations();
+      }
+    })
+  }
 
   userName$ = this.authService.currentUser$.pipe(
     map(profile => {

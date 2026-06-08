@@ -10,4 +10,5 @@ public interface DonationService {
 
     DonationResponseDTO donate(DonationRequestDTO donationRequestDTO);
     List<DonationSummaryResponseDTO> getAvailableDonationsSummary();
+    void requestDonation(Long donationId, String ngoEmail);
 }

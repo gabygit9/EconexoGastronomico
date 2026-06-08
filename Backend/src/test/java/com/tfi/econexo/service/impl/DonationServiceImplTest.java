@@ -191,19 +191,18 @@ class DonationServiceImplTest {
     @Test
     void getAvailableDonationsSummary_WhenDonationsExist_ShouldReturnSummaryDTOs(){
         DonationSummaryResponseDTO expectedSummary = new DonationSummaryResponseDTO(
-                1L, "Masas Finas", "Panadería", 10, "unidades",
-                LocalDateTime.now().plusDays(2), true);
+                1L, "El Hornito", LocalDateTime.now().plusDays(2),true, List.of());
 
         when(donationItemRepository.findByDonation_StatusOrderByExpirationDateAsc(DonationStatus.AVAILABLE))
                 .thenReturn(List.of(donationItem, donationItem));
-        when(donationMapper.toSummaryResponseDTO(any(DonationItem.class))).thenReturn(expectedSummary);
+        when(donationMapper.toSummaryResponseDTO(any(Donation.class))).thenReturn(expectedSummary);
 
         List<DonationSummaryResponseDTO> response = donationService.getAvailableDonationsSummary();
 
         assertEquals(2, response.size());
         verify(donationItemRepository, times(1)).findByDonation_StatusOrderByExpirationDateAsc(DonationStatus.AVAILABLE);
-        verify(donationMapper, times(2)).toSummaryResponseDTO(any(DonationItem.class));
-        assertEquals(response.get(0).title(), expectedSummary.title());
+        verify(donationMapper, times(2)).toSummaryResponseDTO(any(Donation.class));
+        assertEquals(response.get(0).businessName(), expectedSummary.businessName());
     }
 
     @Test
@@ -216,6 +215,6 @@ class DonationServiceImplTest {
         assertNotNull(response);
         assertTrue(response.isEmpty());
         verify(donationItemRepository, times(1)).findByDonation_StatusOrderByExpirationDateAsc(DonationStatus.AVAILABLE);
-        verify(donationMapper, never()).toSummaryResponseDTO(any(DonationItem.class));
+        verify(donationMapper, never()).toSummaryResponseDTO(any(Donation.class));
     }
 }
