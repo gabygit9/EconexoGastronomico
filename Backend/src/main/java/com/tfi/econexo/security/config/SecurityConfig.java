@@ -1,8 +1,9 @@
 package com.tfi.econexo.security.config;
 
-import com.tfi.econexo.security.config.filter.JwtTokenValidator;
 import com.tfi.econexo.service.auth.BlacklistedTokenService;
 import com.tfi.econexo.utils.JwtUtils;
+import com.tfi.econexo.security.config.filter.JwtTokenValidator;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,6 +48,9 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/v3/api-docs", "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(new JwtTokenValidator(jwtUtils, blacklistedTokenService), BasicAuthenticationFilter.class)
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) ->
+                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized")))
                 .build();
     }
 

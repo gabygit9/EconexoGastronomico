@@ -1,7 +1,14 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../../../environments/environment.development';
-import {Category, DonationRequest, DonationResponse, Product, UnitOfMeasure} from '../../shared/models/donation.model';
+import {
+  Category,
+  DonationRequest,
+  DonationResponse,
+  DonationSummaryResponse,
+  Product,
+  UnitOfMeasure
+} from '../../shared/models/donation.model';
 import {Observable} from 'rxjs';
 
 @Injectable({
@@ -44,5 +51,21 @@ export class DonationService {
    */
   getUnitOfMeasures(): Observable<UnitOfMeasure[]> {
     return this.http.get<UnitOfMeasure[]>(`${this.apiUrl}/catalog/units`);
+  }
+
+  /**
+   * Get all available donations
+   * @returns An Observable of the available donations
+   */
+  getAvailableDonations(): Observable<DonationSummaryResponse[]> {
+    return this.http.get<DonationSummaryResponse[]>(`${this.apiUrl}/available`);
+  }
+
+  /**
+   * Request an available donation (Changes status to REQUESTED)
+   * @param donationId - The ID of the donation to request
+   */
+  requestDonation(donationId: number){
+    return this.http.patch<void>(`${this.apiUrl}/${donationId}/request`, {donationId});
   }
 }

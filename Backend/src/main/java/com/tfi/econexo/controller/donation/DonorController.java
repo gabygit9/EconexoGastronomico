@@ -1,6 +1,8 @@
 package com.tfi.econexo.controller.donation;
 
+import com.tfi.econexo.dto.auth.donor.DonorResponseDTO;
 import com.tfi.econexo.model.donation.donor.DonorType;
+import com.tfi.econexo.service.donation.DonorService;
 import com.tfi.econexo.utils.EnumUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -8,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +24,8 @@ import java.util.Map;
 @Tag(name = "Donors", description = "Endpoints for donor types")
 public class DonorController {
 
+    private final DonorService donorService;
+
     @GetMapping("/public/donor-types")
     @Operation(
             summary = "Get donor types",
@@ -32,5 +37,17 @@ public class DonorController {
     })
     public ResponseEntity<List<Map<String, String>>> getDonorTypes() {
         return ResponseEntity.ok(EnumUtils.toDropdownList(DonorType.class));
+    }
+
+    @GetMapping("/profile")
+    @Operation(summary = "Get my profile", description = "Return the profile of the authenticated Donor.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Profile successfully retrieved"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
+    public ResponseEntity<DonorResponseDTO> getMyProfile(Authentication authentication){
+        String email = authentication.getName();
+        DonorResponseDTO profile = this.donorService.getProfileByEmail(email);
+        return ResponseEntity.ok(profile);
     }
 }

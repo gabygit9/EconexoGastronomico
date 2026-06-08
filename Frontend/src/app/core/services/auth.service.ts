@@ -1,8 +1,16 @@
 import {inject, Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpRequest} from '@angular/common/http';
 import {environment} from '../../../environments/environment.development';
-import {DonorRegistrationRequest, DonorResponse} from '../../shared/models/donor.model';
-import {Observable} from 'rxjs';
+import {
+  DonorRegistrationRequest,
+  DonorResponse,
+  DonorTypeLookup,
+  NeighborhoodLookup
+} from '../../shared/models/donor.model';
+import {BehaviorSubject, catchError, Observable, tap, throwError} from 'rxjs';
+import {AuthLoginRequest, AuthResponse} from '../../shared/models/login.model';
+import {NgoRegistrationDTO, NgoResponseDTO, NgoTypeLookup} from '../../shared/models/ngo.model';
+import {DriverRegistrationDTO, DriverResponse} from '../../shared/models/driver.model';
 
 @Injectable({
   providedIn: 'root'
@@ -28,6 +36,14 @@ export class AuthService {
    */
   private hasToken(): boolean{
     return !!localStorage.getItem('econexo_token');
+  }
+
+  /**
+   * Sets the current user
+   * @param user - The user to set
+   */
+  setCurrentUser(user: DonorResponse | NgoResponseDTO | DriverResponse | null){
+    this.currentUserSubject.next(user);
   }
 
   /**
@@ -97,7 +113,6 @@ export class AuthService {
 
   /**
    * Logout the current user
-   * @param request - The logout request
    * @returns An Observable of the logout response
    */
   logout(): Observable<any> {
@@ -112,30 +127,6 @@ export class AuthService {
     );
   }
 
-  //TODO implementar en el backend
-  getNgoProfile(): Observable<NgoResponseDTO>{
-    return this.http.get<NgoResponseDTO>(`${this.apiUrl}/profile`).pipe(
-      tap((profile) => {
-        this.currentUserSubject.next(profile);
-      }));
-  }
-
-  //TODO implementar en el backend
-  getDriverProfile(): Observable<DriverResponse>{
-    return this.http.get<DriverResponse>(`${this.apiUrl}/profile`).pipe(
-      tap((profile) => {
-        this.currentUserSubject.next(profile);
-      }));
-  }
-
-  //TODO implementar en el backend
-  getDonorProfile(): Observable<DonorResponse>{
-    return this.http.get<DonorResponse>(`${this.apiUrl}/profile`).pipe(
-      tap((profile) => {
-        this.currentUserSubject.next(profile);
-      }));
-  }
-
   /**
    * Clears the local session by removing the token and updating the authentication state
    */
@@ -143,5 +134,4 @@ export class AuthService {
     localStorage.removeItem('econexo_token');
     this.isAuthenticatedSubject.next(false);
   }
-
 }
