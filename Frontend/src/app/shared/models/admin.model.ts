@@ -6,7 +6,10 @@ export interface UserAdminResponse {
   email: string,
   userType: string,
   status: Status,
-  createdDate: string
+  createdDate: string,
+  taxId: string,
+  certificateUrl?: string,
+  registrationNumber?: string
 }
 
 export interface UpdateStatusRequest {

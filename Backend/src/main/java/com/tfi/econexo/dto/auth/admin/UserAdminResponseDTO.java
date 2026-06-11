@@ -23,6 +23,15 @@ public record UserAdminResponseDTO(
         String status,
 
         @Schema(description = "The date and time the user was created.", example = "2023-01-01T00:00:00")
-        LocalDateTime createdDate
+        LocalDateTime createdDate,
+
+        @Schema(description = "The tax id of the user.", example = "123456789")
+        String taxId,
+
+        @Schema(description = "The certificate url to manipulate food.", example = "https://example.com/certificate.pdf")
+        String certificateUrl,
+
+        @Schema(description = "The registration legal number of the ngo.", example = "123456789")
+        String registrationNumber
 ) {
 }

@@ -1,0 +1,167 @@
+<div class="min-h-screen bg-gray-50 flex flex-col">
+
+  <app-navbar [userName]="(userName$ | async) || 'Administrador'"></app-navbar>
+
+  <main class="flex-1 p-6 md:p-10">
+    <div class="max-w-7xl mx-auto space-y-8">
+
+      <div class="space-y-2">
+        <h1 class="text-3xl md:text-4xl font-extrabold text-[#161c28] tracking-tight">
+          Panel de Administración
+        </h1>
+        <p class="text-lg text-gray-500">
+          Gestioná las solicitudes de registro y validá el acceso a la plataforma.
+        </p>
+      </div>
+
+      @if (isLoading){
+        <div class="flex justify-center items-center py-20">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-[#eb5c0c] border-t-transparent"></div>
+        </div>
+      } @else {
+        <div class="bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-100">
+          <div class="overflow-x-auto">
+            <table class="min-w-full text-left text-sm text-gray-600">
+              <thead class="bg-gray-50 text-gray-900 uppercase font-bold text-xs tracking-wider border-b border-gray-200">
+              <tr>
+                <th scope="col" class="px-6 py-4">Usuario</th>
+                <th scope="col" class="px-6 py-4">Rol</th>
+                <th scope="col" class="px-6 py-4">Fecha de Registro</th>
+                <th scope="col" class="px-6 py-4">Documentación</th>
+                <th scope="col" class="px-6 py-4 text-center">Estado</th>
+                <th scope="col" class="px-6 py-4 text-center">Acciones</th>
+              </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+
+                @for (user of users$ | async; track user.userId) {
+
+                  <tr class="hover:bg-orange-50/30 transition-colors">
+
+                    <td class="px-6 py-4">
+                      <p class="font-bold text-[#161c28] text-base">{{ user.name }}</p>
+                      <p class="text-gray-400 text-xs">{{ user.email }}</p>
+                    </td>
+
+                    <td class="px-6 py-4">
+                      <span class="px-3 py-1 rounded-full text-xs font-bold tracking-wide"
+                            [ngClass]="{
+                              'bg-blue-100 text-blue-700': user.userType === 'DONOR',
+                              'bg-orange-100 text-[#eb5c0c]': user.userType === 'DRIVER',
+                              'bg-purple-100 text-purple-700': user.userType === 'NGO'
+                            }">
+                        {{ user.userType }}
+                      </span>
+                    </td>
+
+                    <td class="px-6 py-4 font-medium text-sm">
+                      {{ user.createdDate | date:'dd/MM/yyyy HH:mm' }}
+                    </td>
+
+                    <td class="px-6 py-4">
+                      <div class="flex flex-col gap-1 text-xs">
+
+                        <div class="flex items-center gap-1">
+                          <span class="font-bold text-gray-500">CUIT:</span>
+                          <span class="text-gray-700 font-mono">{{ user.taxId }}</span>
+                        </div>
+
+                        @if (user.certificateUrl) {
+                          <div class="mt-1">
+                            <a [href]="user.certificateUrl"
+                               target="_blank"
+                               class="inline-flex items-center gap-1 text-[#eb5c0c] hover:text-[#d65108] font-bold underline transition-all">
+                              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                              </svg>
+                              Libreta Sanitaria
+                            </a>
+                          </div>
+                        }
+
+                        @if (user.registrationNumber) {
+                          <div class="flex items-center gap-1 mt-1">
+                            <span class="font-bold text-gray-500">P. Jurídica:</span>
+                            <span class="bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded font-medium">{{ user.registrationNumber }}</span>
+                          </div>
+                        }
+
+                      </div>
+                    </td>
+
+                    <td class="px-6 py-4 text-center">
+                      <span class="px-3 py-1 rounded-full text-xs font-bold tracking-wide border"
+                            [ngClass]="{
+                             'bg-green-50 border-green-200 text-green-700': user.status === 'APPROVED',
+                             'bg-yellow-50 border-yellow-200 text-yellow-700': user.status === 'PENDING',
+                             'bg-red-50 border-red-200 text-red-700': user.status === 'REJECTED',
+                             'bg-orange-50 border-orange-200 text-orange-700': user.status === 'SUSPENDED',
+                             'bg-gray-100 border-gray-300 text-gray-600': user.status === 'CANCELED'
+                            }">
+                        {{ user.status }}
+                      </span>
+                    </td>
+
+                    <td class="px-6 py-4 text-center">
+                      <div class="flex justify-center gap-3">
+
+                        @if (user.status !== 'APPROVED' && user.status !== 'CANCELED') {
+                          <button (click)="changeStatus(user.userId, 'APPROVED')"
+                                  class="text-green-600 hover:text-green-800 bg-green-50 hover:bg-green-100 p-2 rounded-lg transition-all"
+                                  title="Aprobar">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                          </button>
+                        }
+
+                        @if (user.status === 'PENDING') {
+                          <button (click)="changeStatus(user.userId, 'REJECTED')"
+                                  class="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition-all"
+                                  title="Rechazar">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                          </button>
+                        }
+
+                        @if (user.status === 'APPROVED') {
+                          <button (click)="changeStatus(user.userId, 'SUSPENDED')"
+                                  class="text-orange-600 hover:text-orange-800 bg-orange-50 hover:bg-orange-100 p-2 rounded-lg transition-all"
+                                  title="Suspender">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
+                            </svg>
+                          </button>
+                        }
+
+                      </div>
+                    </td>
+
+                  </tr>
+
+                } @empty {
+                  <tr>
+                    <td colspan="6" class="p-12 text-center">
+                      <svg class="mx-auto h-12 w-12 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                      </svg>
+                      <h3 class="mt-2 text-sm font-medium text-gray-900">Sin usuarios</h3>
+                      <p class="mt-1 text-sm text-gray-500">Aún no hay usuarios registrados en el sistema.</p>
+                    </td>
+                  </tr>
+                }
+
+              </tbody>
+            </table>
+
+          </div>
+        </div>
+      }
+
+    </div>
+  </main>
+
+  <app-footer></app-footer>
+
+</div>

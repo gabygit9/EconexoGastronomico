@@ -36,7 +36,10 @@ public class AdminUserServiceImpl implements AdminUserService {
                 donor.getUser().getEmail(),
                 "DONOR",
                 donor.getStatus().name(),
-                donor.getCreatedDate())));
+                donor.getCreatedDate(),
+                donor.getTaxId(),
+                null,
+                null)));
 
         driverRepository.findAll().forEach(driver -> combinedList.add(new UserAdminResponseDTO(
                 driver.getUser().getId(),
@@ -44,7 +47,10 @@ public class AdminUserServiceImpl implements AdminUserService {
                 driver.getUser().getEmail(),
                 "DRIVER",
                 driver.getStatus().name(),
-                driver.getCreatedDate())));
+                driver.getCreatedDate(),
+                driver.getTaxId(),
+                driver.getFoodHandlerCertificateUrl(),
+                null)));
 
         ngoRepository.findAll().forEach(ngo -> combinedList.add(new UserAdminResponseDTO(
                 ngo.getUser().getId(),
@@ -52,7 +58,10 @@ public class AdminUserServiceImpl implements AdminUserService {
                 ngo.getUser().getEmail(),
                 "NGO",
                 ngo.getStatus().name(),
-                ngo.getCreatedDate())));
+                ngo.getCreatedDate(),
+                ngo.getTaxId(),
+                null,
+                ngo.getLegalPersonalityNumber())));
 
         combinedList.sort(Comparator.comparing(UserAdminResponseDTO::createdDate).reversed());
         return combinedList;
