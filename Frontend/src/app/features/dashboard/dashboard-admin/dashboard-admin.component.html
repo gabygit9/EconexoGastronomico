@@ -50,7 +50,7 @@
                               'bg-orange-100 text-[#eb5c0c]': user.userType === 'DRIVER',
                               'bg-purple-100 text-purple-700': user.userType === 'NGO'
                             }">
-                        {{ user.userType }}
+                        {{ user.userType | roleTranslate }}
                       </span>
                     </td>
 
@@ -98,7 +98,7 @@
                              'bg-orange-50 border-orange-200 text-orange-700': user.status === 'SUSPENDED',
                              'bg-gray-100 border-gray-300 text-gray-600': user.status === 'CANCELED'
                             }">
-                        {{ user.status }}
+                        {{ user.status | statusTranslate }}
                       </span>
                     </td>
 

@@ -9,6 +9,8 @@ import {AuthService} from '../../../core/services/auth.service';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {NavbarComponent} from '../../../shared/components/navbar/navbar.component';
 import {FooterComponent} from '../../../shared/components/footer/footer.component';
+import {StatusTranslatePipe} from '../../../shared/pipes/status-translate.pipe';
+import {RoleTranslatePipe} from '../../../shared/pipes/role-translate.pipe';
 
 @Component({
   selector: 'app-dashboard-admin',
@@ -17,7 +19,9 @@ import {FooterComponent} from '../../../shared/components/footer/footer.componen
     DatePipe,
     AsyncPipe,
     NavbarComponent,
-    FooterComponent
+    FooterComponent,
+    StatusTranslatePipe,
+    RoleTranslatePipe
   ],
   templateUrl: './dashboard-admin.component.html',
   styleUrl: './dashboard-admin.component.css'
@@ -74,4 +78,7 @@ export class DashboardAdminComponent implements OnInit {
       }
     })
   }
+
+  protected readonly RoleTranslatePipe = RoleTranslatePipe;
+  protected readonly StatusTranslatePipe = StatusTranslatePipe;
 }

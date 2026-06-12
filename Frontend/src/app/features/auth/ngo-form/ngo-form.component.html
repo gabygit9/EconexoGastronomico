@@ -34,7 +34,7 @@
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
-            <label class="label-form">Email</label>
+            <label class="label-form label-required">Email</label>
             <input formControlName="email" type="email"
                    [ngClass]="{'input-error' : isInvalidField('email')}"
                    class="input-form"
@@ -47,7 +47,7 @@
             }
           </div>
           <div>
-            <label class="label-form">Contraseña</label>
+            <label class="label-form label-required">Contraseña</label>
             <input formControlName="password" type="password"
                    [ngClass]="{'input-error' : isInvalidField('password')}"
                    class="input-form"
@@ -68,7 +68,7 @@
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           <div class="lg:col-span-2">
-            <label class="label-form">Nombre</label>
+            <label class="label-form label-required">Nombre</label>
             <input formControlName="ngoName" type="text"
                    [ngClass]="{'input-error' : isInvalidField('ngoName')}"
                    class=" input-form"
@@ -81,7 +81,7 @@
             }
           </div>
           <div>
-            <label class="label-form">Tipo ONG</label>
+            <label class="label-form label-required">Tipo ONG</label>
             <select formControlName="ngoType"
                     [ngClass]="{'input-error' : isInvalidField('ngoType')}"
                     class="input-form cursor-pointer">
@@ -97,7 +97,7 @@
             }
           </div>
           <div class="lg:col-span-2">
-            <label class="label-form">N° de PJ</label>
+            <label class="label-form label-required">N° de PJ</label>
             <input formControlName="legalPersonalityNumber" type="text"
                    [ngClass]="{'input-error' : isInvalidField('legalPersonalityNumber')}"
                    class="input-form"
@@ -110,7 +110,7 @@
             }
           </div>
           <div>
-            <label class="label-form">CUIL</label>
+            <label class="label-form label-required">CUIL</label>
             <input formControlName="taxId" type="text"
                    [ngClass]="{'input-error' : isInvalidField('taxId')}"
                    class="input-form"
@@ -124,7 +124,7 @@
           </div>
 
           <div class="lg:col-span-2">
-            <label class="label-form">Responsable</label>
+            <label class="label-form label-required">Responsable</label>
             <input formControlName="responsibleName" type="text"
                    [ngClass]="{'input-error' : isInvalidField('responsibleName')}"
                    class="input-form"
@@ -145,7 +145,7 @@
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
           <div class="md:col-span-3">
-            <label class="label-form">Calle</label>
+            <label class="label-form label-required">Calle</label>
             <input formControlName="street" type="text"
                    [ngClass]="{'input-error' : isInvalidField('street')}"
                    class="input-form">
@@ -157,7 +157,7 @@
             }
           </div>
           <div class="md:col-span-1">
-            <label class="label-form">Número</label>
+            <label class="label-form label-required">Número </label>
             <input formControlName="streetNumber" (blur)="onAddressBlur()" type="text"
                    [ngClass]="{'input-error' : isInvalidField('streetNumber')}"
                    class="input-form">
@@ -169,7 +169,7 @@
             }
           </div>
           <div class="md:col-span-2">
-            <label class="label-form">Barrio</label>
+            <label class="label-form label-required">Barrio</label>
             <select formControlName="neighborhoodId" (change)="onNeighborhoodChange()"
                     [ngClass]="{'input-error' : isInvalidField('neighborhoodId')}"
                     class="input-form cursor-pointer">
@@ -197,7 +197,7 @@
                    placeholder="Opcional">
           </div>
           <div class="md:col-span-4 mt-2">
-            <label class="label-form">Teléfono de Contacto</label>
+            <label class="label-form label-required">Teléfono de Contacto</label>
             <input formControlName="phoneNumber" type="text"
                    [ngClass]="{'input-error' : isInvalidField('phoneNumber')}"
                    class="input-form"

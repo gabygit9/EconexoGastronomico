@@ -138,6 +138,13 @@ public class AuthServiceImpl implements AuthService {
 
         Vehicle vehicle = vehicleMapper.toEntity(driverDTO.vehicle());
         vehicle.setDriver(driver);
+
+        if(vehicle.getNumberPlate() != null && vehicle.getNumberPlate().trim().isEmpty()){
+            vehicle.setNumberPlate(null);
+        }else{
+            vehicle.setNumberPlate(vehicle.getNumberPlate());
+        }
+
         driver.getVehicles().add(vehicle);
 
         driverService.save(driver);

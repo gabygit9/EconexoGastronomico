@@ -34,7 +34,7 @@
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
-            <label class="label-form">Email</label>
+            <label class="label-form label-required">Email</label>
             <input formControlName="email" type="email"
                    [ngClass]="{'input-error' : isInvalidField('email')}"
                    class="input-form"
@@ -47,7 +47,7 @@
             }
           </div>
           <div>
-            <label class="label-form">Contraseña</label>
+            <label class="label-form label-required">Contraseña</label>
             <input formControlName="password" type="password"
                    [ngClass]="{'input-error' : isInvalidField('password')}"
                    class="input-form"
@@ -68,7 +68,7 @@
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           <div class="lg:col-span-2">
-            <label class="label-form">Nombre/s</label>
+            <label class="label-form label-required">Nombre/s</label>
             <input formControlName="firstName" type="text"
                    [ngClass]="{'input-error' : isInvalidField('firstName')}"
                    class=" input-form"
@@ -82,7 +82,7 @@
           </div>
 
           <div class="lg:col-span-2">
-            <label class="label-form">Apellido/s</label>
+            <label class="label-form label-required">Apellido/s</label>
             <input formControlName="lastName" type="text"
                    [ngClass]="{'input-error' : isInvalidField('lastName')}"
                    class=" input-form"
@@ -96,7 +96,7 @@
           </div>
 
           <div>
-            <label class="label-form">CUIT</label>
+            <label class="label-form label-required">CUIT</label>
             <input formControlName="taxId" type="text"
                    [ngClass]="{'input-error' : isInvalidField('taxId')}"
                    class="input-form"
@@ -110,7 +110,7 @@
           </div>
 
           <div>
-            <label class="label-form">Fecha de Nacimiento</label>
+            <label class="label-form label-required">Fecha de Nacimiento</label>
             <input formControlName="birthDate" type="date"
                    [max]="maxBirthDateStr"
                    [ngClass]="{'input-error' : isInvalidField('birthDate')}"
@@ -124,7 +124,7 @@
           </div>
 
           <div>
-            <label class="label-form">Carnet de Manipulador de Alimentos</label>
+            <label class="label-form label-required">Carnet de Manipulador de Alimentos</label>
             <input formControlName="foodHandlerCertificateUrl" type="text"
                    [ngClass]="{'input-error' : isInvalidField('foodHandlerCertificateUrl')}"
                    class="input-form">
@@ -137,7 +137,7 @@
           </div>
 
           <div>
-            <label class="label-form">Vencimiento del Carnet</label>
+            <label class="label-form label-required">Vencimiento del Carnet</label>
             <input formControlName="foodHandlerCertificateExpiration" type="date"
                    [min]="todayStr"
                    [ngClass]="{'input-error' : isInvalidField('foodHandlerCertificateExpiration')}"
@@ -159,7 +159,7 @@
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
           <div class="md:col-span-3">
-            <label class="label-form">Calle</label>
+            <label class="label-form label-required">Calle</label>
             <input formControlName="street" type="text"
                    [ngClass]="{'input-error' : isInvalidField('street')}"
                    class="input-form">
@@ -171,7 +171,7 @@
             }
           </div>
           <div class="md:col-span-1">
-            <label class="label-form">Número</label>
+            <label class="label-form label-required">Número</label>
             <input formControlName="streetNumber" (blur)="onAddressBlur()" type="text"
                    [ngClass]="{'input-error' : isInvalidField('streetNumber')}"
                    class="input-form">
@@ -183,7 +183,7 @@
             }
           </div>
           <div class="md:col-span-2">
-            <label class="label-form">Barrio</label>
+            <label class="label-form label-required">Barrio</label>
             <select formControlName="neighborhoodId" (change)="onNeighborhoodChange()"
                     [ngClass]="{'input-error' : isInvalidField('neighborhoodId')}"
                     class="input-form cursor-pointer">
@@ -211,7 +211,7 @@
                    placeholder="Opcional">
           </div>
           <div class="md:col-span-4 mt-2">
-            <label class="label-form">Teléfono de Contacto</label>
+            <label class="label-form label-required">Teléfono de Contacto</label>
             <input formControlName="phoneNumber" type="text"
                    [ngClass]="{'input-error' : isInvalidField('phoneNumber')}"
                    class="input-form"
@@ -232,7 +232,7 @@
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           <div>
-            <label class="label-form">Tipo de Vehículo</label>
+            <label class="label-form label-required">Tipo de Vehículo</label>
             <select formControlName="vehicleType"
                     [ngClass]="{'input-error' : isInvalidField('vehicle.vehicleType')}"
                     class="input-form cursor-pointer">
@@ -252,7 +252,7 @@
           </div>
 
           <div>
-            <label class="label-form">Capacidad (Kg)</label>
+            <label class="label-form label-required">Capacidad (Kg)</label>
             <input formControlName="capacityKg" type="number"
                    [ngClass]="{'input-error' : isInvalidField('vehicle.capacityKg')}"
                    class="input-form"
@@ -274,7 +274,7 @@
 
           @if (driverForm.get('vehicle.vehicleType')?.value !== 'BICYCLE' && driverForm.get('vehicle.vehicleType')?.value !== 'KICK_SCOOTER') {
             <div>
-              <label class="label-form">Patente</label>
+              <label class="label-form label-required">Patente</label>
               <input formControlName="numberPlate" type="text"
                      [ngClass]="{'input-error' : isInvalidField('vehicle.numberPlate')}"
                      class="input-form"
@@ -287,7 +287,7 @@
             </div>
 
             <div>
-              <label class="label-form">Vencimiento de Licencia</label>
+              <label class="label-form label-required">Vencimiento de Licencia</label>
               <input formControlName="driverLicenseExpiration" type="date"
                      [min]="todayStr"
                      [ngClass]="{'input-error' : isInvalidField('vehicle.driverLicenseExpiration')}"
@@ -300,12 +300,12 @@
             </div>
 
             <div>
-              <label class="label-form">Foto Licencia Frente (URL)</label>
+              <label class="label-form label-required">Foto Licencia Frente (URL)</label>
               <input formControlName="driverLicenseFrontUrl" type="text" class="input-form" placeholder="URL temporal">
             </div>
 
             <div>
-              <label class="label-form">Foto Licencia Dorso (URL)</label>
+              <label class="label-form label-required">Foto Licencia Dorso (URL)</label>
               <input formControlName="driverLicenseBackUrl" type="text" class="input-form" placeholder="URL temporal">
             </div>
           }
