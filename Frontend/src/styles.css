@@ -18,4 +18,8 @@
   .input-form {
     @apply w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 focus:bg-white focus:border-[#eb5c0c] focus:ring-2 focus:ring-[#eb5c0c]/20 outline-none transition-all;
   }
+  .label-required::after {
+    content: '*';
+    @apply ml-1 text-red-500 font-bold;
+  }
 }

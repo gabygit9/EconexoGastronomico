@@ -5,7 +5,7 @@ import {AuthService} from '../../../core/services/auth.service';
 import {LocationService} from '../../../core/services/location.service';
 import {ToastrService} from 'ngx-toastr';
 import {Router} from '@angular/router';
-import {NgClass} from '@angular/common';
+import {formatDate, NgClass} from '@angular/common';
 import {NeighborhoodLookup} from '../../../shared/models/donor.model';
 import {catchError, delay, of} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
@@ -114,6 +114,10 @@ export class DriverFormComponent extends BaseFormComponent implements OnInit{
     }
     this.isSubmitting = true;
     const formData = this.driverForm.value;
+
+    if(formData.numberPlate === ''){
+      formData.numberPlate = null;
+    }
 
     this.authService.registerDriver(formData).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response) => {

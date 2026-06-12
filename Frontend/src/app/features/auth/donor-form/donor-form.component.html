@@ -34,7 +34,7 @@
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
-            <label class="label-form">Email</label>
+            <label class="label-form label-required">Email</label>
             <input formControlName="email" type="email"
                    [ngClass]="{'input-error' : isInvalidField('email')}"
                    class="input-form"
@@ -47,7 +47,7 @@
             }
           </div>
           <div>
-            <label class="label-form">Contraseña</label>
+            <label class="label-form label-required">Contraseña</label>
             <input formControlName="password" type="password"
                    [ngClass]="{'input-error' : isInvalidField('password')}"
                    class="input-form"
@@ -68,7 +68,7 @@
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           <div class="lg:col-span-2">
-            <label class="label-form">Nombre de Fantasía</label>
+            <label class="label-form label-required">Nombre de Fantasía</label>
             <input formControlName="tradeName" type="text"
                    [ngClass]="{'input-error' : isInvalidField('tradeName')}"
                    class=" input-form"
@@ -81,7 +81,7 @@
             }
           </div>
           <div>
-            <label class="label-form">Rubro</label>
+            <label class="label-form label-required">Rubro</label>
             <select formControlName="donorType"
                     [ngClass]="{'input-error' : isInvalidField('donorType')}"
                     class="input-form cursor-pointer">
@@ -97,7 +97,7 @@
             }
           </div>
           <div class="lg:col-span-2">
-            <label class="label-form">Razón Social</label>
+            <label class="label-form label-required">Razón Social</label>
             <input formControlName="legalName" type="text"
                    [ngClass]="{'input-error' : isInvalidField('legalName')}"
                    class="input-form"
@@ -110,7 +110,7 @@
             }
           </div>
           <div>
-            <label class="label-form">CUIT</label>
+            <label class="label-form label-required">CUIT</label>
             <input formControlName="taxId" type="text"
                    [ngClass]="{'input-error' : isInvalidField('taxId')}"
                    class="input-form"
@@ -131,7 +131,7 @@
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
           <div class="md:col-span-3">
-            <label class="label-form">Calle</label>
+            <label class="label-form label-required">Calle</label>
             <input formControlName="street" type="text"
                    [ngClass]="{'input-error' : isInvalidField('street')}"
                    class="input-form">
@@ -143,7 +143,7 @@
             }
           </div>
           <div class="md:col-span-1">
-            <label class="label-form">Número</label>
+            <label class="label-form label-required">Número</label>
             <input formControlName="streetNumber" (blur)="onAddressBlur()" type="text"
                    [ngClass]="{'input-error' : isInvalidField('streetNumber')}"
                    class="input-form">
@@ -155,7 +155,7 @@
             }
           </div>
           <div class="md:col-span-2">
-            <label class="label-form">Barrio</label>
+            <label class="label-form label-required">Barrio</label>
             <select formControlName="neighborhoodId" (change)="onNeighborhoodChange()"
                     [ngClass]="{'input-error' : isInvalidField('neighborhoodId')}"
                     class="input-form cursor-pointer">
@@ -183,7 +183,7 @@
                    placeholder="Opcional">
           </div>
           <div class="md:col-span-4 mt-2">
-            <label class="label-form">Teléfono de Contacto</label>
+            <label class="label-form label-required">Teléfono de Contacto</label>
             <input formControlName="phoneNumber" type="text"
                    [ngClass]="{'input-error' : isInvalidField('phoneNumber')}"
                    class="input-form"
