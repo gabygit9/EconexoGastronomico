@@ -35,6 +35,7 @@ export class DashboardAdminComponent implements OnInit {
 
   users$ = new BehaviorSubject<UserAdminResponse[]>([]);
   isLoading = true;
+  updatingUserId: number | null = null;
 
   userName$ = this.authService.currentUser$.pipe(
     map(profile => {
@@ -64,16 +65,26 @@ export class DashboardAdminComponent implements OnInit {
   }
 
   changeStatus(userId: number, newStatus: Status){
+    this.updatingUserId = userId;
+
     this.adminService.updateUserStatus(userId, newStatus).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         const currentUsers = this.users$.getValue();
         const updateUsers = currentUsers.map(user =>
           user.userId === userId ? {...user, status: newStatus} : user);
         this.users$.next(updateUsers);
-        this.toastr.success('Estado actualizado con éxito', 'Estado Actualizado');
+        if(newStatus === 'APPROVED'){
+          this.toastr.success('Usuario aprobado. Se ha enviado un correo de notificación', '¡Aprobación Exitosa!');
+        } else if(newStatus === 'REJECTED'){
+          this.toastr.warning('La solicitud ha sido rechazada.', 'Usuario Rechazado')
+        } else if(newStatus === 'SUSPENDED'){
+          this.toastr.warning('El usuario ha sido suspendido del sistema.', 'Usuario Suspendido')
+        }
+        this.updatingUserId = null;
       },
       error: (error) => {
         this.toastr.error('Error al actualizar el estado del usuario', 'Error');
+        this.updatingUserId = null;
         console.error(error);
       }
     })
