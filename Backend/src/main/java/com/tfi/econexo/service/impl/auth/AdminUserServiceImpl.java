@@ -5,6 +5,7 @@ import com.tfi.econexo.model.auth.UserSec;
 import com.tfi.econexo.model.donation.donor.Donor;
 import com.tfi.econexo.model.enums.RegistrationStatus;
 import com.tfi.econexo.model.logistics.Driver;
+import com.tfi.econexo.model.logistics.Vehicle;
 import com.tfi.econexo.model.ngo.Ngo;
 import com.tfi.econexo.repository.auth.UserRepository;
 import com.tfi.econexo.repository.donation.DonorRepository;
@@ -44,18 +45,32 @@ public class AdminUserServiceImpl implements AdminUserService {
                 donor.getCreatedDate(),
                 donor.getTaxId(),
                 null,
+                null,
+                null,
                 null)));
 
-        driverRepository.findAll().forEach(driver -> combinedList.add(new UserAdminResponseDTO(
-                driver.getUser().getId(),
-                driver.getLastName() + ", " + driver.getFirstName(),
-                driver.getUser().getEmail(),
-                "DRIVER",
-                driver.getStatus().name(),
-                driver.getCreatedDate(),
-                driver.getTaxId(),
-                driver.getFoodHandlerCertificateUrl(),
-                null)));
+        driverRepository.findAll().forEach(driver -> {
+            String licenseFront = null;
+            String licenseBack = null;
+
+            if (driver.getVehicles() != null && !driver.getVehicles().isEmpty()) {
+                Vehicle firstVehicle = driver.getVehicles().iterator().next();
+                licenseFront = firstVehicle.getDriversLicenseFrontUrl();
+                licenseBack = firstVehicle.getDriversLicenseBackUrl();
+            }
+            combinedList.add(new UserAdminResponseDTO(
+                    driver.getUser().getId(),
+                    driver.getLastName() + ", " + driver.getFirstName(),
+                    driver.getUser().getEmail(),
+                    "DRIVER",
+                    driver.getStatus().name(),
+                    driver.getCreatedDate(),
+                    driver.getTaxId(),
+                    driver.getFoodHandlerCertificateUrl(),
+                    licenseFront,
+                    licenseBack,
+                    null));
+        });
 
         ngoRepository.findAll().forEach(ngo -> combinedList.add(new UserAdminResponseDTO(
                 ngo.getUser().getId(),
@@ -65,6 +80,8 @@ public class AdminUserServiceImpl implements AdminUserService {
                 ngo.getStatus().name(),
                 ngo.getCreatedDate(),
                 ngo.getTaxId(),
+                null,
+                null,
                 null,
                 ngo.getLegalPersonalityNumber())));
 

@@ -1,13 +1,13 @@
 package com.tfi.econexo.controller.auth;
 
+import com.tfi.econexo.dto.auth.donor.DonorRegistrationDTO;
+import com.tfi.econexo.dto.auth.donor.DonorResponseDTO;
+import com.tfi.econexo.dto.auth.login.AuthLoginRequestDTO;
+import com.tfi.econexo.dto.auth.login.AuthResponseDTO;
 import com.tfi.econexo.dto.auth.logistics.DriverRegistrationDTO;
 import com.tfi.econexo.dto.auth.logistics.DriverResponseDTO;
 import com.tfi.econexo.dto.auth.ngo.NgoRegistrationDTO;
 import com.tfi.econexo.dto.auth.ngo.NgoResponseDTO;
-import com.tfi.econexo.dto.auth.login.AuthLoginRequestDTO;
-import com.tfi.econexo.dto.auth.login.AuthResponseDTO;
-import com.tfi.econexo.dto.auth.donor.DonorRegistrationDTO;
-import com.tfi.econexo.dto.auth.donor.DonorResponseDTO;
 import com.tfi.econexo.service.auth.AuthService;
 import com.tfi.econexo.service.auth.BlacklistedTokenService;
 import com.tfi.econexo.service.impl.auth.UserDetailsServiceImpl;
@@ -71,7 +71,7 @@ public class AuthenticationController {
                     content = { @Content(mediaType = "application/json", schema = @Schema(implementation = DonorResponseDTO.class)) }
             ),
             @ApiResponse(
-                    responseCode = "400",
+                    responseCode = "409",
                     description = "Invalid credentials. Or email/taxId already exists. Returns an error message.",
                     content = @Content
             )
@@ -101,7 +101,7 @@ public class AuthenticationController {
 
     @PostMapping("/register/driver")
     @Operation(summary = "Register a new Driver",
-            description = "Post a new driver in the platform. Create its access credentials with DRIVER rol and link its driver profile with geolocalization data.")
+               description = "Post a new driver in the platform. Create its access credentials with DRIVER rol and link its driver profile with geolocalization data.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "201",
@@ -143,5 +143,4 @@ public class AuthenticationController {
         }
         return ResponseEntity.badRequest().body("No token provided");
     }
-
 }

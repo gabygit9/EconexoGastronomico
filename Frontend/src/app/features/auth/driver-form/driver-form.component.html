@@ -141,6 +141,9 @@
                              class="input-form sr-only"
                              accept=".jpg, .jpeg, .png, .pdf"
                              (change)="onFileSelected($event, 'foodHandler')">
+                      <input
+                        type="hidden"
+                        formControlName="foodHandlerCertificateUrl">
                     </label>
                   </div>
                   <p class="text-xs text-gray-500">PNG, JPG, PDF hasta 5 MB</p>
@@ -266,12 +269,9 @@
                     [ngClass]="{'input-error' : isInvalidField('vehicle.vehicleType')}"
                     class="input-form cursor-pointer">
               <option value="" disabled selected>Selecciona un tipo</option>
-              <option value="CAR">Auto</option>
-              <option value="TRUCK">Camión</option>
-              <option value="BICYCLE">Bicicleta</option>
-              <option value="MOTORCYCLE">Moto</option>
-              <option value="KICK_SCOOTER">Monopatín</option>
-              <option value="PICKUP">Camioneta</option>
+              @for (type of vehicleTypes; track type.value) {
+                <option [value]="type.value">{{ type.label }}</option>
+              }
             </select>
             @if (isInvalidField('vehicle.vehicleType')){
               <p class="text-error">
@@ -317,13 +317,13 @@
 
             <div>
               <label class="label-form label-required">Vencimiento de Licencia</label>
-              <input formControlName="driverLicenseExpiration" type="date"
+              <input formControlName="driversLicenseExpiration" type="date"
                      [min]="todayStr"
-                     [ngClass]="{'input-error' : isInvalidField('vehicle.driverLicenseExpiration')}"
+                     [ngClass]="{'input-error' : isInvalidField('vehicle.driversLicenseExpiration')}"
                      class="input-form">
-              @if (isInvalidField('vehicle.driverLicenseExpiration')){
+              @if (isInvalidField('vehicle.driversLicenseExpiration')){
                 <p class="text-error">
-                  {{ getErrorMessage('vehicle.driverLicenseExpiration') }}
+                  {{ getErrorMessage('vehicle.driversLicenseExpiration') }}
                 </p>
               }
             </div>
@@ -331,7 +331,7 @@
             <div>
               <label class="label-form label-required">Foto Licencia Frente</label>
               <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-xl hover:border-[#eb5c0c] transition-colors relative"
-                   [ngClass]="{'border-red-500 bg-red-50': isInvalidField('vehicle.driverLicenseFrontUrl')}">
+                   [ngClass]="{'border-red-500 bg-red-50': isInvalidField('vehicle.driversLicenseFrontUrl')}">
 
                 <div class="space-y-1 text-center">
                   @if (!selectedLicenseFrontFile) {
@@ -343,6 +343,9 @@
                         <span>Subir frente</span>
                         <input type="file" class="sr-only" accept=".jpg,.jpeg,.png,.pdf"
                                (change)="onFileSelected($event, 'licenseFront')">
+                        <input
+                          type="hidden"
+                          formControlName="vehicle.driversLicenseFrontUrl">
                       </label>
                     </div>
                     <p class="text-xs text-gray-500">PNG, JPG, PDF (Max 5MB)</p>
@@ -360,9 +363,9 @@
                 </div>
               </div>
 
-              @if (isInvalidField('vehicle.driverLicenseFrontUrl')){
+              @if (isInvalidField('vehicle.driversLicenseFrontUrl')){
                 <p class="text-error mt-1">
-                  {{ getErrorMessage('vehicle.driverLicenseFrontUrl') }}
+                  {{ getErrorMessage('vehicle.driversLicenseFrontUrl') }}
                 </p>
               }
             </div>
@@ -370,7 +373,7 @@
             <div>
               <label class="label-form label-required">Foto Licencia Dorso</label>
               <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-xl hover:border-[#eb5c0c] transition-colors relative"
-                   [ngClass]="{'border-red-500 bg-red-50': isInvalidField('vehicle.driverLicenseBackUrl')}">
+                   [ngClass]="{'border-red-500 bg-red-50': isInvalidField('vehicle.driversLicenseBackUrl')}">
 
                 <div class="space-y-1 text-center">
                   @if (!selectedLicenseBackFile) {
@@ -382,6 +385,9 @@
                         <span>Subir dorso</span>
                         <input type="file" class="sr-only" accept=".jpg,.jpeg,.png,.pdf"
                                (change)="onFileSelected($event, 'licenseBack')">
+                        <input
+                          type="hidden"
+                          formControlName="vehicle.driversLicenseBackUrl">
                       </label>
                     </div>
                     <p class="text-xs text-gray-500">PNG, JPG, PDF (Max 5MB)</p>
@@ -399,9 +405,9 @@
                 </div>
               </div>
 
-              @if (isInvalidField('vehicle.driverLicenseBackUrl')){
+              @if (isInvalidField('vehicle.driversLicenseBackUrl')){
                 <p class="text-error mt-1">
-                  {{ getErrorMessage('vehicle.driverLicenseBackUrl') }}
+                  {{ getErrorMessage('vehicle.driversLicenseBackUrl') }}
                 </p>
               }
             </div>

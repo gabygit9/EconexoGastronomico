@@ -21,7 +21,7 @@ public class VehicleRequirementsValidator implements ConstraintValidator<ValidVe
         boolean isValid = true;
 
         if(vehicle.numberPlate() == null || vehicle.numberPlate().isEmpty()) return !isValid;
-        if(vehicle.driverLicenseFrontUrl() == null || vehicle.driverLicenseBackUrl() == null || vehicle.driverLicenseExpiration() == null) return !isValid;
+        if(vehicle.driversLicenseFrontUrl() == null || vehicle.driversLicenseBackUrl() == null || vehicle.driversLicenseExpiration() == null) return !isValid;
 
         return isValid;
     }

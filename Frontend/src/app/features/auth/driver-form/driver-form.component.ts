@@ -8,6 +8,8 @@ import {Router} from '@angular/router';
 import {NgClass} from '@angular/common';
 import {NeighborhoodLookup} from '../../../shared/models/donor.model';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {UploadService} from '../../../core/services/upload-service';
+import {forkJoin, Observable, of, switchMap} from 'rxjs';
 
 @Component({
   selector: 'app-driver-form',
@@ -23,6 +25,7 @@ export class DriverFormComponent extends BaseFormComponent implements OnInit{
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private readonly locationService = inject(LocationService);
+  private readonly uploadService = inject(UploadService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly toastr = inject(ToastrService);
   private readonly router = inject(Router);
@@ -41,6 +44,15 @@ export class DriverFormComponent extends BaseFormComponent implements OnInit{
   }
 
   neighborhoods: NeighborhoodLookup[] = [];
+
+  readonly vehicleTypes = [
+    { value: 'CAR', label: 'Auto' },
+    { value: 'TRUCK', label: 'Camión' },
+    { value: 'BICYCLE', label: 'Bicicleta' },
+    { value: 'MOTORCYCLE', label: 'Moto' },
+    { value: 'KICK_SCOOTER', label: 'Monopatín' },
+    { value: 'PICKUP', label: 'Camioneta' }
+  ];
 
   /**
    * Initialize form and load initial data
@@ -83,9 +95,9 @@ export class DriverFormComponent extends BaseFormComponent implements OnInit{
         hasRefrigeration: [false],
         capacityKg: ['', [Validators.required, Validators.min(1)]],
         numberPlate: [''],
-        driverLicenseFrontUrl: [''],
-        driverLicenseBackUrl: [''],
-        driverLicenseExpiration: ['']
+        driversLicenseFrontUrl: [''],
+        driversLicenseBackUrl: [''],
+        driversLicenseExpiration: ['']
       })
     })
   }
@@ -116,13 +128,42 @@ export class DriverFormComponent extends BaseFormComponent implements OnInit{
       return;
     }
     this.isSubmitting = true;
-    const formData = this.driverForm.value;
 
-    if(formData.numberPlate === ''){
-      formData.numberPlate = null;
+    //Preparar subida de archivos, solo si hay archivos seleccionados
+    const uploadTasks: {[key: string] : Observable<{ url: string}> } = {};
+
+    if(this.selectedFoodHandlerFile){
+      uploadTasks['foodHandler'] = this.uploadService.uploadFile(this.selectedFoodHandlerFile, "drivers");
+    }
+    if(this.selectedLicenseFrontFile){
+      uploadTasks['licenseFront'] = this.uploadService.uploadFile(this.selectedLicenseFrontFile, "vehicles");
+    }
+    if(this.selectedLicenseBackFile){
+      uploadTasks['licenseBack'] = this.uploadService.uploadFile(this.selectedLicenseBackFile, "vehicles");
     }
 
-    this.authService.registerDriver(formData).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    //Subir archivos
+    const executeUploads$ = Object.keys(uploadTasks).length > 0 ? forkJoin(uploadTasks) : of({});
+
+    executeUploads$.pipe(
+      switchMap((cloudinaryResponses: any)=> {
+        const finalPayload = { ...this.driverForm.value };
+
+        if(cloudinaryResponses.foodHandler){
+          finalPayload.foodHandlerCertificateUrl = cloudinaryResponses.foodHandler.url;
+        }
+        if(cloudinaryResponses.licenseFront){
+          finalPayload.vehicle.driversLicenseFrontUrl = cloudinaryResponses.licenseFront.url;
+        }
+        if(cloudinaryResponses.licenseBack){
+          finalPayload.vehicle.driversLicenseBackUrl = cloudinaryResponses.licenseBack.url;
+        }
+
+        if(finalPayload.vehicle && finalPayload.vehicle.numberPlate === ''){
+          finalPayload.vehicle.numberPlate = null;
+        }
+        return this.authService.registerDriver(finalPayload);
+      }), takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response) => {
         this.toastr.success("Tu cuenta ha sido creada exitosamente.", "¡Bienvenido a EcoNexo!")
         setTimeout(() => {
@@ -180,7 +221,7 @@ export class DriverFormComponent extends BaseFormComponent implements OnInit{
   private setupVehicleValidation() {
     const vehicleTypeControl = this.driverForm.get('vehicle.vehicleType');
     const plateControl = this.driverForm.get('vehicle.numberPlate');
-    const licenseExpControl = this.driverForm.get('vehicle.driverLicenseExpiration');
+    const licenseExpControl = this.driverForm.get('vehicle.driversLicenseExpiration');
 
     vehicleTypeControl?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(type => {
       if(type === 'BICYCLE' || type === 'KICK_SCOOTER'){
@@ -195,6 +236,11 @@ export class DriverFormComponent extends BaseFormComponent implements OnInit{
     })
   }
 
+  /**
+   * Handle file selection
+   * @param event
+   * @param documentType
+   */
   onFileSelected(event:any, documentType: string){
     const file = event.target.files[0];
     if(file){
@@ -206,30 +252,40 @@ export class DriverFormComponent extends BaseFormComponent implements OnInit{
 
       if(documentType === 'foodHandler'){
         this.selectedFoodHandlerFile = file;
-        this.driverForm.patchValue({foodHandlerCertificate: file.name});
-        this.driverForm.get('foodHandleCertificateUrl')?.markAsTouched();
+        const control = this.driverForm.get('foodHandlerCertificateUrl');
+        control?.setValue(file.name);
+        control?.markAsTouched();
+        control?.updateValueAndValidity();
       } else if(documentType === 'licenseFront'){
         this.selectedLicenseFrontFile = file;
-        this.driverForm.get('vehicle')?.patchValue({driverLicenseFrontUrl: file.name});
-        this.driverForm.get('vehicle.driverLicenseFrontUrl')?.markAsTouched();
+        const control = this.driverForm.get('vehicle.driversLicenseFrontUrl');
+        control?.setValue(file.name);
+        control?.markAsTouched();
+        control?.updateValueAndValidity();
       }else if(documentType === 'licenseBack'){
         this.selectedLicenseBackFile = file;
-        this.driverForm.get('vehicle')?.patchValue({driverLicenseBackUrl: file.name});
-        this.driverForm.get('vehicle.driverLicenseBackUrl')?.markAsTouched();
+        const control = this.driverForm.get('vehicle.driversLicenseBackUrl');
+        control?.setValue(file.name);
+        control?.markAsTouched();
+        control?.updateValueAndValidity();
       }
     }
   }
 
+  /**
+   * Clear the selected file
+   * @param documentType
+   */
   clearFile(documentType: string){
     if(documentType === 'foodHandler'){
       this.selectedFoodHandlerFile = null;
       this.driverForm.patchValue({foodHandlerCertificate: ' '});
     }else if(documentType === 'licenseFront'){
       this.selectedLicenseFrontFile = null;
-      this.driverForm.get('vehicle')?.patchValue({driverLicenseFrontUrl: ' '});
+      this.driverForm.get('vehicle')?.patchValue({driversLicenseFrontUrl: ' '});
     }else if(documentType === 'licenseBack'){
       this.selectedLicenseBackFile = null;
-      this.driverForm.get('vehicle')?.patchValue({driverLicenseBackUrl: ' '});
+      this.driverForm.get('vehicle')?.patchValue({driversLicenseBackUrl: ' '});
     }
   }
 

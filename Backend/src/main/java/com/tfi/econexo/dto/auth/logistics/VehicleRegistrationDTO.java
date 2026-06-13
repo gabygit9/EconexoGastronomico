@@ -22,12 +22,12 @@ public record VehicleRegistrationDTO(
         String numberPlate,
 
         @Schema(description = "URL link to the driver's license front side", example = "https://example.com/driver-license-front.jpg")
-        String driverLicenseFrontUrl,
+        String driversLicenseFrontUrl,
 
         @Schema(description = "URL link to the driver's license back side", example = "https://example.com/driver-license-front.jpg")
-        String driverLicenseBackUrl,
+        String driversLicenseBackUrl,
 
         @Schema(description = "Date of expiration of the driver's license", example = "31-12-2025")
-        LocalDate driverLicenseExpiration
-        ) {
+        LocalDate driversLicenseExpiration
+) {
 }

@@ -23,6 +23,12 @@ public record VehicleResponseDTO(
         @Schema(description = "Number plate of the vehicle", example = "ABC123")
         String numberPlate,
 
+        @Schema(description = "URL link to the driver's license front side", example = "https://example.com/driver-license-front.jpg")
+        String driversLicenseFrontUrl,
+
+        @Schema(description = "URL link to the driver's license back side", example = "https://example.com/driver-license-back.jpg")
+        String driversLicenseBackUrl,
+
         @Schema(description = "Date of expiration of the vehicle's drivers license", example = "31-12-2025")
         LocalDate driversLicenseExpiration
 ) {
