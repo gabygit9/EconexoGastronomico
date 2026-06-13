@@ -123,11 +123,40 @@
             }
           </div>
 
-          <div>
+          <div class="col-span-1 md:col-span-2 lg:col-span-1">
             <label class="label-form label-required">Carnet de Manipulador de Alimentos</label>
-            <input formControlName="foodHandlerCertificateUrl" type="text"
-                   [ngClass]="{'input-error' : isInvalidField('foodHandlerCertificateUrl')}"
-                   class="input-form">
+
+            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-xl hover:border-[#eb5c0c] transition-colors relative"
+                 [ngClass]="{'border-red-500 bg-red-50' : isInvalidField('foodHandlerCertificateUrl')}">
+              <div class="space-y-1 text-center">
+                @if(!selectedFoodHandlerFile){
+                  <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                  <div class="flex text-sm text-gray-600 justify-center">
+                    <label class="relative cursor-pointer bg-white rounded-md font-medium text-[#eb5c0c] hover:text-[#d4530b] focus-within:outline-none">
+                      <span>Subir un archivo</span>
+                      <input type="file"
+                             [ngClass]="{'input-error' : isInvalidField('foodHandlerCertificateUrl')}"
+                             class="input-form sr-only"
+                             accept=".jpg, .jpeg, .png, .pdf"
+                             (change)="onFileSelected($event, 'foodHandler')">
+                    </label>
+                  </div>
+                  <p class="text-xs text-gray-500">PNG, JPG, PDF hasta 5 MB</p>
+                } @else {
+                  <div class="flex flex-col items-center">
+                    <svg class="mx-auto h-8 w-8 text-green-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <p class="text-sm font-medium text-gray-900 truncate max-wxs">{{ selectedFoodHandlerFile.name }}</p>
+                    <button type="button" (click)="clearFile('foodHandler')" class="mt-2 text-xs text-red-500 hover:text-red-700 font-bold">
+                      Quitar archivo
+                    </button>
+                  </div>
+                }
+              </div>
+            </div>
 
             @if (isInvalidField('foodHandlerCertificateUrl')){
               <p class="text-error">
@@ -300,13 +329,81 @@
             </div>
 
             <div>
-              <label class="label-form label-required">Foto Licencia Frente (URL)</label>
-              <input formControlName="driverLicenseFrontUrl" type="text" class="input-form" placeholder="URL temporal">
+              <label class="label-form label-required">Foto Licencia Frente</label>
+              <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-xl hover:border-[#eb5c0c] transition-colors relative"
+                   [ngClass]="{'border-red-500 bg-red-50': isInvalidField('vehicle.driverLicenseFrontUrl')}">
+
+                <div class="space-y-1 text-center">
+                  @if (!selectedLicenseFrontFile) {
+                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                      <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <div class="flex text-sm text-gray-600 justify-center">
+                      <label class="relative cursor-pointer bg-white rounded-md font-medium text-[#eb5c0c] hover:text-[#d4530b] focus-within:outline-none">
+                        <span>Subir frente</span>
+                        <input type="file" class="sr-only" accept=".jpg,.jpeg,.png,.pdf"
+                               (change)="onFileSelected($event, 'licenseFront')">
+                      </label>
+                    </div>
+                    <p class="text-xs text-gray-500">PNG, JPG, PDF (Max 5MB)</p>
+                  } @else {
+                    <div class="flex flex-col items-center">
+                      <svg class="mx-auto h-8 w-8 text-green-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                      <p class="text-sm font-medium text-gray-900 truncate max-w-[150px]">{{ selectedLicenseFrontFile.name }}</p>
+                      <button type="button" (click)="clearFile('licenseFront')" class="mt-2 text-xs text-red-500 hover:text-red-700 font-bold">
+                        Quitar archivo
+                      </button>
+                    </div>
+                  }
+                </div>
+              </div>
+
+              @if (isInvalidField('vehicle.driverLicenseFrontUrl')){
+                <p class="text-error mt-1">
+                  {{ getErrorMessage('vehicle.driverLicenseFrontUrl') }}
+                </p>
+              }
             </div>
 
             <div>
-              <label class="label-form label-required">Foto Licencia Dorso (URL)</label>
-              <input formControlName="driverLicenseBackUrl" type="text" class="input-form" placeholder="URL temporal">
+              <label class="label-form label-required">Foto Licencia Dorso</label>
+              <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-xl hover:border-[#eb5c0c] transition-colors relative"
+                   [ngClass]="{'border-red-500 bg-red-50': isInvalidField('vehicle.driverLicenseBackUrl')}">
+
+                <div class="space-y-1 text-center">
+                  @if (!selectedLicenseBackFile) {
+                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                      <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <div class="flex text-sm text-gray-600 justify-center">
+                      <label class="relative cursor-pointer bg-white rounded-md font-medium text-[#eb5c0c] hover:text-[#d4530b] focus-within:outline-none">
+                        <span>Subir dorso</span>
+                        <input type="file" class="sr-only" accept=".jpg,.jpeg,.png,.pdf"
+                               (change)="onFileSelected($event, 'licenseBack')">
+                      </label>
+                    </div>
+                    <p class="text-xs text-gray-500">PNG, JPG, PDF (Max 5MB)</p>
+                  } @else {
+                    <div class="flex flex-col items-center">
+                      <svg class="mx-auto h-8 w-8 text-green-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                      <p class="text-sm font-medium text-gray-900 truncate max-w-[150px]">{{ selectedLicenseBackFile.name }}</p>
+                      <button type="button" (click)="clearFile('licenseBack')" class="mt-2 text-xs text-red-500 hover:text-red-700 font-bold">
+                        Quitar archivo
+                      </button>
+                    </div>
+                  }
+                </div>
+              </div>
+
+              @if (isInvalidField('vehicle.driverLicenseBackUrl')){
+                <p class="text-error mt-1">
+                  {{ getErrorMessage('vehicle.driverLicenseBackUrl') }}
+                </p>
+              }
             </div>
           }
         </div>

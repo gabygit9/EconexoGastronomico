@@ -5,9 +5,8 @@ import {AuthService} from '../../../core/services/auth.service';
 import {LocationService} from '../../../core/services/location.service';
 import {ToastrService} from 'ngx-toastr';
 import {Router} from '@angular/router';
-import {formatDate, NgClass} from '@angular/common';
+import {NgClass} from '@angular/common';
 import {NeighborhoodLookup} from '../../../shared/models/donor.model';
-import {catchError, delay, of} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 @Component({
@@ -27,6 +26,10 @@ export class DriverFormComponent extends BaseFormComponent implements OnInit{
   private readonly destroyRef = inject(DestroyRef);
   private readonly toastr = inject(ToastrService);
   private readonly router = inject(Router);
+
+  selectedFoodHandlerFile: File | null = null;
+  selectedLicenseFrontFile: File | null = null;
+  selectedLicenseBackFile: File | null = null;
 
   driverForm!: FormGroup;
   isSubmitting = false;
@@ -190,6 +193,44 @@ export class DriverFormComponent extends BaseFormComponent implements OnInit{
       plateControl?.updateValueAndValidity();
       licenseExpControl?.updateValueAndValidity();
     })
+  }
+
+  onFileSelected(event:any, documentType: string){
+    const file = event.target.files[0];
+    if(file){
+      //Máximo 5MB
+      if(file.size > 5 * 1024 * 1024){
+        this.toastr.warning('El archivo es demasiado grande. Máximo 5MB.', 'Archivo muy pesado.');
+        return;
+      }
+
+      if(documentType === 'foodHandler'){
+        this.selectedFoodHandlerFile = file;
+        this.driverForm.patchValue({foodHandlerCertificate: file.name});
+        this.driverForm.get('foodHandleCertificateUrl')?.markAsTouched();
+      } else if(documentType === 'licenseFront'){
+        this.selectedLicenseFrontFile = file;
+        this.driverForm.get('vehicle')?.patchValue({driverLicenseFrontUrl: file.name});
+        this.driverForm.get('vehicle.driverLicenseFrontUrl')?.markAsTouched();
+      }else if(documentType === 'licenseBack'){
+        this.selectedLicenseBackFile = file;
+        this.driverForm.get('vehicle')?.patchValue({driverLicenseBackUrl: file.name});
+        this.driverForm.get('vehicle.driverLicenseBackUrl')?.markAsTouched();
+      }
+    }
+  }
+
+  clearFile(documentType: string){
+    if(documentType === 'foodHandler'){
+      this.selectedFoodHandlerFile = null;
+      this.driverForm.patchValue({foodHandlerCertificate: ' '});
+    }else if(documentType === 'licenseFront'){
+      this.selectedLicenseFrontFile = null;
+      this.driverForm.get('vehicle')?.patchValue({driverLicenseFrontUrl: ' '});
+    }else if(documentType === 'licenseBack'){
+      this.selectedLicenseBackFile = null;
+      this.driverForm.get('vehicle')?.patchValue({driverLicenseBackUrl: ' '});
+    }
   }
 
 

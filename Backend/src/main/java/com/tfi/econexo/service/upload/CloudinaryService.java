@@ -26,9 +26,11 @@ public class CloudinaryService {
         ));
     }
 
-    public String uploadFile(MultipartFile file) throws IOException {
+    public String uploadFile(MultipartFile file, String folderName) throws IOException {
+        String cloudinaryFolder = "econexo/" + folderName;
+
         Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
-                "folder", "econexo/drivers"
+                "folder", cloudinaryFolder
         ));
         return uploadResult.get("secure_url").toString();
     }
