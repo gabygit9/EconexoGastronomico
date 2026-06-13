@@ -107,6 +107,8 @@
 
                         @if (user.status !== 'APPROVED' && user.status !== 'CANCELED') {
                           <button (click)="changeStatus(user.userId, 'APPROVED')"
+                                  [disabled]="updatingUserId === user.userId"
+                                  [ngClass]="{'opacity-50 cursor-not-allowed': updatingUserId === user.userId}"
                                   class="text-green-600 hover:text-green-800 bg-green-50 hover:bg-green-100 p-2 rounded-lg transition-all"
                                   title="Aprobar">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -117,6 +119,8 @@
 
                         @if (user.status === 'PENDING') {
                           <button (click)="changeStatus(user.userId, 'REJECTED')"
+                                  [disabled]="updatingUserId === user.userId"
+                                  [ngClass]="{'opacity-50 cursor-not-allowed': updatingUserId === user.userId}"
                                   class="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition-all"
                                   title="Rechazar">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -127,6 +131,8 @@
 
                         @if (user.status === 'APPROVED') {
                           <button (click)="changeStatus(user.userId, 'SUSPENDED')"
+                                  [disabled]="updatingUserId === user.userId"
+                                  [ngClass]="{'opacity-50 cursor-not-allowed': updatingUserId === user.userId}"
                                   class="text-orange-600 hover:text-orange-800 bg-orange-50 hover:bg-orange-100 p-2 rounded-lg transition-all"
                                   title="Suspender">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
