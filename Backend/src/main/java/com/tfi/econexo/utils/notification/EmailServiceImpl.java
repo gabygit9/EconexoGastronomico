@@ -1,11 +1,15 @@
 package com.tfi.econexo.utils.notification;
 
+import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
+import java.io.UnsupportedEncodingException;
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +20,7 @@ public class EmailServiceImpl implements  EmailService {
     @Value("${spring.mail.username}")
     private String fromEmail;
 
+    @Async
     @Override
     public void sendApprovalEmail(String toEmail, String recipientName, String role) {
         try {
@@ -34,7 +39,7 @@ public class EmailServiceImpl implements  EmailService {
             
             mailSender.send(message);
             System.out.println("Email enviado exitosamente a " + toEmail);
-        } catch (Exception e) {
+        } catch (MessagingException | UnsupportedEncodingException e) {
             System.err.println("Fallo al enviar el correo a " + toEmail + ": " + e.getMessage());
         }
     }
