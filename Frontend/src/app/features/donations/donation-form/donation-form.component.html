@@ -1,0 +1,255 @@
+<app-navbar [userName]="(userName$ | async) || ''"></app-navbar>
+
+
+<div class="max-w-5xl mx-auto my-5 bg-white rounded-2xl shadow-md overflow-hidden">
+
+  <div class="px-8 pt-8 pb-6 border-b border-gray-100">
+    <span class="text-xs font-bold text-[#eb5c0c] uppercase tracking-widest">Donaciones</span>
+    <h2 class="text-gray-900 text-2xl font-extrabold mt-1">Nueva Donación</h2>
+    <p class="text-gray-400 text-sm mt-1">Publicá tu excedente en minutos</p>
+  </div>
+
+  <form [formGroup]="donationForm" (ngSubmit)="onSubmit()" class="p-8 space-y-10">
+
+    <section>
+      <h3 class="text-gray-900 text-lg font-bold flex items-center gap-2 mb-4">
+        <span class="w-2 h-2 rounded-full bg-[#eb5c0c]"></span>
+        Ventana horaria
+      </h3>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="label-form block label-required">Disponible desde</label>
+          <input type="time" formControlName="pickupStartTime" class="input-form"
+                 [ngClass]="{ 'input-form-error': isInvalidField('pickupStartTime') }">
+          @if (isInvalidField('pickupStartTime')) {
+            <p class="text-error">
+              {{ getErrorMessage('pickupStartTime') }}
+            </p>
+          }
+        </div>
+        <div>
+          <label class="label-form block label-required">Disponible hasta</label>
+          <input type="time" formControlName="pickupEndTime" class="input-form"
+                 [ngClass]="{ 'input-form-error': isInvalidField('pickupEndTime') }">
+          @if (isInvalidField('pickupEndTime')) {
+            <p class="text-error">
+              {{ getErrorMessage('pickupEndTime') }}
+            </p>
+          }
+        </div>
+      </div>
+      @if (donationForm.touched) {
+        @if (donationForm.hasError('timeOrderInvalid')) {
+          <p class="text-error mt-2">La hora de finalización debe ser posterior a la de inicio.</p>
+        }
+        @if (donationForm.hasError('minWindowInvalid')) {
+          <p class="text-error mt-2">Por seguridad, la ventana de retiro debe ser de al menos 1 hora.</p>
+        }
+      }
+    </section>
+
+    <hr class="border-gray-100">
+
+    <section formArrayName="items">
+      <div class="flex justify-between items-end mb-6">
+        <h3 class="text-gray-900 text-lg font-bold flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-[#eb5c0c]"></span>
+          Productos
+        </h3>
+        <span class="text-sm font-bold text-gray-400">{{ items.length }} ítem(s)</span>
+      </div>
+
+      <div class="space-y-6">
+        @for (item of items.controls; track $index) {
+          <div [formGroupName]="$index" class="p-6 bg-white border border-gray-200 rounded-xl relative group">
+
+            <div class="flex justify-between items-center mb-6">
+                <span class="text-[#eb5c0c] font-extrabold text-sm uppercase tracking-wide">
+                  Ítem {{ $index + 1 }}
+                </span>
+
+              @if (items.length > 1) {
+                <button type="button" (click)="removeItem($index)"
+                        class="text-gray-400 hover:text-red-600 hover:bg-red-50 px-2 py-1 rounded-md transition-colors flex items-center gap-1 text-sm font-bold">
+                  Quitar
+                </button>
+              }
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
+
+              <div>
+                <label class="label-form block text-xs label-required">Categoría</label>
+                <select formControlName="categoryId" (change)="onCategoryChange($index)" class="input-form"
+                        [ngClass]="{'input-error' : isInvalidItemField($index, 'categoryId')}">
+                  <option [value]="null" disabled selected>Seleccioná</option>
+                  @for (cat of categories; track cat.id) {
+                    <option [value]="cat.id">{{ cat.description }}</option>
+                  }
+                </select>
+                @if (isInvalidItemField($index, 'categoryId')){
+                  <p class="text-error">
+                    {{ getItemErrorMessage($index, 'categoryId') }}
+                  </p>
+                }
+              </div>
+
+              <div>
+                <label class="label-form block text-xs label-required">Producto</label>
+                <select formControlName="productId" (change)="onProductChange($index)" class="input-form"
+                        [ngClass]="{ 'input-error' : isInvalidItemField($index,'productId')}">
+                  <option [value]="null" disabled selected>Seleccioná</option>
+                  @for (prod of allProducts | filterByCategory: item.get('categoryId')?.value; track prod.id) {
+                    <option [value]="prod.id">{{ prod.name }}</option>
+                  }
+                </select>
+                @if (isInvalidItemField($index, 'productId')){
+                  <p class="text-error">
+                    {{ getItemErrorMessage($index, 'productId') }}
+                  </p>
+                }
+              </div>
+
+              <div>
+                <label class="label-form block text-xs label-required">Cantidad</label>
+                <input type="number" formControlName="quantity" class="input-form"
+                       [ngClass]="{ 'input-error' : isInvalidItemField($index, 'quantity')}">
+                @if (isInvalidItemField($index, 'quantity')){
+                  <p class="text-error">
+                    {{ getItemErrorMessage($index, 'quantity') }}
+                  </p>
+                }
+              </div>
+
+              <div>
+                <label class="label-form block text-xs label-required">Unidad</label>
+                <select formControlName="unitOfMeasureId" class="input-form "
+                        [ngClass]="{ 'input-error' : isInvalidItemField($index, 'unitOfMeasureId')}">
+                  <option [value]="null" disabled selected>Seleccioná</option>
+                  @for (uom of unitsOfMeasure; track uom.id) {
+                    <option [value]="uom.id">{{ uom.description }}</option>
+                  }
+                </select>
+                @if (isInvalidItemField($index, 'unitOfMeasureId')){
+                  <p class="text-error">
+                    {{ getItemErrorMessage($index, 'unitOfMeasureId') }}
+                  </p>
+                }
+              </div>
+
+              @if (item.get('productId')?.value == 4 || item.get('productId')?.value == 5) {
+                <div class="col-span-full bg-[#fff6f0] p-4 rounded-lg border border-[#fbdabb]">
+                  <label class="label-form block text-xs text-[#eb5c0c] mb-2 font-bold">
+                    ¿Qué producto es exactamente? *
+                  </label>
+                  <input type="text" formControlName="description"
+                         placeholder="Ej: Lasagna de carne y verdura, Pan de nuez..."
+                         class="input-form border-[#eb5c0c] focus:ring-[#eb5c0c]/30"
+                         [ngClass]="{ ' input-error' : isInvalidItemField($index, 'description')}">
+                  @if (isInvalidItemField($index, 'description')){
+                    <p class="text-error">
+                      {{ getItemErrorMessage($index, 'description') }}
+                    </p>
+                  }
+                </div>
+              }
+
+              <div>
+                <label class="label-form block text-xs">Elaboración</label>
+                <input type="date" formControlName="productionDate" class="input-form"
+                       [max]="maxProductionDate">
+              </div>
+
+              <div>
+                <label class="label-form block text-xs label-required">Vencimiento</label>
+                <input type="date" formControlName="expirationDate" class="input-form "
+                       [min]="minExpirationDate"
+                       [ngClass]="{ 'input-error' : isInvalidItemField($index, 'expirationDate')}">
+                @if (isInvalidItemField($index, 'expirationDate')){
+                  <p class="text-error">
+                    {{ getItemErrorMessage($index, 'expirationDate') }}
+                  </p>
+                }
+              </div>
+
+              <div>
+                <label class="label-form block text-xs">Lote
+                  @if (isRequiredField($index, 'batchNumber')) {
+                    <span class="text-error">*</span>
+                  } @else {
+                    <span class="text-gray-400 font-normal">(Opcional)</span>
+                  }</label>
+                <input type="text" formControlName="batchNumber" placeholder="Ej: L-123" class="input-form"
+                       [ngClass]="{ 'input-error' : isInvalidItemField($index, 'batchNumber')}">
+                @if (isInvalidItemField($index, 'batchNumber')){
+                  <p class="text-error">
+                    {{ getItemErrorMessage($index, 'batchNumber') }}
+                  </p>
+                }
+              </div>
+
+              <div>
+                <label class="label-form block text-xs">Temperatura</label>
+                <select formControlName="deliveryTemperature" class="input-form">
+                  <option [value]="null" disabled selected>Seleccioná</option>
+                  <option value="Ambiente">Ambiente</option>
+                  <option value="Refrigerado">Refrigerado (Heladera)</option>
+                  <option value="Congelado">Congelado (Freezer)</option>
+                </select>
+              </div>
+
+              <div class="col-span-full">
+                <label class="label-form block text-xs">Observaciones</label>
+                <input type="text" formControlName="observations" placeholder="Ej: Cajas con pequeños golpes, venir por puerta de atrás..." class="input-form">
+              </div>
+            </div>
+
+            <div class="mt-6 bg-amber-50 p-5 rounded-xl border-2 border-amber-200 shadow-inner">
+              <label class="flex items-center gap-3 text-sm font-extrabold text-amber-900 mb-4">
+                <svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+                <span>Advertencia de Alérgenos <span class="font-normal text-amber-700">(Opcional)</span></span>
+              </label>
+
+              <input type="text"
+                     formControlName="allergenWarning"
+                     placeholder="Ej: Contiene maní, TACC, derivados de leche..."
+                     class="input-form bg-white border-amber-200 focus:border-amber-400 focus:ring-amber-400/20">
+
+              <p class="text-xs text-amber-700 mt-2.5 ml-1">
+                Por favor, aclará si el producto contiene ingredientes que puedan causar alergias.
+              </p>
+            </div>
+
+          </div>
+        }
+      </div>
+
+      <button type="button" (click)="addItem()"
+              class="mt-6 w-full py-4 border-2 border-dashed border-[#eb5c0c] text-[#eb5c0c] font-bold rounded-xl hover:bg-[#fff6f0] transition-colors flex justify-center items-center gap-2">
+        <span>+ Añadir Ítem</span>
+      </button>
+    </section>
+
+    <hr class="border-gray-100">
+
+    <div class="pt-2 flex justify-end">
+      <button type="submit" [disabled]="isSubmitting"
+              class="w-full md:w-auto px-8 py-3.5 bg-[#eb5c0c] text-white font-bold rounded-lg hover:bg-[#d65108] focus:ring-4 focus:ring-[#eb5c0c]/30 transition-all flex items-center justify-center gap-2 shadow-sm">
+        @if (isSubmitting) {
+          <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span>Publicando y Redirigiendo...</span>
+        } @else {
+          <span>Publicar Excedente</span>
+        }
+      </button>
+    </div>
+
+  </form>
+</div>
+<app-footer></app-footer>

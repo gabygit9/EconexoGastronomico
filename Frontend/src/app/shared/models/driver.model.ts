@@ -1,23 +1,23 @@
 import {Status} from './login.model';
 
 export interface DriverRegistrationDTO {
- firstName: string,
- lastName: string,
- taxId: string,
- birthDate: Date,
- email: string,
- password: string,
- foodHandlerCertificateUrl: string,
- foodHandlerCertificateExpiration: Date,
- vehicle: VehicleRegistrationDTO,
- phoneNumber: string,
- street: string,
- streetNumber: string,
- floor: string,
- apartment: string,
- latitude: number,
- longitude: number,
- neighborhoodId: number
+  firstName: string,
+  lastName: string,
+  taxId: string,
+  birthDate: Date,
+  email: string,
+  password: string,
+  foodHandlerCertificateUrl: string,
+  foodHandlerCertificateExpiration: Date,
+  vehicle: VehicleRegistrationDTO,
+  phoneNumber: string,
+  street: string,
+  streetNumber: string,
+  floor: string,
+  apartment: string,
+  latitude: number,
+  longitude: number,
+  neighborhoodId: number
 }
 
 export interface DriverResponse {
@@ -43,9 +43,9 @@ export interface VehicleRegistrationDTO {
   hasRefrigeration: boolean,
   capacityKg: number,
   numberPlate: string,
-  driverLicenseFrontUrl: string,
-  driverLicenseBackUrl: string,
-  driverLicenseExpiration: Date
+  driversLicenseFrontUrl: string,
+  driversLicenseBackUrl: string,
+  driversLicenseExpiration: Date
 }
 
 export interface VehicleResponseDTO {
@@ -54,7 +54,9 @@ export interface VehicleResponseDTO {
   hasRefrigeration: boolean,
   capacityKg: number,
   numberPlate: string,
-  driverLicenseExpiration: Date
+  driversLicenseFrontUrl: string,
+  driversLicenseBackUrl: string,
+  driversLicenseExpiration: Date
 }
 
 export type VehicleType = 'CAR' | 'TRUCK' | 'BICYCLE' | 'MOTORCYCLE' | 'KICK_SCOOTER' | 'PICKUP'

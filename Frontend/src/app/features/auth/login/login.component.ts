@@ -23,6 +23,7 @@ export class LoginComponent extends BaseFormComponent implements OnInit{
 
   loginForm!: FormGroup;
   isSubmitting = false;
+  showPassword = false;
 
   get form() {
     return this.loginForm;
@@ -62,6 +63,8 @@ export class LoginComponent extends BaseFormComponent implements OnInit{
               this.router.navigate(['/dashboard/donor']);
             }else if(authoritiesString.includes('ROLE_DRIVER')){
               this.router.navigate(['/dashboard/driver']);
+            }else if(authoritiesString.includes('ROLE_ADMIN')){
+              this.router.navigate(['/dashboard/admin']);
             }else{
               this.router.navigate(['/']);
             }

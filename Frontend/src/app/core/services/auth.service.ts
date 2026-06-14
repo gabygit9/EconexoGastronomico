@@ -1,8 +1,16 @@
 import {inject, Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpRequest} from '@angular/common/http';
 import {environment} from '../../../environments/environment.development';
-import {DonorRegistrationRequest, DonorResponse} from '../../shared/models/donor.model';
-import {Observable} from 'rxjs';
+import {
+  DonorRegistrationRequest,
+  DonorResponse,
+  DonorTypeLookup,
+  NeighborhoodLookup
+} from '../../shared/models/donor.model';
+import {BehaviorSubject, catchError, Observable, tap, throwError} from 'rxjs';
+import {AuthLoginRequest, AuthResponse} from '../../shared/models/login.model';
+import {NgoRegistrationDTO, NgoResponseDTO, NgoTypeLookup} from '../../shared/models/ngo.model';
+import {DriverRegistrationDTO, DriverResponse} from '../../shared/models/driver.model';
 
 @Injectable({
   providedIn: 'root'
@@ -16,8 +24,11 @@ export class AuthService {
   private readonly donorsUrl =`${environment.apiUrl}/v1/donors/public/donor-types`;
   private readonly ngosUrl = `${environment.apiUrl}/v1/organizations/public/ngo-types`;
 
-  private currentUserSubject = new BehaviorSubject<boolean>(this.hasToken());
-  public isAuthenticated$ = this.currentUserSubject.asObservable();
+  private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasToken());
+  public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
+
+  private currentUserSubject = new BehaviorSubject<DonorResponse | NgoResponseDTO | DriverResponse | UserAdminResponse | null>(null);
+  public currentUser$ = this.currentUserSubject.asObservable();
 
   /**
    * Checks if there is a token in localStorage
@@ -25,6 +36,14 @@ export class AuthService {
    */
   private hasToken(): boolean{
     return !!localStorage.getItem('econexo_token');
+  }
+
+  /**
+   * Sets the current user
+   * @param user - The user to set
+   */
+  setCurrentUser(user: DonorResponse | NgoResponseDTO | DriverResponse | null){
+    this.currentUserSubject.next(user);
   }
 
   /**
@@ -69,7 +88,7 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
       tap((response) => {
         localStorage.setItem('econexo_token', response.jwt);
-        this.currentUserSubject.next(true);
+        this.isAuthenticatedSubject.next(true);
       })
     );
   }
@@ -94,7 +113,6 @@ export class AuthService {
 
   /**
    * Logout the current user
-   * @param request - The logout request
    * @returns An Observable of the logout response
    */
   logout(): Observable<any> {
@@ -109,27 +127,30 @@ export class AuthService {
     );
   }
 
-  //TODO implementar en el backend
-  getNgoProfile(): Observable<NgoResponseDTO>{
-    return this.http.get<NgoResponseDTO>(`${this.apiUrl}/profile`);
-  }
-
-  //TODO implementar en el backend
-  getDriverProfile(): Observable<DriverResponse>{
-    return this.http.get<DriverResponse>(`${this.apiUrl}/profile`);
-  }
-
-  //TODO implementar en el backend
-  getDonorProfile(): Observable<DonorResponse>{
-    return this.http.get<DonorResponse>(`${this.apiUrl}/profile`);
-  }
-
   /**
    * Clears the local session by removing the token and updating the authentication state
    */
   private clearLocalSession(){
     localStorage.removeItem('econexo_token');
-    this.currentUserSubject.next(false);
+    this.isAuthenticatedSubject.next(false);
   }
 
+  /**
+   * Request a password reset email
+   * @param email - The user's email address
+   * @returns An Observable of the success message
+   */
+  requestPasswordReset(email: string) {
+    return this.http.post(`${this.apiUrl}/password-reset/request`, { email }, { responseType: 'text' });
+  }
+
+  /**
+   * Confirm password reset with the token
+   * @param token - The reset token from the URL
+   * @param newPassword - The new password
+   * @returns An Observable of the success message
+   */
+  confirmPassword(token: string, newPassword: string){
+    return this.http.post(`${this.apiUrl}/password-reset/confirm`, { token, newPassword }, { responseType: 'text' });
+  }
 }

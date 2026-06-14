@@ -1,12 +1,12 @@
 package com.tfi.econexo.security.config;
 
-import com.tfi.econexo.security.config.filter.JwtTokenValidator;
 import com.tfi.econexo.service.auth.BlacklistedTokenService;
 import com.tfi.econexo.utils.JwtUtils;
+import com.tfi.econexo.security.config.filter.JwtTokenValidator;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -42,11 +42,15 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/neighborhoods/public").permitAll()
                         .requestMatchers("/api/v1/donors/public/donor-types").permitAll()
                         .requestMatchers("/api/v1/organizations/public/ngo-types").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/uploads/**").permitAll()
+                        .requestMatchers("/api/v1/uploads/**").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/api/v1/auth/password-reset/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/v3/api-docs", "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(new JwtTokenValidator(jwtUtils, blacklistedTokenService), BasicAuthenticationFilter.class)
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) ->
+                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized")))
                 .build();
     }
 
