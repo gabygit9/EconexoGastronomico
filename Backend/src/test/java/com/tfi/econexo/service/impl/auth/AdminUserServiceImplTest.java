@@ -49,7 +49,7 @@ class AdminUserServiceImplTest {
 
     @BeforeEach
     public void setUp(){
-        userDto = new UserAdminResponseDTO(1L,"name","email","role","status", LocalDateTime.now(), null, null, null);
+        userDto = new UserAdminResponseDTO(1L,"name","email","role","status", LocalDateTime.now(), null, null, null, null, null);
 
         donor = new Donor();
         donor.setTradeName("Hornito Santiagueño");

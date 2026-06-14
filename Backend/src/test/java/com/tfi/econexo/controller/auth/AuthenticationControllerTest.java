@@ -4,17 +4,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tfi.econexo.config.AuditorAwareImpl;
 import com.tfi.econexo.dto.auth.donor.DonorRegistrationDTO;
 import com.tfi.econexo.dto.auth.donor.DonorResponseDTO;
+import com.tfi.econexo.dto.auth.login.AuthLoginRequestDTO;
+import com.tfi.econexo.dto.auth.login.AuthResponseDTO;
 import com.tfi.econexo.dto.auth.logistics.DriverRegistrationDTO;
 import com.tfi.econexo.dto.auth.logistics.DriverResponseDTO;
 import com.tfi.econexo.dto.auth.logistics.VehicleRegistrationDTO;
 import com.tfi.econexo.dto.auth.logistics.VehicleResponseDTO;
-import com.tfi.econexo.dto.auth.login.AuthLoginRequestDTO;
-import com.tfi.econexo.dto.auth.login.AuthResponseDTO;
 import com.tfi.econexo.dto.auth.ngo.NgoRegistrationDTO;
 import com.tfi.econexo.dto.auth.ngo.NgoResponseDTO;
+import com.tfi.econexo.exception.ConflictException;
 import com.tfi.econexo.model.enums.RegistrationStatus;
 import com.tfi.econexo.model.logistics.VehicleType;
-import com.tfi.econexo.exception.ConflictException;
 import com.tfi.econexo.service.DriverService;
 import com.tfi.econexo.service.NeighborhoodService;
 import com.tfi.econexo.service.NgoService;
@@ -31,14 +31,14 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-
 import java.time.LocalDate;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @WebMvcTest(AuthenticationController.class)
@@ -76,6 +76,9 @@ class AuthenticationControllerTest {
     @MockitoBean
     private BlacklistedTokenService blacklistedTokenService;
 
+    @MockitoBean
+    private AdminUserService adminUserService;
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -87,10 +90,10 @@ class AuthenticationControllerTest {
                 new AuthResponseDTO("test@mail.com", "login successful", "token", true));
 
         mockMvc.perform(
-                        post("/api/v1/auth/login")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(json)
-                )
+                post("/api/v1/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+        )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.jwt").value("token"))
                 .andExpect(jsonPath("$.email").value("test@mail.com"));
@@ -142,10 +145,10 @@ class AuthenticationControllerTest {
                         "450", "PB", "A", 1L, "PENDING"));
 
         mockMvc.perform(
-                        post("/api/v1/auth/register/donor")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(json)
-                )
+                post("/api/v1/auth/register/donor")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+        )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.trade_name").value("Hornito Santiagueño"))
@@ -163,10 +166,10 @@ class AuthenticationControllerTest {
                 """;
 
         mockMvc.perform(
-                        post("/api/v1/auth/register/donor")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(json)
-                )
+                post("/api/v1/auth/register/donor")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+        )
                 .andExpect(status().isBadRequest());
     }
 
@@ -185,10 +188,10 @@ class AuthenticationControllerTest {
         );
 
         mockMvc.perform(
-                        post("/api/v1/auth/register/ngo")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(json)
-                )
+                post("/api/v1/auth/register/ngo")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+        )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.tax_id").value("22589875879"))
@@ -206,10 +209,10 @@ class AuthenticationControllerTest {
                 .thenThrow(new ConflictException("Ngo already exists"));
 
         mockMvc.perform(
-                        post("/api/v1/auth/register/ngo")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(json)
-                )
+                post("/api/v1/auth/register/ngo")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+        )
                 .andExpect(status().isConflict());
     }
 
@@ -232,7 +235,7 @@ class AuthenticationControllerTest {
                         String.valueOf(RegistrationStatus.PENDING), LocalDate.of(2027,5,30),
                         "Obispo Trejo", "440", "PB", "A", "Nueva Córdoba",
                         List.of(new VehicleResponseDTO(1L, VehicleType.CAR, true,
-                                1000, "AA123CC", LocalDate.of(2029, 4,12)))));
+                                1000, "AA123CC",null, null, LocalDate.of(2029, 4,12)))));
 
         mockMvc.perform(
                         post("/api/v1/auth/register/driver")

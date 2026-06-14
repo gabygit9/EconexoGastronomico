@@ -31,6 +31,12 @@ public record UserAdminResponseDTO(
         @Schema(description = "The certificate url to manipulate food.", example = "https://example.com/certificate.pdf")
         String certificateUrl,
 
+        @Schema(description = "The front image of driver license", example = "https://example.com/driver-license-front.png")
+        String driversLicenseFrontUrl,
+
+        @Schema(description = "The back image of driver license", example = "https://example.com/driver-license-back.png")
+        String driversLicenseBackUrl,
+
         @Schema(description = "The registration legal number of the ngo.", example = "123456789")
         String registrationNumber
 ) {

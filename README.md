@@ -68,6 +68,8 @@ Por seguridad, las credenciales no están versionadas. Debés inyectar las sigui
 * ```PRIVATE_KEY```: ```<tu_clave_secreta_para_firmar_jwts>``` (Ej: una cadena alfanumérica segura)
 * ```USER_GENERATOR```: ```<tu_generador>```
 * ```JWT_EXPIRATION_MINUTES```: ```<tu_expiracion>```
+* ```MAIL_USERNAME```: ```<tu_correo_emisor``` (Cuenta de Gmail/servidor para notificaciones y credenciales)
+* ```MAIL_PASSWORD```: ```<tu_contraseña_de_aplicación>``` (Token seguro provisto por tu proveedor de correo)
 
 Una vez seteadas, ejecutá la clase ```EconexoApplication.java```. El sistema creará automáticamente un usuario administrador por defecto (admin@econexo.com / admin1234).
 
@@ -88,7 +90,7 @@ El ciclo de vida del proyecto está estructurado en 6 Sprints incrementales:
 
 * [x] **Sprint 0: Setup y Arquitectura**. Configuración inicial, despliegue de base de datos con PostGIS, variables de entorno y scaffolding completo de Backend y Frontend.
 * [x] **Sprint 1: Identidad y Seguridad**. Implementación del módulo de autenticación (Spring Security + JWT) y gestión de perfiles (Comercios, ONGs, Conductores).
-* [ ] **Sprint 2: Core de Donaciones**. Flujo completo de publicación de excedentes alimentarios, catálogo, actualización de estados y panel de gestión.
+* [x] **Sprint 2: Core de Donaciones**. Flujo completo de publicación de excedentes alimentarios, catálogo, actualización de estados y panel de gestión.
 * [ ] **Sprint 3: Motor Espacial**. Integración de mapas, uso de PostGIS para el cálculo de distancias y lógicas de asignación por proximidad.
 * [ ] **Sprint 4: Trazabilidad e Impacto**. Registro bromatológico, control de estados de entrega y dashboard de métricas ambientales (Kg salvados, CO2 evitado).
 * [ ] **Sprint 5: Cumplimiento Legal y Certificación.** Implementación de la lógica para la Ley Donal, generación de comprobantes y emisión de certificados fiscales de donación.

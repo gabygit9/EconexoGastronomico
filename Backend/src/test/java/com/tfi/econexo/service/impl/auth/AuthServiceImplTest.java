@@ -199,6 +199,8 @@ class AuthServiceImplTest {
                 true,
                 1000,
                 "AA123CC",
+                null,
+                null,
                 LocalDate.of(2029, 4,12)
         );
 

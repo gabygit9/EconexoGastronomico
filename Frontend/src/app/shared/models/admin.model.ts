@@ -9,6 +9,8 @@ export interface UserAdminResponse {
   createdDate: string,
   taxId: string,
   certificateUrl?: string,
+  driversLicenseFrontUrl?: string,
+  driversLicenseBackUrl?: string,
   registrationNumber?: string
 }
 
