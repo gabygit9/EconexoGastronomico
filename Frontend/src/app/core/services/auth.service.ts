@@ -134,4 +134,23 @@ export class AuthService {
     localStorage.removeItem('econexo_token');
     this.isAuthenticatedSubject.next(false);
   }
+
+  /**
+   * Request a password reset email
+   * @param email - The user's email address
+   * @returns An Observable of the success message
+   */
+  requestPasswordReset(email: string) {
+    return this.http.post(`${this.apiUrl}/password-reset/request`, { email }, { responseType: 'text' });
+  }
+
+  /**
+   * Confirm password reset with the token
+   * @param token - The reset token from the URL
+   * @param newPassword - The new password
+   * @returns An Observable of the success message
+   */
+  confirmPassword(token: string, newPassword: string){
+    return this.http.post(`${this.apiUrl}/password-reset/confirm`, { token, newPassword }, { responseType: 'text' });
+  }
 }

@@ -1,5 +1,7 @@
 package com.tfi.econexo.controller.auth;
 
+import com.tfi.econexo.dto.auth.EmailRequestDTO;
+import com.tfi.econexo.dto.auth.PasswordResetDTO;
 import com.tfi.econexo.dto.auth.donor.DonorRegistrationDTO;
 import com.tfi.econexo.dto.auth.donor.DonorResponseDTO;
 import com.tfi.econexo.dto.auth.login.AuthLoginRequestDTO;
@@ -142,5 +144,35 @@ public class AuthenticationController {
             return ResponseEntity.ok("Logout successful");
         }
         return ResponseEntity.badRequest().body("No token provided");
+    }
+
+    @PostMapping("/password-reset/request")
+    @Operation(summary = "Request password reset", description = "Generates a reset token and sends an email to the user.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Process completed (returns generic message for security)", content = @Content)
+    })
+    public ResponseEntity<?> requestPasswordReset(@RequestBody @Valid EmailRequestDTO request) {
+        try {
+            authService.requestPasswordReset(request.email());
+            //Siempre devolver 200 aunque el mail no exista para evitar ataques de enumeracion
+            return ResponseEntity.ok("Password reset request processed successfully");
+        } catch (Exception e) {
+            return ResponseEntity.ok("Password reset request processed successfully");
+        }
+    }
+
+    @PostMapping("/password-reset/confirm")
+    @Operation(summary = "Confirm password reset", description = "Validates the token and updates the user's password.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Password updated successfully", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Invalid or expired token", content = @Content)
+    })
+    public ResponseEntity<?> confirmPasswordReset(@RequestBody @Valid PasswordResetDTO request) {
+        try {
+            authService.confirmPasswordReset(request.token(), request.newPassword());
+            return ResponseEntity.ok("Password successfully updated.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

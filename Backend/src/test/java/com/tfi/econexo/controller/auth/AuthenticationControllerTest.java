@@ -76,6 +76,9 @@ class AuthenticationControllerTest {
     @MockitoBean
     private BlacklistedTokenService blacklistedTokenService;
 
+    @MockitoBean
+    private AdminUserService adminUserService;
+
     @Autowired
     private ObjectMapper objectMapper;
 

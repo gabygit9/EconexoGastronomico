@@ -44,6 +44,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/organizations/public/ngo-types").permitAll()
                         .requestMatchers("/api/v1/uploads/**").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/api/v1/auth/password-reset/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/v3/api-docs", "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(new JwtTokenValidator(jwtUtils, blacklistedTokenService), BasicAuthenticationFilter.class)

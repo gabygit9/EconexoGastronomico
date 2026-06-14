@@ -11,6 +11,7 @@ import com.tfi.econexo.mappers.DonorMapper;
 import com.tfi.econexo.mappers.DriverMapper;
 import com.tfi.econexo.mappers.NgoMapper;
 import com.tfi.econexo.mappers.UserMapper;
+import com.tfi.econexo.model.auth.PasswordResetToken;
 import com.tfi.econexo.model.enums.RegistrationStatus;
 import com.tfi.econexo.model.auth.Role;
 import com.tfi.econexo.model.auth.UserSec;
@@ -19,6 +20,7 @@ import com.tfi.econexo.model.location.Neighborhood;
 import com.tfi.econexo.model.logistics.Driver;
 import com.tfi.econexo.model.logistics.Vehicle;
 import com.tfi.econexo.model.ngo.Ngo;
+import com.tfi.econexo.repository.auth.PasswordResetTokenRepository;
 import com.tfi.econexo.service.donation.DonorService;
 import com.tfi.econexo.service.DriverService;
 import com.tfi.econexo.service.NeighborhoodService;
@@ -27,12 +29,14 @@ import com.tfi.econexo.service.auth.AuthService;
 import com.tfi.econexo.service.auth.RoleService;
 import com.tfi.econexo.service.auth.UserService;
 import com.tfi.econexo.mappers.VehicleMapper;
+import com.tfi.econexo.utils.notification.EmailService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.Optional;
 
@@ -45,6 +49,9 @@ public class AuthServiceImpl implements AuthService {
     private final RoleService roleService;
     private final NgoService ngoService;
     private final DriverService driverService;
+
+    private final PasswordResetTokenRepository tokenRepository;
+    private final EmailService emailService;
 
     private final DonorMapper donorMapper;
     private final UserMapper userMapper;
@@ -153,6 +160,45 @@ public class AuthServiceImpl implements AuthService {
         driverService.save(driver);
 
         return driverMapper.toResponseDTO(driver);
+    }
+
+    @Transactional
+    @Override
+    public void requestPasswordReset(String email) {
+        UserSec user = userService.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        PasswordResetToken resetToken = tokenRepository.findByUser_Id(user.getId())
+                .orElse(new PasswordResetToken());
+
+        //Token con fecha de expiración de 15 minutos
+        String token = java.util.UUID.randomUUID().toString();
+        resetToken.setToken(token);
+        resetToken.setUser(user);
+        resetToken.setExpiryDate(LocalDateTime.now().plusMinutes(15));
+
+        tokenRepository.save(resetToken);
+
+        String resetLink = "http://localhost:4200/reset-password?token=" + token;
+
+        emailService.sendPasswordResetEmail(user.getEmail(), resetLink);
+    }
+
+    @Transactional
+    @Override
+    public void confirmPasswordReset(String token, String newPassword) {
+        PasswordResetToken resetToken = tokenRepository.findByToken(token).orElseThrow(() -> new IllegalArgumentException("Token invalid or doesn't exist"));
+
+        if(resetToken.isExpired()){
+            tokenRepository.delete(resetToken);
+            throw new IllegalArgumentException("Token has expired. Please, request for a new one.");
+        }
+
+        UserSec user = resetToken.getUser();
+        user.setPassword(userService.encryptPassword(newPassword));
+        userService.save(user);
+
+        //Eliminar token para que no se pueda reciclar
+        tokenRepository.delete(resetToken);
     }
 
     private Optional<Neighborhood> existsNeighborhood(Long neighborhoodId) {

@@ -12,5 +12,6 @@ public interface AuthService {
     DonorResponseDTO registerDonor(DonorRegistrationDTO donorRegistrationDTO);
     DriverResponseDTO registerDriver(DriverRegistrationDTO driverRegistrationDTO);
     NgoResponseDTO registerNgo(NgoRegistrationDTO ngoRegistrationDTO);
-    //AuthResponseDTO login(AuthLoginRequestDTO request);
+    void requestPasswordReset(String email);
+    void confirmPasswordReset(String token, String newPassword);
 }

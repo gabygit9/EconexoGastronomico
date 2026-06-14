@@ -23,6 +23,7 @@ export class LoginComponent extends BaseFormComponent implements OnInit{
 
   loginForm!: FormGroup;
   isSubmitting = false;
+  showPassword = false;
 
   get form() {
     return this.loginForm;

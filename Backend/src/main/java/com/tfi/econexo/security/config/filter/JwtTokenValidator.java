@@ -68,6 +68,7 @@ public class JwtTokenValidator extends OncePerRequestFilter {
                 path.contains("/api/v1/neighborhoods/public") ||
                 path.contains("/api/v1/donors/public/donor-types") ||
                 path.contains("/api/v1/organizations/public/ngo-types") ||
-                path.contains("/api/v1/uploads");
+                path.contains("/api/v1/uploads") ||
+                path.contains("/api/v1/auth/password-reset");
     }
 }

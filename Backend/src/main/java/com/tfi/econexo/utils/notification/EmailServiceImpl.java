@@ -1,6 +1,5 @@
 package com.tfi.econexo.utils.notification;
 
-import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,8 +7,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-
-import java.io.UnsupportedEncodingException;
 
 @Service
 @RequiredArgsConstructor
@@ -29,19 +26,55 @@ public class EmailServiceImpl implements  EmailService {
 
             //Alias del remitente
             helper.setFrom(fromEmail, "Equipo EcoNexo");
-            
+
             helper.setTo(toEmail);
             helper.setSubject("¡Tu cuenta ha sido aprobada!");
-            
+
             //Generar html
             String htmlContent = buildHtmlContent(recipientName, role);
             helper.setText(htmlContent, true);
-            
+
             mailSender.send(message);
             System.out.println("Email enviado exitosamente a " + toEmail);
-        } catch (MessagingException | UnsupportedEncodingException e) {
+        } catch (Exception e) {
             System.err.println("Fallo al enviar el correo a " + toEmail + ": " + e.getMessage());
         }
+    }
+
+    @Async
+    @Override
+    public void sendPasswordResetEmail(String toEmail, String resetLink) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom(fromEmail, "Equipo EcoNexo");
+            helper.setTo(toEmail);
+            helper.setSubject("Recuperación de Contraseña - EcoNexo");
+
+            String htmlContent = buildPasswordResetHtml(resetLink);
+            helper.setText(htmlContent, true);
+
+            mailSender.send(message);
+        }catch (Exception e) {
+            System.err.println("Fallo al enviar el correo a " + toEmail + ": " + e.getMessage());
+        }
+    }
+
+    private String buildPasswordResetHtml(String resetLink) {
+        return "<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden;\">"
+                + "<div style=\"background-color: #161c28; padding: 20px; text-align: center;\">"
+                + "<h1 style=\"color: #ffffff; margin: 0; font-size: 24px;\">EcoNexo</h1>"
+                + "</div>"
+                + "<div style=\"padding: 30px; color: #374151; background-color: #ffffff;\">"
+                + "<h2 style=\"color: #161c28; font-size: 20px;\">Recuperación de contraseña</h2>"
+                + "<p style=\"font-size: 16px; line-height: 1.5;\">Recibimos una solicitud para restablecer la contraseña de tu cuenta. Si fuiste vos, hacé clic en el siguiente botón (el enlace es válido por 15 minutos):</p>"
+                + "<div style=\"text-align: center; margin: 30px 0;\">"
+                + "<a href=\"" + resetLink + "\" style=\"background-color: #eb5c0c; color: #ffffff; text-decoration: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; font-size: 16px; display: inline-block;\">Restablecer Contraseña</a>"
+                + "</div>"
+                + "<p style=\"font-size: 14px; line-height: 1.5; color: #6b7280;\">Si no solicitaste este cambio, podés ignorar este correo de forma segura. Tu cuenta está protegida.</p>"
+                + "</div>"
+                + "</div>";
     }
 
     private String buildHtmlContent(String name, String role) {
