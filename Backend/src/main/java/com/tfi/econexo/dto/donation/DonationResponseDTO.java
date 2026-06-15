@@ -2,11 +2,13 @@ package com.tfi.econexo.dto.donation;
 
 import com.tfi.econexo.dto.donation.item.DonationItemResponseDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Schema(description = "Donation response")
+@Builder
 public record DonationResponseDTO(
 
         @Schema(description = "Donation ID", example = "1L")
