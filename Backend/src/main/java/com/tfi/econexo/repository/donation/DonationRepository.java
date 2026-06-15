@@ -26,8 +26,9 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
             "SELECT v FROM Vehicle v WHERE v.driver.id = :driverId AND v.capacityKg >= (" +
             "SELECT SUM(di.quantity) FROM DonationItem di WHERE di.donation = d) AND (" +
             "v.hasRefrigeration = true OR NOT EXISTS (SELECT 1 FROM DonationItem di2 JOIN di2.product p WHERE di2.donation = d AND p.requiresRefrigeration = true)))" +
+            "AND NOT EXISTS (SELECT 1 FROM DonationItem di3 WHERE di3.donation = d AND di3.expirationDate < CURRENT_TIMESTAMP)" +
             "ORDER BY ST_Distance(donor.location, :driverLocation) ASC")
-    List<Donation>  findAvailableTripsNearly(
+    List<Donation>  findAvailableTripsNearby(
             @Param("driverLocation") Point driverLocation,
             @Param("driverId") Long driverId,
             @Param("status") DonationStatus status

@@ -1,7 +1,7 @@
 package com.tfi.econexo.controller.logistics;
 
 import com.tfi.econexo.dto.auth.logistics.DriverResponseDTO;
-import com.tfi.econexo.service.DriverService;
+import com.tfi.econexo.service.logistics.DriverService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

@@ -20,7 +20,7 @@ import com.tfi.econexo.model.logistics.Vehicle;
 import com.tfi.econexo.model.logistics.VehicleType;
 import com.tfi.econexo.model.ngo.Ngo;
 import com.tfi.econexo.service.donation.DonorService;
-import com.tfi.econexo.service.DriverService;
+import com.tfi.econexo.service.logistics.DriverService;
 import com.tfi.econexo.service.NeighborhoodService;
 import com.tfi.econexo.service.NgoService;
 import com.tfi.econexo.service.auth.RoleService;
