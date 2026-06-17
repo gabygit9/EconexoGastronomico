@@ -66,6 +66,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
+    @ExceptionHandler(TripNotAvailableException.class)
+    public ResponseEntity<ErrorApi> handleError(TripNotAvailableException ex) {
+        ErrorApi error = buildError(ex.getMessage(), HttpStatus.CONFLICT);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
+    @ExceptionHandler(VehicleIncompatibleException.class)
+    public ResponseEntity<ErrorApi> handleError(VehicleIncompatibleException ex) {
+        ErrorApi error = buildError(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
     private ErrorApi buildError(String message, HttpStatus status){
         return ErrorApi.builder()
                 .timeStamp(String.valueOf(Timestamp.from(ZonedDateTime.now().toInstant())))

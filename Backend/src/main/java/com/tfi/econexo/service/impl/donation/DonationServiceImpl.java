@@ -28,6 +28,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -119,5 +120,15 @@ public class DonationServiceImpl implements DonationService {
     @Override
     public List<Donation> findAvailableTripsNearby(Point driverLocation, Long driverId, DonationStatus status) {
         return donationRepository.findAvailableTripsNearby(driverLocation, driverId, status);
+    }
+
+    @Override
+    public Optional<Donation> findByIdDonation(Long id) {
+        return donationRepository.findById(id);
+    }
+
+    @Override
+    public Donation save(Donation donation) {
+        return donationRepository.save(donation);
     }
 }

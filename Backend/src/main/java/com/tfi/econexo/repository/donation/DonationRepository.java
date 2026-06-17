@@ -33,5 +33,7 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
             @Param("driverId") Long driverId,
             @Param("status") DonationStatus status
     );
+
+
 }
 
