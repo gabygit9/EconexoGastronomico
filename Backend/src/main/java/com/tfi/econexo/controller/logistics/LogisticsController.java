@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -22,6 +23,7 @@ public class LogisticsController {
 
     private final LogisticsService logisticsService;
 
+    @PreAuthorize("hasAnyRole('DRIVER', 'ADMIN')")
     @GetMapping("/available-trips")
     @Operation(summary = "Get available trips by location",
             description = "Return a pending of retire donations list compatible with driver's vehicles, ordered by distance.")
@@ -33,6 +35,7 @@ public class LogisticsController {
         return ResponseEntity.ok(logisticsService.getAvailableTripsNearby(driverEmail, latitude, longitude));
     }
 
+    @PreAuthorize("hasAnyRole('DRIVER', 'ADMIN')")
     @PostMapping("/trips/{id}/accept")
     @Operation(summary = "Accept a donation trip", description = "Accept a donation trip by a driver")
     @ApiResponse(responseCode = "200", description = "Donation trip accepted successfully")
