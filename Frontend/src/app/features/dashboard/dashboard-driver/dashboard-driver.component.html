@@ -52,7 +52,7 @@
 
       @else if (driverProfile.status === 'APPROVED') {
         <div class="w-full h-full">
-          <app-available-trips></app-available-trips>
+          <app-available-trips [driverProfile]="driverProfile"></app-available-trips>
         </div>
       }
 
