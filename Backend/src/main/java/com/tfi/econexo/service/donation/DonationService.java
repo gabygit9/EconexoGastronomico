@@ -9,6 +9,7 @@ import org.locationtech.jts.geom.Point;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface DonationService {
 
@@ -20,4 +21,6 @@ public interface DonationService {
             @Param("driverId") Long driverId,
             @Param("status") DonationStatus status
     );
+    Optional<Donation> findByIdDonation(Long id);
+    Donation save(Donation donation);
 }

@@ -116,7 +116,7 @@
           </div>
 
           <div class="p-4 bg-gray-50 border-t border-gray-100">
-            <button class="w-full bg-[#eb5c0c] text-white font-bold py-3 rounded-xl hover:bg-[#d4530b] transition-all shadow-md shadow-orange-100 active:scale-[0.98]">
+            <button (click)="openTripDetails(trip)" class="w-full bg-[#eb5c0c] text-white font-bold py-3 rounded-xl hover:bg-[#d4530b] transition-all shadow-md shadow-orange-100 active:scale-[0.98]">
               Ver Detalles del Viaje
             </button>
           </div>
@@ -139,3 +139,12 @@
     </div>
   }
 </div>
+@if (selectedTrip()) {
+  <app-accept-trip-modal
+    [trip]="selectedTrip()!"
+    [vehicles]="driverProfile.vehicles"
+    [isAccepting]="isAccepting()"
+    (close)="closeModal()"
+    (accept)="confirmAcceptTrip($event)"
+  ></app-accept-trip-modal>
+}

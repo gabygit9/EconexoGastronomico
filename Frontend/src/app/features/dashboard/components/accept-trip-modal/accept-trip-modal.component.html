@@ -1,0 +1,73 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
+
+    <div class="p-6 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+      <div>
+        <h3 class="text-xl font-bold text-gray-900">Confirmar Viaje</h3>
+        <p class="text-sm text-gray-500">Revisá los detalles antes de aceptar</p>
+      </div>
+      <button (click)="close.emit()" [disabled]="isAccepting" class="text-gray-400 hover:text-gray-600 transition-colors p-2 rounded-full hover:bg-gray-200 disabled:opacity-50">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+    </div>
+
+    <div class="p-6 overflow-y-auto flex-1 space-y-6">
+
+      <div class="bg-blue-50 rounded-xl p-4 border border-blue-100">
+        <div class="flex items-center gap-3 text-blue-800 mb-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+          <span class="font-bold">Retiro en: {{ trip.businessName }}</span>
+        </div>
+        <p class="text-sm text-blue-600 ml-8">Horario límite: {{ trip.pickupEndTime | date:'shortTime' }}</p>
+      </div>
+
+      <div class="space-y-3">
+        <label class="block text-sm font-bold text-gray-700">¿Con qué vehículo vas a realizar el viaje?</label>
+        <select
+          [ngModel]="selectedVehicleId()"
+          (ngModelChange)="selectedVehicleId.set($event)"
+          [disabled]="isAccepting"
+          class="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-orange-500 focus:border-orange-500 block p-3 transition-colors">
+
+          @for (vehicle of vehicles; track vehicle.id) {
+            <option [value]="vehicle.id">
+              {{ vehicle.vehicleType }}
+              {{ vehicle.numberPlate ? 'Patente: ' + vehicle.numberPlate : '' }}
+              (Cap: {{ vehicle.capacityKg }}kg {{ vehicle.hasRefrigeration ? '- Frío' : '' }})
+            </option>
+          }
+
+          @if (vehicles.length === 0) {
+            <option disabled>No tienes vehículos registrados</option>
+          }
+        </select>
+        <p class="text-xs text-gray-500">Asegurate de que la capacidad y refrigeración sean adecuadas.</p>
+      </div>
+
+    </div>
+
+    <div class="p-6 border-t border-gray-100 bg-gray-50 flex gap-4">
+      <button
+        (click)="close.emit()"
+        [disabled]="isAccepting"
+        class="flex-1 py-3 px-4 bg-white border border-gray-300 rounded-xl text-gray-700 font-bold hover:bg-gray-50 transition-colors disabled:opacity-50">
+        Cancelar
+      </button>
+
+      <button
+        (click)="onConfirm()"
+        [disabled]="isAccepting || !selectedVehicleId()"
+        class="flex-1 py-3 px-4 bg-[#eb5c0c] text-white rounded-xl font-bold shadow-md shadow-orange-100 hover:bg-[#d4530b] transition-all flex justify-center items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
+
+        @if (isAccepting) {
+          <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+          Asignando...
+        } @else {
+          Aceptar Viaje
+        }
+      </button>
+    </div>
+
+  </div>
+</div>

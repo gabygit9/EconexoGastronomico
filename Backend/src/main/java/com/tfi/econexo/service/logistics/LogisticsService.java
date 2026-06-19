@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface LogisticsService {
     List<DonationResponseDTO> getAvailableTripsNearby(String driverEmail, Double latitude, Double longitude);
+    void acceptTrip(Long donationId, String driverEmail, Long vehicleId);
 }
