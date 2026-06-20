@@ -29,6 +29,18 @@ public record DonationResponseDTO(
         @Schema(description = "Business name", example = "Business Name")
         String businessName,
 
+        @Schema(description = "Donor latitude", example = "40.7128")
+        Double pickupLat,
+
+        @Schema(description = "Donor longitude", example = "-40.7128")
+        Double pickupLng,
+
+        @Schema(description = "Ngo latitude", example = "40.7128")
+        Double dropOffLat,
+
+        @Schema(description = "Ngo longitude", example = "40.7128")
+        Double dropOffLng,
+
         @Schema(description = "Donation items", example = "[...]")
         List<DonationItemResponseDTO> items
 ) {

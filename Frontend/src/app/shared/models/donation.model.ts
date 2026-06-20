@@ -34,6 +34,10 @@ export interface DonationResponse {
   pickupEndTime: string,
   createdAt: string,
   businessName: string,
+  pickupLat: number,
+  pickupLng: number,
+  dropOffLat: number,
+  dropOffLng: number,
   items: DonationItemResponse[]
 }
 

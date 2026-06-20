@@ -7,16 +7,21 @@ import com.tfi.econexo.dto.donation.item.DonationItemResponseDTO;
 import com.tfi.econexo.dto.donation.DonationResponseDTO;
 import com.tfi.econexo.model.donation.Donation;
 import com.tfi.econexo.model.donation.DonationItem;
+import com.tfi.econexo.utils.GeometryUtils;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", imports = GeometryUtils.class)
 public interface DonationMapper {
 
     @Mapping(target = "businessName", source = "donor.tradeName")
     @Mapping(target = "status", expression = "java(donation.getStatus().name())")
     @Mapping(target = "items", source = "donationItems")
     @Mapping(target = "createdAt", source = "createdDate")
+    @Mapping(target = "pickupLat", expression = "java(GeometryUtils.getLatitude(donation.getDonor() != null ? donation.getDonor().getLocation() : null))")
+    @Mapping(target = "pickupLng", expression = "java(GeometryUtils.getLongitude(donation.getDonor() != null ? donation.getDonor().getLocation() : null))")
+    @Mapping(target = "dropOffLat", expression = "java(GeometryUtils.getLatitude(donation.getNgo() != null ? donation.getNgo().getLocation() : null))")
+    @Mapping(target = "dropOffLng", expression = "java(GeometryUtils.getLongitude(donation.getNgo() != null ? donation.getNgo.getLocation() : null))")
     DonationResponseDTO toResponseDTO(Donation donation);
 
     @Mapping(target = "id", ignore = true)
