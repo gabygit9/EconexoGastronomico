@@ -41,4 +41,14 @@ export class LogisticsService {
   getTripById(id: number): Observable<DonationResponse>{
     return this.http.get<DonationResponse>(`${this.apiUrl}/trips/${id}`);
   }
+
+  /**
+   * Updates the status of a trip
+   * @param tripId
+   * @param newStatus
+   */
+  updateTripStatus(tripId: number, newStatus: string,): Observable<void> {
+    const payload = { status: newStatus };
+    return this.http.patch<void>(`${this.apiUrl}/trips/${tripId}/status`, payload);
+  }
 }

@@ -19,6 +19,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -86,6 +87,37 @@ public class LogisticsServiceImpl implements LogisticsService {
         Donation donation = donationService.findByIdDonation(id)
                 .orElseThrow(() -> new EntityNotFoundException("Request trip not found."));
         return donationMapper.toResponseDTO(donation);
+    }
+
+    @Override
+    @Transactional
+    public void updateTripStatus(Long tripId, String newStatus, String driverEmail) {
+        Donation donation = donationService.findByIdDonation(tripId)
+                .orElseThrow(() -> new EntityNotFoundException("Request trip not found."));
+
+        if(donation.getDriver() == null){
+            throw new EntityNotFoundException("The trip is not assigned to a driver.");
+        }
+
+        if(!donation.getDriver().getUser().getEmail().equals(driverEmail)){
+            throw new AccessDeniedException("You are not authorized to update this trip.");
+        }
+
+        DonationStatus requestedStatus = DonationStatus.valueOf(newStatus);
+
+        if(donation.getStatus() == DonationStatus.ASSIGNED && requestedStatus != DonationStatus.IN_TRANSIT){
+            throw new IllegalArgumentException("The trip must be IN_TRANSIT before being finished.");
+        }
+
+        if(donation.getStatus() == DonationStatus.IN_TRANSIT && requestedStatus != DonationStatus.DELIVERED){
+            throw new IllegalArgumentException("An IN_TRANSIT trip can only be DELIVERED.");
+        }
+
+        if(donation.getStatus() == DonationStatus.DELIVERED){
+            throw new IllegalArgumentException("An DELIVERED trip can only be DELIVERED and can not be modified.");
+        }
+
+        donation.setStatus(requestedStatus);
     }
 
 }

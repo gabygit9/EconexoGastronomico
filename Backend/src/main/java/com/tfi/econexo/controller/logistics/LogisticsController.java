@@ -2,6 +2,7 @@ package com.tfi.econexo.controller.logistics;
 
 import com.tfi.econexo.dto.donation.DonationResponseDTO;
 import com.tfi.econexo.dto.logistics.AcceptTripRequestDTO;
+import com.tfi.econexo.dto.logistics.TripStatusUpdateRequestDTO;
 import com.tfi.econexo.service.logistics.LogisticsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -52,5 +53,19 @@ public class LogisticsController {
     public ResponseEntity<DonationResponseDTO> getTripById(@PathVariable Long id){
         DonationResponseDTO tripDetails = logisticsService.getTripDetailsById(id);
         return ResponseEntity.ok(tripDetails);
+    }
+
+    @PreAuthorize("hasAnyRole('DRIVER', 'ADMIN')")
+    @PatchMapping("/trips/{id}/status")
+    @Operation(summary = "Update trip status", description = "Update the status of a donation trip. Move the status trip from ASSIGNED to IN_TRANSIT, or from IN_TRANSIT to DELIVERED.")
+    @ApiResponse(responseCode = "204", description = "Trip status updated successfully")
+    public ResponseEntity<Void> updateTripStatus(@PathVariable Long id,
+                                                 @RequestBody @Valid TripStatusUpdateRequestDTO request,
+                                                 Principal principal){
+
+        String driverEmail = principal.getName();
+        logisticsService.updateTripStatus(id, request.status(), driverEmail);
+
+        return ResponseEntity.noContent().build();
     }
 }

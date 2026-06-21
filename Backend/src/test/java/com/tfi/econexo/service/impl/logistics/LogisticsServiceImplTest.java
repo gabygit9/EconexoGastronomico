@@ -20,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -273,5 +274,62 @@ class LogisticsServiceImplTest {
         });
     }
 
+    @Test
+    public void updateTripStatus_WhenValidAssignedToInTransit_ShouldUpdateStatus(){
+
+        Long tripId = 3L;
+        Donation mockDonation = new Donation();
+        mockDonation.setStatus(DonationStatus.ASSIGNED);
+        mockDonation.setDriver(driver);
+
+        when(donationService.findByIdDonation(tripId)).thenReturn(Optional.of(mockDonation));
+
+        logisticsServiceImpl.updateTripStatus(tripId, DonationStatus.IN_TRANSIT.name(), "driver@example.com");
+
+        assertEquals(DonationStatus.IN_TRANSIT, mockDonation.getStatus());
+    }
+
+    @Test
+    public void updateTripStatus_WhenStateJump_ShouldThrowIllegalStateException(){
+
+        Long tripId = 3L;
+        Donation mockDonation = new Donation();
+        mockDonation.setStatus(DonationStatus.ASSIGNED);
+        mockDonation.setDriver(driver);
+
+        when(donationService.findByIdDonation(tripId)).thenReturn(Optional.of(mockDonation));
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            logisticsServiceImpl.updateTripStatus(tripId, DonationStatus.DELIVERED.name(), "driver@example.com");
+        });
+    }
+
+    @Test
+    public void updateTripStatus_WhenWrongDriverEmail_ShouldThrowAccessDeniedException(){
+        Long tripId = 3L;
+        Donation mockDonation = new Donation();
+        mockDonation.setStatus(DonationStatus.ASSIGNED);
+        mockDonation.setDriver(driver);
+
+        when(donationService.findByIdDonation(tripId)).thenReturn(Optional.of(mockDonation));
+
+        assertThrows(AccessDeniedException.class, () -> {
+            logisticsServiceImpl.updateTripStatus(tripId, DonationStatus.DELIVERED.name(), "juan@gmail.com");
+        });
+    }
+
+    @Test
+    public void updateTripStatus_WhenTripAlreadyDelivered_ShouldThrowIllegalStateException(){
+        Long tripId = 3L;
+        Donation mockDonation = new Donation();
+        mockDonation.setStatus(DonationStatus.DELIVERED);
+        mockDonation.setDriver(driver);
+
+        when(donationService.findByIdDonation(tripId)).thenReturn(Optional.of(mockDonation));
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            logisticsServiceImpl.updateTripStatus(tripId, DonationStatus.IN_TRANSIT.name(), "driver@example.com");
+        });
+    }
 
 }
