@@ -11,17 +11,20 @@ import com.tfi.econexo.utils.GeometryUtils;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", imports = GeometryUtils.class)
+@Mapper(componentModel = "spring", imports = { GeometryUtils.class, com.tfi.econexo.model.enums.DonationStatus.class})
 public interface DonationMapper {
 
     @Mapping(target = "businessName", source = "donor.tradeName")
     @Mapping(target = "status", expression = "java(donation.getStatus().name())")
     @Mapping(target = "items", source = "donationItems")
     @Mapping(target = "createdAt", source = "createdDate")
+    @Mapping(target = "ngoName", source = "ngo.ngoName")
+    @Mapping(target = "pickupAddress", expression = "java(donation.getDonor() != null ? donation.getDonor().getStreet() + \" \" + donation.getDonor().getStreetNumber() + (donation.getDonor().getFloor() != null ? \" Piso \" + donation.getDonor().getFloor() : \"\") + (donation.getDonor().getApartment() != null ? \" Dpto \" + donation.getDonor().getApartment() : \"\") : \"\")")
+    @Mapping(target = "dropOffAddress", expression = "java(donation.getNgo() != null ? donation.getNgo().getStreet() + \" \" + donation.getNgo().getStreetNumber() + (donation.getNgo().getFloor() != null ? \" Piso \" + donation.getNgo().getFloor() : \"\") + (donation.getNgo().getApartment() != null ? \" Dpto \" + donation.getNgo().getApartment() : \"\") : \"\")")
     @Mapping(target = "pickupLat", expression = "java(GeometryUtils.getLatitude(donation.getDonor() != null ? donation.getDonor().getLocation() : null))")
     @Mapping(target = "pickupLng", expression = "java(GeometryUtils.getLongitude(donation.getDonor() != null ? donation.getDonor().getLocation() : null))")
     @Mapping(target = "dropOffLat", expression = "java(GeometryUtils.getLatitude(donation.getNgo() != null ? donation.getNgo().getLocation() : null))")
-    @Mapping(target = "dropOffLng", expression = "java(GeometryUtils.getLongitude(donation.getNgo() != null ? donation.getNgo.getLocation() : null))")
+    @Mapping(target = "dropOffLng", expression = "java(GeometryUtils.getLongitude(donation.getNgo() != null ? donation.getNgo().getLocation() : null))")
     DonationResponseDTO toResponseDTO(Donation donation);
 
     @Mapping(target = "id", ignore = true)

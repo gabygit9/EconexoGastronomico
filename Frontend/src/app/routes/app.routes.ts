@@ -26,6 +26,7 @@ export const routes: Routes = [
   { path: 'dashboard/driver', component: DashboardDriverComponent },
   { path: 'dashboard/admin', component: DashboardAdminComponent },
   { path: 'dashboard/driver/available-trips', component: AvailableTripsComponent },
+  { path: 'dashboard/trips/:id', component: ActiveTripComponent },
   { path: 'donations/form', component: DonationFormComponent },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: 'login' }

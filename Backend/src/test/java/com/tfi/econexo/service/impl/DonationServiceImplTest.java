@@ -96,7 +96,7 @@ class DonationServiceImplTest {
                 10.0, "unidades", "1241", LocalDateTime.now(), LocalDateTime.now().plusDays(2), "24", "This product contains peanuts", "This product is organic", "None");
         donationRequestDTO = new DonationRequestDTO(LocalDateTime.now(), LocalDateTime.now(), List.of(donationItemRequestDTO));
         donationResponseDTO = new DonationResponseDTO(1L, "AVAILABLE", LocalDateTime.now(), LocalDateTime.now().plusDays(2),
-                LocalDateTime.now(), "El Hornito", List.of(donationItemResponseDTO));
+                LocalDateTime.now(), "El Hornito", any(), any(), any(), any(), List.of(donationItemResponseDTO));
         donor = new Donor();
         donor.setStreet("Obispo Trejo");
         donor.setStreetNumber("123");

@@ -80,4 +80,12 @@ public class LogisticsServiceImpl implements LogisticsService {
 
         donationService.save(donation);
     }
+
+    @Override
+    public DonationResponseDTO getTripDetailsById(Long id){
+        Donation donation = donationService.findByIdDonation(id)
+                .orElseThrow(() -> new EntityNotFoundException("Request trip not found."));
+        return donationMapper.toResponseDTO(donation);
+    }
+
 }
