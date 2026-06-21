@@ -44,4 +44,13 @@ public class LogisticsController {
         logisticsService.acceptTrip(id, driverEmail, request.vehicleId());
         return ResponseEntity.noContent().build();
     }
+
+    @PreAuthorize("hasAnyRole('DRIVER', 'NGO', 'DONOR', 'ADMIN')")
+    @GetMapping("/trips/{id}")
+    @Operation(summary = "Get trip details by ID", description = "Return the details of a specific donation trip.")
+    @ApiResponse(responseCode = "200", description = "Trip details returned successfully")
+    public ResponseEntity<DonationResponseDTO> getTripById(@PathVariable Long id){
+        DonationResponseDTO tripDetails = logisticsService.getTripDetailsById(id);
+        return ResponseEntity.ok(tripDetails);
+    }
 }

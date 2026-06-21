@@ -33,4 +33,12 @@ export class LogisticsService {
     const payload = { vehicleId };
     return this.http.post<void>(`${this.apiUrl}/trips/${donationId}/accept`, payload);
   }
+
+  /**
+   * Gets a specific trip by ID
+   * @param id
+   */
+  getTripById(id: number): Observable<DonationResponse>{
+    return this.http.get<DonationResponse>(`${this.apiUrl}/trips/${id}`);
+  }
 }

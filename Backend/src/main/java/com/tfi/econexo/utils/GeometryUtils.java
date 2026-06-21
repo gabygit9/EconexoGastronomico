@@ -16,4 +16,11 @@ public class GeometryUtils {
         return geometryFactory.createPoint(new Coordinate(longitude, latitude));
     }
 
+    public static Double getLatitude(Point point){
+        return point != null ? point.getY() : null;
+    }
+
+    public static Double getLongitude(Point point){
+        return point != null ? point.getX() : null;
+    }
 }
