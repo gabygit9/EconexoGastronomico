@@ -7,14 +7,18 @@ import {DatePipe} from '@angular/common';
 import {DriverResponse} from '../../../../shared/models/driver.model';
 import {
   AcceptTripModalComponent
-} from '../../../../src/app/features/dashboard/components/accept-trip-modal/accept-trip-modal.component';
+} from '../accept-trip-modal/accept-trip-modal.component';
 import {Router} from '@angular/router';
+import {NavbarComponent} from '../../../../shared/components/navbar/navbar.component';
+import {FooterComponent} from '../../../../shared/components/footer/footer.component';
 
 @Component({
   selector: 'app-available-trips',
   imports: [
     DatePipe,
-    AcceptTripModalComponent
+    AcceptTripModalComponent,
+    NavbarComponent,
+    FooterComponent
   ],
   templateUrl: './available-trips.component.html',
   styleUrl: './available-trips.component.css'

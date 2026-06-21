@@ -91,6 +91,8 @@ export class MapComponent implements AfterViewInit {
       show: false,
       collapsible: false
     }as any).addTo(this.map);
+
+    this.updateMapRoute();
   }
 
   private fixLeafletIcons(){
@@ -125,7 +127,6 @@ export class MapComponent implements AfterViewInit {
         this.currentDriverLng = lng;
 
         if(!this.driverMarker && this.map){
-
           const radarHtml = `
             <div class="driver-radar-pulsing">
                 <div class="dot"></div>
@@ -146,6 +147,10 @@ export class MapComponent implements AfterViewInit {
 
         }else if (this.driverMarker){
           this.driverMarker.setLatLng([lat, lng]);
+        }
+
+        if(this._status === 'ASSIGNED' || this._status === 'IN_TRANSIT'){
+          this.updateMapRoute();
         }
       },
       (error) => {
@@ -174,9 +179,18 @@ export class MapComponent implements AfterViewInit {
       endPoint = L.latLng(this.pickupLat, this.pickupLng);
     }else if (this._status === 'IN_TRANSIT'){
       //Ruta donante -> Ong
-      startPoint = L.latLng(this.pickupLat, this.pickupLng);
+      const startLat = this.currentDriverLat ?? this.pickupLat;
+      const startLng = this.currentDriverLng ?? this.pickupLng;
+
+      startPoint = L.latLng(startLat, startLng);
       endPoint = L.latLng(this.dropOffLat, this.dropOffLng);
     } else {
+      this.routingControl.setWaypoints([]);
+
+      if(this.driverMarker && this.map){
+        this.map.removeLayer(this.driverMarker);
+        this.driverMarker = undefined;
+      }
       return;
     }
     this.routingControl.setWaypoints([
