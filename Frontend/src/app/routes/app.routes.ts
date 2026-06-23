@@ -21,6 +21,7 @@ export const routes: Routes = [
   { path: 'register/donor', component: DonorFormComponent },
   { path: 'register/driver', component: DriverFormComponent },
   { path: 'register/ngo', component: NgoFormComponent },
+  { path: 'dashboard/donations/:id', component: DonationsDetailComponent},
   { path: 'dashboard/donor', component: DashboardDonorComponent },
   { path: 'dashboard/ngo', component: DashboardNgoComponent },
   { path: 'dashboard/driver', component: DashboardDriverComponent },

@@ -7,7 +7,7 @@ import {NavbarComponent} from '../../../shared/components/navbar/navbar.componen
 import {map} from 'rxjs';
 import {AsyncPipe, DatePipe} from '@angular/common';
 import {DonationService} from '../../../core/services/donation.service';
-import {DonationSummaryResponse} from '../../../shared/models/donation.model';
+import {DonationResponse, DonationSummaryResponse} from '../../../shared/models/donation.model';
 import {NgoService} from '../../../core/services/ngo.service';
 import {ToastrService} from 'ngx-toastr';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
@@ -15,6 +15,7 @@ import {
   DonationConfirmModalComponent
 } from '../../../shared/components/donation-confirm-modal/donation-confirm-modal.component';
 import {AvailableDonationsComponent} from './available-donations/available-donations.component';
+import {DonationListComponent} from '../../../shared/components/donation-list/donation-list.component';
 
 @Component({
   selector: 'app-dashboard-ngo',
@@ -22,9 +23,8 @@ import {AvailableDonationsComponent} from './available-donations/available-donat
     FooterComponent,
     NavbarComponent,
     AsyncPipe,
-    DatePipe,
-    DonationConfirmModalComponent,
-    AvailableDonationsComponent
+    AvailableDonationsComponent,
+    DonationListComponent
   ],
   templateUrl: './dashboard-ngo.component.html',
   styleUrl: './dashboard-ngo.component.css'
@@ -32,11 +32,16 @@ import {AvailableDonationsComponent} from './available-donations/available-donat
 export class DashboardNgoComponent implements OnInit{
   private readonly authService = inject(AuthService);
   private readonly ngoService = inject(NgoService);
+  private readonly donationService = inject(DonationService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly  toastr = inject(ToastrService);
+  private readonly router = inject(Router);
 
   ngoProfile: NgoResponseDTO | null = null;
   isLoading = true;
+
+  myDonations = signal<DonationResponse[]>([]);
+  isLoadingDonations = signal<boolean>(true);
 
   userName$ = this.authService.currentUser$.pipe(
     map(profile => {
@@ -49,6 +54,7 @@ export class DashboardNgoComponent implements OnInit{
 
   ngOnInit(){
     this.loadNgoProfile();
+    this.loadMyDonations();
   }
 
   loadNgoProfile(){
@@ -65,4 +71,21 @@ export class DashboardNgoComponent implements OnInit{
     })
   }
 
+  loadMyDonations(){
+    this.isLoadingDonations.set(true);
+    this.donationService.getMyDonations().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (donations) => {
+        this.myDonations.set(donations);
+        this.isLoadingDonations.set(false);
+      },
+      error: (err) => {
+        this.isLoadingDonations.set(false);
+        this.toastr.error('No se pudo cargar el historial de donaciones.', 'Error')
+      }
+    })
+  }
+
+  openDetail(donationId: number) {
+    this.router.navigate(['/dashboard/donations', donationId]);
+  }
 }

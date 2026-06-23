@@ -1,3 +1,5 @@
+import {DriverSummaryDTO} from './driver.model';
+
 export interface DonationItemRequest {
   productId: number;
   quantity: number;
@@ -41,7 +43,8 @@ export interface DonationResponse {
   pickupLng: number,
   dropOffLat: number,
   dropOffLng: number,
-  items: DonationItemResponse[]
+  items: DonationItemResponse[],
+  driverInfo?: DriverSummaryDTO | null;
 }
 
 export interface DonationRequest {

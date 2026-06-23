@@ -131,4 +131,18 @@ public class DonationServiceImpl implements DonationService {
     public Donation save(Donation donation) {
         return donationRepository.save(donation);
     }
+
+    @Override
+    public List<DonationResponseDTO> getMyDonations(String email) {
+        List<Donation> myDonations = donationRepository.findMyDonationsOrderByCreatedDateDesc(email);
+        return myDonations.stream()
+                .map(donationMapper::toResponseDTO)
+                .toList();
+    }
+
+    @Override
+    public DonationResponseDTO getDonation(Long id) {
+        return donationMapper.toResponseDTO(donationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Donation not found")));
+    }
 }
