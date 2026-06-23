@@ -1,6 +1,7 @@
 package com.tfi.econexo.dto.donation;
 
 import com.tfi.econexo.dto.donation.item.DonationItemResponseDTO;
+import com.tfi.econexo.dto.logistics.DriverSummaryDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
@@ -51,6 +52,9 @@ public record DonationResponseDTO(
         Double dropOffLng,
 
         @Schema(description = "Donation items", example = "[...]")
-        List<DonationItemResponseDTO> items
+        List<DonationItemResponseDTO> items,
+
+        @Schema(description = "Driver information")
+        DriverSummaryDTO driverInfo
 ) {
 }

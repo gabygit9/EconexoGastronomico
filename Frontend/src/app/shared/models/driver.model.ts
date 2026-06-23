@@ -59,4 +59,11 @@ export interface VehicleResponseDTO {
   driversLicenseExpiration: Date
 }
 
+export interface DriverSummaryDTO {
+  firstName: string;
+  lastName: string;
+  numberPlate: string;
+  vehicleType: string;
+}
+
 export type VehicleType = 'CAR' | 'TRUCK' | 'BICYCLE' | 'MOTORCYCLE' | 'KICK_SCOOTER' | 'PICKUP'

@@ -68,4 +68,21 @@ export class DonationService {
   requestDonation(donationId: number){
     return this.http.patch<void>(`${this.apiUrl}/${donationId}/request`, {donationId});
   }
+
+  /**
+   * Get my donations (as a Donor or Ngo)
+   * @returns An Observable of the user's donations
+   */
+  getMyDonations(): Observable<DonationResponse[]>{
+    return this.http.get<DonationResponse[]>(`${this.apiUrl}/me`);
+  }
+
+  /**
+   * Get a donation by ID
+   * @param donationId - The ID of the donation to get
+   * @returns An Observable of the donation
+   */
+  getDonationById(donationId: number): Observable<DonationResponse>{
+    return this.http.get<DonationResponse>(`${this.apiUrl}/${donationId}`);
+  }
 }

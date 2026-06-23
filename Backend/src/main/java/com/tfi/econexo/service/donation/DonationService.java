@@ -23,4 +23,6 @@ public interface DonationService {
     );
     Optional<Donation> findByIdDonation(Long id);
     Donation save(Donation donation);
+    List<DonationResponseDTO> getMyDonations(String email);
+    DonationResponseDTO getDonation(Long id);
 }
