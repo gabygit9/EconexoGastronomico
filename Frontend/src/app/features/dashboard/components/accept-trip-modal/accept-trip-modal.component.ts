@@ -3,12 +3,14 @@ import {DonationResponse} from '../../../../shared/models/donation.model';
 import {VehicleResponseDTO} from '../../../../shared/models/driver.model';
 import {DatePipe} from '@angular/common';
 import {FormsModule} from '@angular/forms';
+import {VehicleTypeTranslatePipe} from '../../../../shared/pipes/vehicle-type-translate.pipe';
 
 @Component({
   selector: 'app-accept-trip-modal',
   imports: [
     DatePipe,
-    FormsModule
+    FormsModule,
+    VehicleTypeTranslatePipe
   ],
   templateUrl: './accept-trip-modal.component.html',
   styleUrl: './accept-trip-modal.component.css'

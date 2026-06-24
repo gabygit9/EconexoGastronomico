@@ -32,7 +32,7 @@
 
           @for (vehicle of vehicles; track vehicle.id) {
             <option [value]="vehicle.id">
-              {{ vehicle.vehicleType }}
+              {{ vehicle.vehicleType | vehicleTypeTranslate}}
               {{ vehicle.numberPlate ? 'Patente: ' + vehicle.numberPlate : '' }}
               (Cap: {{ vehicle.capacityKg }}kg {{ vehicle.hasRefrigeration ? '- Frío' : '' }})
             </option>
