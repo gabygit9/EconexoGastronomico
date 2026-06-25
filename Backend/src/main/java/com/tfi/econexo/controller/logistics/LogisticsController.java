@@ -73,7 +73,7 @@ public class LogisticsController {
     }
 
     @PreAuthorize("hasRole('DRIVER')")
-    @PostMapping("/trip/{id}/cancel")
+    @PostMapping("/trips/{id}/cancel")
     @Operation(summary = "Cancel an assigned trip", description = "Cancel a donation trip by a driver")
     @ApiResponse(responseCode = "204", description = "Donation trip cancelled successfully")
     public ResponseEntity<Void> cancelTrip(@PathVariable Long id, Authentication authentication){

@@ -16,6 +16,7 @@ import com.tfi.econexo.model.donation.donor.Donor;
 import com.tfi.econexo.model.enums.DonationStatus;
 import com.tfi.econexo.model.location.City;
 import com.tfi.econexo.model.location.Neighborhood;
+import com.tfi.econexo.model.logistics.Driver;
 import com.tfi.econexo.repository.donation.DonationItemRepository;
 import com.tfi.econexo.repository.donation.DonationRepository;
 import com.tfi.econexo.repository.donation.catalog.ProductRepository;
@@ -28,6 +29,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.locationtech.jts.geom.Point;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -216,5 +218,59 @@ class DonationServiceImplTest {
         assertTrue(response.isEmpty());
         verify(donationItemRepository, times(1)).findByDonation_StatusOrderByExpirationDateAsc(DonationStatus.AVAILABLE);
         verify(donationMapper, never()).toSummaryResponseDTO(any(Donation.class));
+    }
+
+    @Test
+    void cancelTrip_WhenValidAssignedTrip_ShouldRollbackToRequestedAndNullifyDriver() {
+        Long donationId = 1L;
+        String driverEmail = "voluntario@correo.com";
+
+        Driver mockDriver = new Driver();
+        Donation mockDonation = new Donation();
+        mockDonation.setId(donationId);
+        mockDonation.setStatus(DonationStatus.ASSIGNED);
+        mockDonation.setDriver(mockDriver);
+
+        when(donationRepository.findById(donationId)).thenReturn(Optional.of(mockDonation));
+        when(donationRepository.save(any(Donation.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        donationService.cancelTrip(donationId, driverEmail);
+
+        ArgumentCaptor<Donation> donationCaptor = ArgumentCaptor.forClass(Donation.class);
+        verify(donationRepository, times(1)).save(donationCaptor.capture());
+
+        Donation savedDonation = donationCaptor.getValue();
+        assertEquals(DonationStatus.REQUESTED, savedDonation.getStatus());
+        assertNull(savedDonation.getDriver());
+    }
+
+    @Test
+    void cancelTrip_WhenTripIsAlreadyDelivered_ShouldThrowIllegalStateException() {
+        Long donationId = 1L;
+        String driverEmail = "voluntario@correo.com";
+
+        Donation mockDonation = new Donation();
+        mockDonation.setId(donationId);
+        mockDonation.setStatus(DonationStatus.DELIVERED);
+
+        when(donationRepository.findById(donationId)).thenReturn(Optional.of(mockDonation));
+
+        assertThrows(IllegalStateException.class, () -> {
+            donationService.cancelTrip(donationId, driverEmail);
+        });
+
+        verify(donationRepository, never()).save(any(Donation.class));
+    }
+
+    @Test
+    void cancelTrip_WhenDonationDoesNotExist_ShouldThrowEntityNotFoundException() {
+        Long donationId = 99L;
+        String driverEmail = "voluntario@correo.com";
+
+        when(donationRepository.findById(donationId)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> {
+            donationService.cancelTrip(donationId, driverEmail);
+        });
     }
 }
