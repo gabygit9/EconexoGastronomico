@@ -25,4 +25,5 @@ public interface DonationService {
     Donation save(Donation donation);
     List<DonationResponseDTO> getMyDonations(String email);
     DonationResponseDTO getDonation(Long id);
+    void cancelTrip(Long donationId, String driverEmail);
 }

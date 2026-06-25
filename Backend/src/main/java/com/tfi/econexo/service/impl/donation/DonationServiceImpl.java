@@ -145,4 +145,22 @@ public class DonationServiceImpl implements DonationService {
         return donationMapper.toResponseDTO(donationRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Donation not found")));
     }
+
+    @Transactional
+    @Override
+    public void cancelTrip(Long donationId, String driverEmail) {
+        Donation donation = donationRepository.findById(donationId)
+                .orElseThrow(() -> new EntityNotFoundException("Donation not found"));
+
+        if(donation.getStatus() == DonationStatus.AVAILABLE ||
+                donation.getStatus() == DonationStatus.CANCELED ||
+                donation.getStatus() == DonationStatus.REJECTED ||
+                donation.getStatus() == DonationStatus.DELIVERED ){
+            throw new IllegalStateException("The trip can not be canceled in its current state: " + donation.getStatus());
+        }
+
+        donation.setStatus(DonationStatus.REQUESTED);
+        donation.setDriver(null);
+        donationRepository.save(donation);
+    }
 }
