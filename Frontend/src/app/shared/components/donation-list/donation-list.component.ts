@@ -17,14 +17,30 @@ export class DonationListComponent {
   viewRole = input<'DONOR' | 'NGO'>();
   rowClick= output<number>();
 
+  //Filtros
+  currentFilter = signal<'ALL' | 'ACTIVE' | 'HISTORY'>('ACTIVE');
+
+  filteredDonations = computed(() => {
+    const all = this.donations();
+    const filter = this.currentFilter();
+    if(filter === 'ALL') return all;
+    if(filter === 'ACTIVE') {
+      return all.filter(d => ['AVAILABLE', 'REQUESTED', 'ASSIGNED', 'IN_TRANSIT'].includes(d.status));
+    }
+    if(filter === 'HISTORY') {
+      return all.filter(d => ['DELIVERED', 'CANCELED', 'REJECTED'].includes(d.status));
+    }
+    return all;
+  })
+
   //Paginación
   currentPage = signal<number>(1);
-  pageSize = signal<number>(8);
+  pageSize = signal<number>(5);
 
   paginateDonations = computed(() => {
     const start = (this.currentPage() - 1) * this.pageSize();
     const end = start + this.pageSize();
-    return this.donations().slice(start, end);
+    return this.filteredDonations().slice(start, end);
   })
 
   totalPages = computed(() => {
@@ -33,6 +49,11 @@ export class DonationListComponent {
 
   startItem = computed(() => (this.currentPage() - 1) * this.pageSize() + 1);
   endItem = computed(() => Math.min(this.currentPage() * this.pageSize(), this.donations().length));
+
+  setFilter(filter: 'ALL' | 'ACTIVE' | 'HISTORY'){
+    this.currentFilter.set(filter);
+    this.currentPage.set(1);
+  }
 
   nextPage(){
     if(this.currentPage() < this.totalPages()){

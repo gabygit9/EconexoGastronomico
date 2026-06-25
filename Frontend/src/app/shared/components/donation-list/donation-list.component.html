@@ -1,5 +1,26 @@
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
 
+  <div class="flex items-center gap-2 p-4 border-b border-gray-100 bg-white overflow-x-auto">
+    <button
+      (click)="setFilter('ACTIVE')"
+      [class]="currentFilter() === 'ACTIVE' ? 'bg-[#eb5c0c] text-white shadow-md' : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-200'"
+      class="px-4 py-2 text-sm font-bold rounded-xl transition-all whitespace-nowrap">
+      Activas
+    </button>
+    <button
+      (click)="setFilter('HISTORY')"
+      [class]="currentFilter() === 'HISTORY' ? 'bg-[#161c28] text-white shadow-md' : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-200'"
+      class="px-4 py-2 text-sm font-bold rounded-xl transition-all whitespace-nowrap">
+      Historial
+    </button>
+    <button
+      (click)="setFilter('ALL')"
+      [class]="currentFilter() === 'ALL' ? 'bg-gray-500 text-white shadow-md' : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-200'"
+      class="px-4 py-2 text-sm font-bold rounded-xl transition-all whitespace-nowrap">
+      Todas
+    </button>
+  </div>
+
   <div class="hidden lg:grid grid-cols-12 gap-4 p-4 bg-gray-50 border-b border-gray-100 text-xs font-bold text-gray-500 uppercase tracking-wider">
     <div class="col-span-4">Detalle de Carga</div>
     <div class="col-span-3">{{ viewRole() === 'DONOR' ? 'Destino (ONG)' : 'Origen (Comercio)' }}</div>
@@ -77,14 +98,14 @@
     }
   </div>
 
-  @if (donations().length > 0) {
+  @if (filteredDonations().length > 0) {
     <div class="flex items-center justify-between px-4 py-3 bg-gray-50 border-t border-gray-100 sm:px-6">
 
       <div class="hidden sm:block">
         <p class="text-sm text-gray-600">
           Mostrando <span class="font-bold text-gray-900">{{ startItem() }}</span> -
           <span class="font-bold text-gray-900">{{ endItem() }}</span> de
-          <span class="font-bold text-gray-900">{{ donations().length }}</span> registros
+          <span class="font-bold text-gray-900">{{ filteredDonations().length }}</span> registros
         </p>
       </div>
 
