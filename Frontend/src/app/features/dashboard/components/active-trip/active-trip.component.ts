@@ -32,6 +32,10 @@ export class ActiveTripComponent implements OnInit {
   isLoading = signal(true);
   isUpdatingStatus = signal(false);
 
+  //Modal cancelación
+  showCancelModal = signal(false);
+  isCanceling = signal(false);
+
   //Modal confirmación
   isModalOpen = signal(false);
 
@@ -77,6 +81,14 @@ export class ActiveTripComponent implements OnInit {
     this.pendingStatus = null;
   }
 
+  openCancelModal(){
+    this.showCancelModal.set(true);
+  }
+
+  closeCancelModal(){
+    this.showCancelModal.set(false);
+  }
+
   executeStatusUpdate(newStatus: 'IN_TRANSIT' | 'DELIVERED') {
     const currentTrip = this.trip();
     if(!currentTrip) return;
@@ -92,7 +104,7 @@ export class ActiveTripComponent implements OnInit {
 
         if(newStatus === 'DELIVERED'){
           this.toastr.info('Has completado la entrega. ¡Gracias por tu ayuda!', 'Viaje Finalizado');
-          this.router.navigate(['/dashboard/driver']);
+          this.goBack();
         }
 
       },
@@ -108,10 +120,17 @@ export class ActiveTripComponent implements OnInit {
     const tripId = this.route.snapshot.paramMap.get('id');
     if(tripId){
       this.loadTripDetails(+tripId);
+    } else {
+      this.goBack();
     }
   }
 
+  goBack() {
+    this.router.navigate(['/dashboard/driver']);
+  }
+
   private loadTripDetails(id:number){
+    this.isLoading.set(true);
     this.logisticsService.getTripById(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
         this.trip.set(data);
@@ -120,7 +139,26 @@ export class ActiveTripComponent implements OnInit {
       error: () => {
         this.isLoading.set(false);
         this.toastr.error('El viaje no existe o no está disponible.', 'Error');
-        this.router.navigate(['/dashboard/driver']);
+        this.goBack();
+      }
+    })
+  }
+
+  confirmCancelTrip(){
+    const currentTrip = this.trip();
+    if(!currentTrip) return;
+
+    this.isCanceling.set(true);
+    this.logisticsService.cancelTrip(currentTrip.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.isCanceling.set(false);
+        this.closeCancelModal();
+        this.toastr.success('Viaje cancelado. La donación fue liberada para la red.', 'Viaje Liberado');
+        this.goBack();
+      },
+      error: (err) => {
+        this.isCanceling.set(false);
+        this.toastr.error('Hubo un problema al cancelar el viaje. Intentá nuevamente.', 'Error');
       }
     })
   }

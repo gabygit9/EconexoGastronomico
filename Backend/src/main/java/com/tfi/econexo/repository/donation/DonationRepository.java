@@ -34,7 +34,7 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
             @Param("status") DonationStatus status
     );
 
-    @Query("SELECT d FROM Donation d WHERE d.donor.user.email = :email OR d.ngo.user.email = :email ORDER BY d.createdDate DESC")
+    @Query("SELECT d FROM Donation d WHERE d.donor.user.email = :email OR d.ngo.user.email = :email OR d.driver.user.email = :email ORDER BY d.createdDate DESC")
     List<Donation> findMyDonationsOrderByCreatedDateDesc(@Param("email") String email);
 
 }
