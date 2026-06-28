@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {DonationSummaryResponse} from '../../models/donation.model';
+import {DonationResponse, DonationSummaryResponse} from '../../models/donation.model';
 
 @Component({
   selector: 'app-donation-confirm-modal',
@@ -9,7 +9,10 @@ import {DonationSummaryResponse} from '../../models/donation.model';
 })
 export class DonationConfirmModalComponent {
 
-  @Input({ required: true }) donation!: DonationSummaryResponse;
+  @Input() title: string = 'Confirmar Acción';
+  @Input() message: string = '¿Estás seguro de realizar esta acción?';
+
+  @Input({ required: true }) donation!: DonationResponse | DonationSummaryResponse;
   @Output() confirm = new EventEmitter<number>();
   @Output() close = new EventEmitter<void>();
 
@@ -19,5 +22,9 @@ export class DonationConfirmModalComponent {
 
   onConfirm(){
     this.confirm.emit(this.donation.id);
+  }
+
+  isSummary(donation: DonationResponse | DonationSummaryResponse): donation is DonationSummaryResponse {
+    return (donation as DonationSummaryResponse).requiresRefrigeration !== undefined;
   }
 }

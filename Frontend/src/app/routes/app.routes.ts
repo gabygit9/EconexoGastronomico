@@ -11,6 +11,7 @@ import {DonationFormComponent} from '../features/donations/donation-form/donatio
 import {DashboardAdminComponent} from '../features/dashboard/dashboard-admin/dashboard-admin.component';
 import {ForgotPasswordComponent} from '../features/auth/login/forgot-password/forgot-password.component';
 import {ResetPasswordComponent} from '../features/auth/login/reset-password/reset-password.component';
+import {AvailableTripsComponent} from '../features/dashboard/components/available-trips/available-trips.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -20,10 +21,13 @@ export const routes: Routes = [
   { path: 'register/donor', component: DonorFormComponent },
   { path: 'register/driver', component: DriverFormComponent },
   { path: 'register/ngo', component: NgoFormComponent },
+  { path: 'dashboard/donations/:id', component: DonationsDetailComponent},
   { path: 'dashboard/donor', component: DashboardDonorComponent },
   { path: 'dashboard/ngo', component: DashboardNgoComponent },
   { path: 'dashboard/driver', component: DashboardDriverComponent },
   { path: 'dashboard/admin', component: DashboardAdminComponent },
+  { path: 'dashboard/driver/available-trips', component: AvailableTripsComponent },
+  { path: 'dashboard/trips/:id', component: ActiveTripComponent },
   { path: 'donations/form', component: DonationFormComponent },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: 'login' }

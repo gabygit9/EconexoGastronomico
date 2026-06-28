@@ -5,7 +5,7 @@
     <div class="bg-[#161c28] text-white px-6 py-5 flex justify-between items-center shrink-0">
       <h3 class="text-lg font-bold flex items-center gap-2">
         <span class="w-2 h-2 rounded-full bg-[#eb5c0c]"></span>
-        Confirmar Solicitud
+        {{  title }}
       </h3>
       <button (click)="onClose()" class="text-gray-400 hover:text-white transition-colors">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -13,7 +13,7 @@
     </div>
 
     <div class="p-6 space-y-6 overflow-y-auto max-h-[70vh]">
-
+      <p class="text-sm text-gray-700 font-medium">{{ message }}</p>
       <div>
         <p class="text-xs font-bold text-[#eb5c0c] uppercase tracking-wider mb-1">{{ donation.businessName }}</p>
         <h4 class="text-2xl font-extrabold text-gray-900 mb-3">Resumen del Lote solicitado</h4>
@@ -45,7 +45,7 @@
       </div>
 
       <div class="grid grid-cols-1 gap-3">
-        @if (donation.requiresRefrigeration) {
+        @if (isSummary(donation) && donation.requiresRefrigeration) {
           <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 flex gap-3 items-start">
             <svg class="w-5 h-5 text-blue-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
             <div>

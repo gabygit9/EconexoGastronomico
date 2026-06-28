@@ -12,7 +12,6 @@ import com.tfi.econexo.model.donation.catalog.UnitOfMeasure;
 import com.tfi.econexo.model.donation.donor.Donor;
 import com.tfi.econexo.model.enums.DonationStatus;
 import com.tfi.econexo.model.ngo.Ngo;
-import com.tfi.econexo.repository.donation.DonationItemRepository;
 import com.tfi.econexo.repository.donation.DonationRepository;
 import com.tfi.econexo.repository.donation.catalog.ProductRepository;
 import com.tfi.econexo.repository.donation.catalog.UnitOfMeasureRepository;
@@ -21,14 +20,17 @@ import com.tfi.econexo.service.donation.DonationService;
 import com.tfi.econexo.service.donation.DonorService;
 import com.tfi.econexo.service.impl.GeocodingService;
 import com.tfi.econexo.utils.GeometryUtils;
+import com.tfi.econexo.utils.notification.NotificationService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Point;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -39,8 +41,8 @@ public class DonationServiceImpl implements DonationService {
     private final DonorService donorService;
     private final ProductRepository productRepository;
     private final UnitOfMeasureRepository unitOfMeasureRepository;
-    private final DonationItemRepository donationItemRepository;
     private final NgoRepository ngoRepository;
+    private final NotificationService notificationService;
 
     private final DonationMapper donationMapper;
 
@@ -115,6 +117,147 @@ public class DonationServiceImpl implements DonationService {
 
         donation.setStatus(DonationStatus.REQUESTED);
         donation.setNgo(ngo);
+        donationRepository.save(donation);
+    }
+
+    @Override
+    public List<Donation> findAvailableTripsNearby(Point driverLocation, Long driverId, DonationStatus status) {
+        return donationRepository.findAvailableTripsNearby(driverLocation, driverId, status);
+    }
+
+    @Override
+    public Optional<Donation> findByIdDonation(Long id) {
+        return donationRepository.findById(id);
+    }
+
+    @Override
+    public Donation save(Donation donation) {
+        return donationRepository.save(donation);
+    }
+
+    @Override
+    public List<DonationResponseDTO> getMyDonations(String email) {
+        List<Donation> myDonations = donationRepository.findMyDonationsOrderByCreatedDateDesc(email);
+        return myDonations.stream()
+                .map(donationMapper::toResponseDTO)
+                .toList();
+    }
+
+    @Override
+    public DonationResponseDTO getDonation(Long id) {
+        return donationMapper.toResponseDTO(donationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Donation not found")));
+    }
+
+    @Transactional
+    @Override
+    public void cancelTrip(Long donationId, String driverEmail) {
+        Donation donation = donationRepository.findById(donationId)
+                .orElseThrow(() -> new EntityNotFoundException("Donation not found"));
+
+        if(donation.getStatus() != DonationStatus.ASSIGNED){
+            throw new IllegalStateException("The trip can not be canceled if it's ASSIGEND. Current state: " + donation.getStatus());
+        }
+
+        notificationService.notifyUser(donation.getDonor().getUser().getEmail(), "El conductor ha cancelado el retiro. La donación vuelve a estar disponible para ser tomada por otro voluntario.", "Viaje cancelado por el conductor");
+
+        if(donation.getNgo() != null && donation.getNgo().getUser() != null){
+            notificationService.notifyUser(donation.getNgo().getUser().getEmail(), "El conductor asignado ha cancelado el servicio. Estamos buscando un nuevo voluntario para tu donación.", "Actualización en tu donación");
+        }
+
+        donation.setStatus(DonationStatus.REQUESTED);
+        donation.setDriver(null);
+        donationRepository.save(donation);
+    }
+
+    @Override
+    public void rejectDonationByDriver(Long donationId, String driverEmail) {
+        Donation donation = donationRepository.findById(donationId)
+                .orElseThrow(() -> new EntityNotFoundException("Donation not found"));
+
+        if(donation.getStatus() != DonationStatus.ASSIGNED){
+            throw new IllegalStateException("Only trips ASSIGNED can be rejected. Current state: " + donation.getStatus());
+        }
+
+        notificationService.notifyUser(donation.getDonor().getUser().getEmail(), "El conductor ha reportado un problema con la mercadería y no pudo retirar la donación. La donación ha sido retirada de la red.", "Donación rechazada por el conductor");
+
+        if(donation.getNgo() != null && donation.getNgo().getUser() != null){
+            notificationService.notifyUser(donation.getNgo().getUser().getEmail(), "La donación que esperabas fue rechazada por el conductor debido a un problema con la mercadería.", "Donación rechazada por el conductor");
+        }
+
+        donation.setStatus(DonationStatus.REJECTED);
+        donation.setDriver(null);
+        donationRepository.save(donation);
+    }
+
+    @Override
+    public void cancelDonationByDonor(Long donationId, String donorEmail) {
+
+        Donation donation = donationRepository.findById(donationId)
+                .orElseThrow(() -> new EntityNotFoundException("Donation not found"));
+
+        if(!donation.getDonor().getUser().getEmail().equals(donorEmail)){
+            throw new AccessDeniedException("You are not allowed to cancel this donation");
+        }
+
+        List<DonationStatus> allowedStatuses = List.of(DonationStatus.AVAILABLE, DonationStatus.REQUESTED, DonationStatus.ASSIGNED);
+
+        if(!allowedStatuses.contains(donation.getStatus())) {
+            throw new IllegalStateException("Only active donations can be canceled. Current state: " + donation.getStatus());
+        }
+
+        if(donation.getDriver() != null && donation.getDriver().getUser() != null && donation.getStatus() == DonationStatus.ASSIGNED){
+            notificationService.notifyUser(donation.getDriver().getUser().getEmail(), "Tu viaje hacia el donante ha sido cancelado.", "Viaje Cancelado");
+        } else if(donation.getNgo() != null && donation.getNgo().getUser() != null &&donation.getStatus() == DonationStatus.REQUESTED){
+            notificationService.notifyUser(donation.getNgo().getUser().getEmail(), "La donación que solicitaste fue cancelada por el donante.", "Donación Cancelada");
+        }
+
+        donation.setStatus(DonationStatus.CANCELED);
+        donationRepository.save(donation);
+    }
+
+    @Override
+    public void rejectDriverByDonor(Long donationId, String donorEmail) {
+        Donation donation = donationRepository.findById(donationId)
+                .orElseThrow(() -> new EntityNotFoundException("Donation not found"));
+
+        if(!donation.getDonor().getUser().getEmail().equals(donorEmail)){
+            throw new AccessDeniedException("You are not allowed to cancel this donation");
+        }
+
+        if(donation.getStatus() != DonationStatus.ASSIGNED) {
+            throw new IllegalStateException("Only ASSIGNED donations can be rejected by the donor");
+        }
+
+        if(donation.getDriver() != null && donation.getDriver().getUser() != null){
+            notificationService.notifyUser(donation.getDriver().getUser().getEmail(), "El donante ha rechazado la asignación de este viaje. La donación vuelve a la red.", "Viaje Rechazado");
+        }
+
+        if(donation.getNgo() != null && donation.getNgo().getUser() != null){
+            notificationService.notifyUser(donation.getNgo().getUser().getEmail(), "El donante ha rechazado al conductor asignado. Se está buscando uno nuevo para tu donación.", "Cambio en la logística de tu donación");
+        }
+
+        donation.setDriver(null);
+        donation.setStatus(DonationStatus.REQUESTED);
+        donationRepository.save(donation);
+    }
+
+    @Transactional
+    @Override
+    public void cancelDonationByNgo(Long donationId, String ngoEmail) {
+        Donation donation = donationRepository.findById(donationId)
+                .orElseThrow(() -> new EntityNotFoundException("Donation not found"));
+        if(!donation.getNgo().getUser().getEmail().equals(ngoEmail)){
+            throw new AccessDeniedException("You are not allowed to cancel this donation");
+        }
+        if(donation.getStatus() != DonationStatus.REQUESTED){
+            throw new IllegalStateException("Only REQUESTED donations can be canceled by the NGO");
+        }
+
+        notificationService.notifyUser(donation.getDonor().getUser().getEmail(), "La ONG ha cancelado su solicitud. La donación vuelve a estado DISPONIBLE.", "Solicitud cancelada por la ONG");
+
+        donation.setStatus(DonationStatus.AVAILABLE);
+        donation.setNgo(null);
         donationRepository.save(donation);
     }
 }

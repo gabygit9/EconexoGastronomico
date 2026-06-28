@@ -2,17 +2,21 @@ package com.tfi.econexo.utils.notification;
 
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import org.slf4j.Logger;
+
 @Service
 @RequiredArgsConstructor
 public class EmailServiceImpl implements  EmailService {
 
     private final JavaMailSender mailSender;
+    private static final Logger logger = LoggerFactory.getLogger(EmailServiceImpl.class);
 
     @Value("${spring.mail.username}")
     private String fromEmail;
@@ -58,6 +62,31 @@ public class EmailServiceImpl implements  EmailService {
             mailSender.send(message);
         }catch (Exception e) {
             System.err.println("Fallo al enviar el correo a " + toEmail + ": " + e.getMessage());
+        }
+    }
+
+    @Async
+    @Override
+    public void sendGenericNotification(String toEmail, String subject, String message) {
+        try {
+            MimeMessage msg = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(msg, true, "UTF-8");
+            helper.setFrom(fromEmail, "Equipo EcoNexo");
+            helper.setTo(toEmail);
+            helper.setSubject(subject);
+
+            String html = "<div style='font-family:Arial; padding:20px;'>" +
+                    "<h2>Notificación EcoNexo</h2>" +
+                    "<p>" + message + "</p>" +
+                    "</div>";
+
+            helper.setText(html, true);
+
+            System.out.println("Enviando mail a: " + toEmail);
+
+            mailSender.send(msg);
+        } catch (Exception e) {
+            logger.error("Fail attempt to send email to " + toEmail + ": " + e.getMessage());
         }
     }
 

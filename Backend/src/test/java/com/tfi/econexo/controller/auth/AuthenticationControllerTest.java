@@ -15,7 +15,7 @@ import com.tfi.econexo.dto.auth.ngo.NgoResponseDTO;
 import com.tfi.econexo.exception.ConflictException;
 import com.tfi.econexo.model.enums.RegistrationStatus;
 import com.tfi.econexo.model.logistics.VehicleType;
-import com.tfi.econexo.service.DriverService;
+import com.tfi.econexo.service.logistics.DriverService;
 import com.tfi.econexo.service.NeighborhoodService;
 import com.tfi.econexo.service.NgoService;
 import com.tfi.econexo.service.auth.*;

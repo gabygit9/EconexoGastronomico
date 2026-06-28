@@ -1,0 +1,131 @@
+<div class="min-h-screen bg-gray-50 flex flex-col">
+  <app-navbar [userName]="(userName$ | async) || '' "></app-navbar>
+
+  <main class="flex-1 p-6 lg:p-8 max-w-5xl mx-auto w-full">
+
+    <button (click)="goBack()" class="flex items-center gap-2 text-gray-500 hover:text-[#eb5c0c] transition-colors mb-6 font-bold text-sm">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+      Volver al Panel
+    </button>
+
+    @if (isLoading()) {
+      <div class="flex justify-center items-center py-20">
+        <div class="w-10 h-10 border-4 border-[#eb5c0c] border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    }
+    @else if (donation()) {
+
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+        <div>
+          <h1 class="text-2xl font-extrabold text-gray-900">
+            Detalle de la Donación
+          </h1>
+          <p class="text-gray-500 text-sm mt-1">
+            Publicada el {{ donation()!.createdAt | date:'dd/MM/yyyy HH:mm' }}
+          </p>
+        </div>
+
+        <div class="px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl">
+          <span class="text-xs font-bold text-gray-500 uppercase block mb-1">Estado actual</span>
+          <span class="font-extrabold text-gray-900">{{ donation()!.status | statusTranslate }}</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <div class="lg:col-span-2 space-y-4">
+          <h2 class="text-lg font-bold text-[#161c28]">Contenido de la Carga</h2>
+
+          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 divide-y divide-gray-100">
+            @for (item of donation()!.items; track item.id) {
+              <div class="p-4 flex justify-between items-start">
+                <div>
+                  <h3 class="font-bold text-gray-900 text-lg">
+                    {{ item.quantity }} {{ item.unitOfMeasure }} de {{ item.productName }}
+                  </h3>
+                  <div class="text-sm text-gray-500 mt-1 flex gap-2">
+                    <span class="bg-gray-100 px-2 py-0.5 rounded-md">{{ item.category }}</span>
+                    @if (item.deliveryTemperature === 'Refrigerado') {
+                      <span class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-md font-medium">Requiere frío</span>
+                    }
+                  </div>
+                  @if (item.allergenWarning) {
+                    <p class="text-xs text-red-600 font-bold mt-2 flex items-center gap-1">
+                      ⚠️ Advertencia: {{ item.allergenWarning }}
+                    </p>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mt-6">
+            <h2 class="text-lg font-bold text-[#161c28] mb-4">Ruta Logística</h2>
+            <div class="space-y-4 relative">
+              <div class="absolute left-3 top-4 bottom-4 w-0.5 bg-gray-200"></div>
+
+              <div class="flex gap-4 relative z-10">
+                <div class="w-6 h-6 bg-[#161c28] rounded-full border-4 border-white flex-shrink-0 mt-1"></div>
+                <div>
+                  <p class="text-xs font-bold text-gray-500 uppercase">Origen (Retiro)</p>
+                  <p class="font-bold text-gray-900">{{ donation()!.businessName }}</p>
+                  <p class="text-sm text-gray-600">{{ donation()!.pickupAddress }}</p>
+                </div>
+              </div>
+
+              <div class="flex gap-4 relative z-10">
+                <div class="w-6 h-6 bg-[#eb5c0c] rounded-full border-4 border-white flex-shrink-0 mt-1"></div>
+                <div>
+                  <p class="text-xs font-bold text-gray-500 uppercase">Destino (Entrega)</p>
+                  <p class="font-bold text-gray-900">{{ donation()!.ngoName ? donation()!.ngoName : 'Por definir' }}</p>
+                  <p class="text-sm text-gray-600">{{ donation()!.dropOffAddress ? donation()!.dropOffAddress : 'Por definir' }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-1">
+          <h2 class="text-lg font-bold text-[#161c28] mb-4">Logística</h2>
+
+          @if (donation()!.driverInfo) {
+            <app-driver-info-card [info]="donation()!.driverInfo!"></app-driver-info-card>
+          } @else {
+            <div class="bg-gray-50 border border-gray-200 border-dashed rounded-2xl p-6 text-center">
+              <svg class="w-10 h-10 mx-auto text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+              <p class="text-sm text-gray-500 font-medium">Buscando conductor voluntario...</p>
+              <p class="text-xs text-gray-400 mt-1">Te avisaremos cuando alguien tome el viaje.</p>
+            </div>
+          }
+
+          <div class="mt-6 flex flex-col gap-3">
+            @if (['AVAILABLE', 'REQUESTED', 'ASSIGNED'].includes(donation()!.status)) {
+              <button (click)="openModal('CANCEL')" class="w-full py-3 bg-red-50 text-red-600 font-bold rounded-xl hover:bg-red-100 transition-colors">
+                Cancelar Donación
+              </button>
+            }
+
+            @if (donation()!.status === 'ASSIGNED') {
+              <button (click)="openModal('REJECT')" class="w-full py-3 bg-orange-50 text-orange-600 font-bold rounded-xl hover:bg-orange-100 transition-colors">
+                Rechazar Conductor
+              </button>
+            }
+          </div>
+        </div>
+
+      </div>
+
+      @if (showModal() && donation()) {
+        <app-donation-confirm-modal
+          [donation]="donation()!"
+          [title]="modalTitle()"
+          [message]="modalMessage()"
+          (confirm)="handleConfirm()"
+          (close)="showModal.set(false)">
+        </app-donation-confirm-modal>
+      }
+    }
+  </main>
+
+  <app-footer></app-footer>
+</div>

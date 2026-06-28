@@ -1,10 +1,16 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import {ApplicationConfig, LOCALE_ID, provideZoneChangeDetection} from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './routes/app.routes';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { caseTransformInterceptor } from './shared/interceptors/case-transform.interceptors';
+import {provideHttpClient, withInterceptors} from '@angular/common/http';
+import {caseTransformInterceptor} from './core/interceptors/case-transform.interceptor';
+import {provideAnimations} from '@angular/platform-browser/animations';
+import {provideToastr} from 'ngx-toastr';
 import {authInterceptor} from './core/interceptors/auth.interceptor';
+import {registerLocaleData} from '@angular/common';
+import localeEsAr from '@angular/common/locales/es-AR';
+
+registerLocaleData(localeEsAr, 'es-AR');
 
 export const appConfig: ApplicationConfig = {
   providers: [provideZoneChangeDetection({ eventCoalescing: true }),
@@ -15,7 +21,10 @@ export const appConfig: ApplicationConfig = {
       timeOut: 3000,
       positionClass: 'toast-bottom-right',
       preventDuplicates: true,
-      progressBar: true
-    })
+      progressBar: true,
+    }),
+    { provide: LOCALE_ID, useValue: 'es-AR' }
   ]
 };
+
+

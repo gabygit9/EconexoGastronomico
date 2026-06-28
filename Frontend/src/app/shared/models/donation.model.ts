@@ -1,3 +1,5 @@
+import {DriverSummaryDTO} from './driver.model';
+
 export interface DonationItemRequest {
   productId: number;
   quantity: number;
@@ -34,7 +36,15 @@ export interface DonationResponse {
   pickupEndTime: string,
   createdAt: string,
   businessName: string,
-  items: DonationItemResponse[]
+  ngoName: string,
+  pickupAddress: string,
+  dropOffAddress: string,
+  pickupLat: number,
+  pickupLng: number,
+  dropOffLat: number,
+  dropOffLng: number,
+  items: DonationItemResponse[],
+  driverInfo?: DriverSummaryDTO | null;
 }
 
 export interface DonationRequest {
@@ -77,4 +87,11 @@ export interface DonationSummaryResponse {
   items: DonationItemSummary[];
 }
 
-export type DonationStatus = 'AVAILABLE'| 'REQUESTED' | 'ASSIGNED' | 'IN_TRANSIT' | 'REJECTED' | 'DELIVERED' | 'CANCELED'
+export interface NotificationDto {
+  id:number;
+  message: string;
+  isRead: boolean;
+  createdAt: string;
+}
+
+export type DonationStatus = 'AVAILABLE'| 'REQUESTED' | 'ASSIGNED' | 'IN_TRANSIT' | 'REJECTED' | 'DELIVERED' | 'CANCELED' | 'EXPIRED'

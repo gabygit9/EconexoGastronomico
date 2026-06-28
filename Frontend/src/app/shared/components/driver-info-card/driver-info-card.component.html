@@ -1,0 +1,31 @@
+
+<div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mt-6 flex items-start gap-4">
+  <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center shrink-0">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+    </svg>
+  </div>
+
+  <div class="flex-1">
+    <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-1">Información del Conductor</h3>
+    <p class="text-lg font-extrabold text-gray-900">
+      {{ info().firstName }} {{ info().lastName }}
+    </p>
+
+    <div class="mt-2 flex flex-wrap gap-3">
+      @if (info().numberPlate && info().numberPlate !== 'Sin patente') {
+        <span class="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 text-gray-700 text-sm font-bold rounded-lg border border-gray-200">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path></svg>
+          Patente: {{ info().numberPlate }}
+        </span>
+      }
+
+      <span class="inline-flex items-center gap-1 px-3 py-1 bg-[#eb5c0c]/10 text-[#eb5c0c] text-sm font-bold rounded-lg">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+        </svg>
+        {{ info().vehicleType | vehicleTypeTranslate }}
+      </span>
+    </div>
+  </div>
+</div>
