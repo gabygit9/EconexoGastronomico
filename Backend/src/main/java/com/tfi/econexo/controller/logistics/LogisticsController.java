@@ -3,6 +3,7 @@ package com.tfi.econexo.controller.logistics;
 import com.tfi.econexo.dto.donation.DonationResponseDTO;
 import com.tfi.econexo.dto.logistics.AcceptTripRequestDTO;
 import com.tfi.econexo.dto.logistics.TripStatusUpdateRequestDTO;
+import com.tfi.econexo.service.donation.DonationService;
 import com.tfi.econexo.service.logistics.LogisticsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -11,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -23,6 +25,7 @@ import java.util.List;
 public class LogisticsController {
 
     private final LogisticsService logisticsService;
+    private final DonationService donationService;
 
     @PreAuthorize("hasAnyRole('DRIVER', 'ADMIN')")
     @GetMapping("/available-trips")
@@ -66,6 +69,26 @@ public class LogisticsController {
         String driverEmail = principal.getName();
         logisticsService.updateTripStatus(id, request.status(), driverEmail);
 
+        return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasRole('DRIVER')")
+    @PostMapping("/trips/{id}/cancel")
+    @Operation(summary = "Cancel an assigned trip", description = "Cancel a donation trip by a driver")
+    @ApiResponse(responseCode = "204", description = "Donation trip cancelled successfully")
+    public ResponseEntity<Void> cancelTrip(@PathVariable Long id, Authentication authentication){
+        String driverEmail = authentication.getName();
+        donationService.cancelTrip(id, driverEmail);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasRole('DRIVER')")
+    @PostMapping("/trips/{id}/reject")
+    @Operation(summary = "Reject an assigned trip", description = "Reject a donation trip by a driver")
+    @ApiResponse(responseCode = "204", description = "Donation trip rejected successfully")
+    public ResponseEntity<Void> rejectTrip(@PathVariable Long id, Authentication authentication){
+        String driverEmail = authentication.getName();
+        donationService.rejectDonationByDriver(id, driverEmail);
         return ResponseEntity.noContent().build();
     }
 }

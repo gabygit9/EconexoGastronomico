@@ -22,7 +22,8 @@ export class StatusTranslatePipe implements PipeTransform {
     'IN_TRANSIT': 'En tránsito',
     'DELIVERED': 'Entregado',
     'REJECTED': 'Rechazado',
-    'CANCELED': 'Cancelado'
+    'CANCELED': 'Cancelado',
+    'EXPIRED': 'Expirado'
   }
 
   transform(value: Status | DonationStatus): string {

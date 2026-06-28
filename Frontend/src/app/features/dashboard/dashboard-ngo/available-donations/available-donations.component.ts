@@ -1,4 +1,4 @@
-import {Component, DestroyRef, inject, OnInit, signal} from '@angular/core';
+import {Component, DestroyRef, inject, OnInit, output, signal} from '@angular/core';
 import {DonationService} from '../../../../core/services/donation.service';
 import {ToastrService} from 'ngx-toastr';
 import {DonationSummaryResponse} from '../../../../shared/models/donation.model';
@@ -22,6 +22,8 @@ export class AvailableDonationsComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly toastr = inject(ToastrService);
 
+  onDonationRequested = output<void>();
+
   availableDonations = signal<DonationSummaryResponse[]>([]);
   isLoadingDonations = signal<boolean>(true);
   selectedDonation = signal<DonationSummaryResponse | null>(null);
@@ -30,7 +32,7 @@ export class AvailableDonationsComponent implements OnInit {
     this.loadAvailableDonations();
   }
 
-  private loadAvailableDonations() {
+  loadAvailableDonations() {
     this.donationService.getAvailableDonations()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
@@ -64,6 +66,7 @@ export class AvailableDonationsComponent implements OnInit {
           this.availableDonations.update(currentDonations =>
             currentDonations.filter(donation => donation.id !== donationId)
           );
+          this.onDonationRequested.emit();
         },
         error: (err) => {
           console.error('Error al solicitar la donación:', err);

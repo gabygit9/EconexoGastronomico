@@ -51,8 +51,38 @@
       }
 
       @else if (driverProfile.status === 'APPROVED') {
-        <div class="w-full h-full">
+        <div class="w-full h-full space-y-6">
+
+          @if (activeTrip()) {
+            <div class="bg-[#161c28] rounded-2xl p-6 md:p-8 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden animate-fade-in border border-gray-800">
+
+              <div class="absolute -top-10 -right-10 w-40 h-40 bg-[#eb5c0c] rounded-full blur-3xl opacity-20"></div>
+
+              <div class="flex items-center gap-5 relative z-10 w-full md:w-auto">
+                <div class="w-16 h-16 bg-[#eb5c0c]/10 text-[#eb5c0c] rounded-full flex items-center justify-center shrink-0 border border-[#eb5c0c]/20">
+                  <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                </div>
+                <div>
+                  <span class="inline-block px-3 py-1 bg-[#eb5c0c] text-white text-xs font-bold uppercase tracking-wider rounded-lg mb-2">
+                    {{ activeTrip()?.status === 'ASSIGNED' ? 'Por Retirar' : 'En Tránsito' }}
+                  </span>
+                  <h3 class="text-2xl font-extrabold text-white tracking-tight">¡Tenés un viaje en curso!</h3>
+                  <p class="text-gray-400 text-sm mt-1">Hacia: <span class="text-gray-200 font-bold">{{ activeTrip()?.ngoName }}</span></p>
+                </div>
+              </div>
+
+              <button
+                (click)="goToActiveTrip()"
+                class="w-full md:w-auto relative z-10 bg-[#eb5c0c] hover:bg-[#d4530b] text-white font-bold py-4 px-8 rounded-xl transition-all shadow-lg active:scale-[0.98] flex items-center justify-center gap-2 whitespace-nowrap">
+                Retomar Viaje
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+              </button>
+
+            </div>
+          }
+
           <app-available-trips [driverProfile]="driverProfile"></app-available-trips>
+
         </div>
       }
 

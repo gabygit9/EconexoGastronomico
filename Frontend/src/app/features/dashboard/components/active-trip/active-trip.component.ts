@@ -8,6 +8,9 @@ import {ToastrService} from 'ngx-toastr';
 import {GenericModalComponent} from '../../../../shared/components/generic-modal/generic-modal.component';
 import {NavbarComponent} from '../../../../shared/components/navbar/navbar.component';
 import {FooterComponent} from '../../../../shared/components/footer/footer.component';
+import {AuthService} from '../../../../core/services/auth.service';
+import {map} from 'rxjs';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
   selector: 'app-active-trip',
@@ -15,7 +18,8 @@ import {FooterComponent} from '../../../../shared/components/footer/footer.compo
     MapComponent,
     GenericModalComponent,
     NavbarComponent,
-    FooterComponent
+    FooterComponent,
+    AsyncPipe
   ],
   templateUrl: './active-trip.component.html',
   styleUrl: './active-trip.component.css'
@@ -25,12 +29,20 @@ export class ActiveTripComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly logisticsService = inject(LogisticsService);
+  private readonly authService = inject(AuthService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly toastr = inject(ToastrService);
 
   trip = signal<DonationResponse | null>(null);
   isLoading = signal(true);
   isUpdatingStatus = signal(false);
+
+  //Modal rechazo
+  showRejectModal = signal(false);
+
+  //Modal cancelación
+  showCancelModal = signal(false);
+  isCanceling = signal(false);
 
   //Modal confirmación
   isModalOpen = signal(false);
@@ -43,6 +55,15 @@ export class ActiveTripComponent implements OnInit {
   })
 
   private pendingStatus: 'IN_TRANSIT' | 'DELIVERED' | null = null;
+
+  userName$ = this.authService.currentUser$.pipe(
+    map(profile => {
+      if(profile && 'firstName' in profile && 'lastName' in profile){
+        return profile.firstName + ' ' + profile.lastName;
+      }
+      return '';
+    })
+  );
 
   openConfirmation(action: 'IN_TRANSIT' | 'DELIVERED'){
     this.pendingStatus = action;
@@ -77,6 +98,22 @@ export class ActiveTripComponent implements OnInit {
     this.pendingStatus = null;
   }
 
+  openCancelModal(){
+    this.showCancelModal.set(true);
+  }
+
+  closeCancelModal(){
+    this.showCancelModal.set(false);
+  }
+
+  openRejectModal(){
+    this.showRejectModal.set(true);
+  }
+
+  closeRejectModal(){
+    this.showRejectModal.set(false);
+  }
+
   executeStatusUpdate(newStatus: 'IN_TRANSIT' | 'DELIVERED') {
     const currentTrip = this.trip();
     if(!currentTrip) return;
@@ -92,7 +129,7 @@ export class ActiveTripComponent implements OnInit {
 
         if(newStatus === 'DELIVERED'){
           this.toastr.info('Has completado la entrega. ¡Gracias por tu ayuda!', 'Viaje Finalizado');
-          this.router.navigate(['/dashboard/driver']);
+          this.goBack();
         }
 
       },
@@ -108,10 +145,17 @@ export class ActiveTripComponent implements OnInit {
     const tripId = this.route.snapshot.paramMap.get('id');
     if(tripId){
       this.loadTripDetails(+tripId);
+    } else {
+      this.goBack();
     }
   }
 
+  goBack() {
+    this.router.navigate(['/dashboard/driver']);
+  }
+
   private loadTripDetails(id:number){
+    this.isLoading.set(true);
     this.logisticsService.getTripById(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
         this.trip.set(data);
@@ -120,9 +164,47 @@ export class ActiveTripComponent implements OnInit {
       error: () => {
         this.isLoading.set(false);
         this.toastr.error('El viaje no existe o no está disponible.', 'Error');
-        this.router.navigate(['/dashboard/driver']);
+        this.goBack();
       }
     })
+  }
+
+  confirmCancelTrip(){
+    const currentTrip = this.trip();
+    if(!currentTrip) return;
+
+    this.isCanceling.set(true);
+    this.logisticsService.cancelTrip(currentTrip.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.isCanceling.set(false);
+        this.closeCancelModal();
+        this.toastr.success('Viaje cancelado. La donación fue liberada para la red.', 'Viaje Liberado');
+        this.goBack();
+      },
+      error: (err) => {
+        this.isCanceling.set(false);
+        this.toastr.error('Hubo un problema al cancelar el viaje. Intentá nuevamente.', 'Error');
+      }
+    })
+  }
+
+  confirmRejectTrip(){
+    const currentTrip = this.trip();
+    if(!currentTrip) return;
+
+    this.isCanceling.set(true);
+    this.logisticsService.rejectTrip(currentTrip.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.isCanceling.set(false);
+        this.closeRejectModal();
+        this.toastr.info('Donación marcada como rechazada y fuera de circulación.', 'Mercadería no apta');
+        this.goBack();
+      },
+      error: () => {
+        this.isCanceling.set(false);
+        this.toastr.error('Error al rechazar la donación.')
+      }
+    });
   }
 
 }

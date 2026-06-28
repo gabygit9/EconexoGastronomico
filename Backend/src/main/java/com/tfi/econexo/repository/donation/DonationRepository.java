@@ -34,7 +34,15 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
             @Param("status") DonationStatus status
     );
 
-    @Query("SELECT d FROM Donation d WHERE d.donor.user.email = :email OR d.ngo.user.email = :email ORDER BY d.createdDate DESC")
+    @Query("SELECT d FROM Donation d " +
+            "LEFT JOIN d.donor don " +
+            "LEFT JOIN don.user uDon " +
+            "LEFT JOIN d.ngo ngo " +
+            "LEFT JOIN ngo.user uNgo " +
+            "LEFT JOIN d.driver dr " +
+            "LEFT JOIN dr.user uDr " +
+            "WHERE uDon.email = :email OR uNgo.email = :email OR uDr.email = :email " +
+            "ORDER BY d.createdDate DESC")
     List<Donation> findMyDonationsOrderByCreatedDateDesc(@Param("email") String email);
 
 }

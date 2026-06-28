@@ -6,6 +6,7 @@ import com.tfi.econexo.dto.logistics.AcceptTripRequestDTO;
 import com.tfi.econexo.exception.GlobalExceptionHandler;
 import com.tfi.econexo.security.config.SecurityConfig;
 import com.tfi.econexo.service.auth.BlacklistedTokenService;
+import com.tfi.econexo.service.donation.DonationService;
 import com.tfi.econexo.service.logistics.DriverService;
 import com.tfi.econexo.service.logistics.LogisticsService;
 import com.tfi.econexo.utils.JwtUtils;
@@ -23,9 +24,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doThrow;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,6 +41,7 @@ class LogisticsControllerTest {
     @Autowired private ObjectMapper objectMapper;
     @MockitoBean private LogisticsService logisticsService;
     @MockitoBean private DriverService driverService;
+    @MockitoBean private DonationService donationService;
     @MockitoBean JwtUtils jwtUtils;
     @MockitoBean UserDetailsService userDetailsService;
     @MockitoBean BlacklistedTokenService blacklistedTokenService;
@@ -55,12 +57,37 @@ class LogisticsControllerTest {
         AcceptTripRequestDTO request = new AcceptTripRequestDTO(10L);
 
         mockMvc.perform(post("/api/v1/logistics/trips/1/accept")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))
-                .with(csrf()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .with(csrf()))
                 .andExpect(status().isConflict());
     }
 
+    @Test
+    @WithMockUser(username = "driver@correo.com", roles = {"DRIVER"})
+    void cancelTrip_WithDriverRole_ShouldReturnNoContent() throws Exception {
+        Long tripId = 1L;
+
+        doNothing().when(donationService).cancelTrip(eq(tripId), anyString());
+
+        mockMvc.perform(post("/api/v1/logistics/trips/{id}/cancel", tripId)
+                        .with(csrf()))
+                .andExpect(status().isNoContent());
+
+        verify(donationService, times(1)).cancelTrip(eq(tripId), eq("driver@correo.com"));
+    }
+
+    @Test
+    @WithMockUser(username = "donor@correo.com", roles = {"DONOR"})
+    void cancelTrip_WithInvalidRole_ShouldReturnForbidden() throws Exception {
+        Long tripId = 1L;
+
+        mockMvc.perform(post("/api/v1/logistics/trips/{id}/cancel", tripId)
+                        .with(csrf()))
+                .andExpect(status().isForbidden());
+
+        verify(donationService, never()).cancelTrip(anyLong(), anyString());
+    }
 
 
 }

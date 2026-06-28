@@ -1,5 +1,11 @@
-<app-navbar></app-navbar>
+<app-navbar [userName]="(userName$ | async) || '' "></app-navbar>
+
 <div class="p-6 max-w-7xl mx-auto space-y-6 min-h-[calc(100vh-160px)]">
+
+  <button (click)="goBack()" class="flex items-center gap-2 text-gray-500 hover:text-[#eb5c0c] transition-colors font-bold text-sm mb-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+    Volver al Panel
+  </button>
 
   <div class="flex items-center justify-between bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
     <div class="flex items-center gap-4">
@@ -21,6 +27,43 @@
       Viaje en curso
     </div>
   </div>
+
+
+  @if (trip()?.status === 'ASSIGNED') {
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="text-sm text-gray-500">
+        Gestioná el estado de este viaje si surgieron inconvenientes.
+      </div>
+
+      <div class="flex gap-3 w-full md:w-auto">
+        <button
+          (click)="openCancelModal()"
+          class="flex-1 md:flex-none bg-red-50 hover:bg-red-100 text-red-600 font-bold py-3 px-6 rounded-xl border border-red-200 transition-all flex items-center justify-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          Cancelar
+        </button>
+
+        <button
+          (click)="openRejectModal()"
+          class="flex-1 md:flex-none bg-orange-50 hover:bg-orange-100 text-orange-700 font-bold py-3 px-6 rounded-xl border border-orange-200 transition-all flex items-center justify-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+          Rechazar carga
+        </button>
+      </div>
+    </div>
+  }
+  @if (trip()?.status === 'IN_TRANSIT') {
+    <div class="bg-blue-50 border border-blue-100 p-4 rounded-xl flex items-start gap-3 mt-4">
+      <svg class="w-5 h-5 text-blue-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      <div class="text-sm text-blue-700">
+        <p class="font-bold">Viaje en curso</p>
+        <p>La mercadería ya está siendo transportada. Si surge un inconveniente de fuerza mayor, por favor contactá directamente con el soporte de EcoNexo.</p>
+      </div>
+    </div>
+  }
+
 
   @if (isLoading()) {
     <div class="w-full h-[550px] bg-white animate-pulse rounded-2xl flex flex-col gap-4 items-center justify-center border border-gray-100 shadow-sm p-10">
@@ -74,7 +117,6 @@
 
         <div class="mt-auto pt-4">
           @if (trip()?.status === 'ASSIGNED') {
-
             <button
               (click)="openConfirmation('IN_TRANSIT')"
               [disabled]="isUpdatingStatus()"
@@ -87,9 +129,7 @@
                 Confirmar Retiro de Carga
               }
             </button>
-
           } @else if (trip()?.status === 'IN_TRANSIT') {
-
             <button
               (click)="openConfirmation('DELIVERED')"
               [disabled]="isUpdatingStatus()"
@@ -102,13 +142,81 @@
                 Confirmar Entrega en ONG
               }
             </button>
-
           }
         </div>
       </div>
     </div>
   }
 </div>
+
+@if (showCancelModal()) {
+  <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-gray-100 space-y-6 transform scale-100 transition-transform">
+
+      <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto text-red-500">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+        </svg>
+      </div>
+
+      <div class="text-center space-y-2">
+        <h3 class="text-xl font-extrabold text-gray-900">¿Liberar este viaje?</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">
+          ¿Estás seguro de que deseas liberar este viaje? La donación volverá a estar disponible para que otro conductor de la red pueda rescatarla.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 pt-2">
+        <button
+          (click)="closeCancelModal()"
+          [disabled]="isCanceling()"
+          class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-xl transition-all disabled:opacity-50">
+          Volver
+        </button>
+
+        <button
+          (click)="confirmCancelTrip()"
+          [disabled]="isCanceling()"
+          class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-50 active:scale-[0.98]">
+          @if (isCanceling()) {
+            <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+          } @else {
+            Sí, cancelar
+          }
+        </button>
+      </div>
+
+    </div>
+  </div>
+}
+
+@if (showRejectModal()) {
+  <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-gray-100 space-y-6">
+
+      <div class="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center mx-auto text-orange-500">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+      </div>
+
+      <div class="text-center space-y-2">
+        <h3 class="text-xl font-extrabold text-gray-900">¿Rechazar por problemas?</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">
+          Esta acción marcará la donación como no apta y la sacará de circulación. ¿Confirmás que la mercadería no está en condiciones?
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 pt-2">
+        <button (click)="closeRejectModal()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-xl transition-all">
+          Volver
+        </button>
+        <button (click)="confirmRejectTrip()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl transition-all shadow-md active:scale-[0.98]">
+          @if (isCanceling()) { Procesando... } @else { Sí, rechazar }
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
 <app-generic-modal
   [isOpen]="isModalOpen()"
   [title]="modalConfig().title"

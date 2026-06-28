@@ -85,4 +85,28 @@ export class DonationService {
   getDonationById(donationId: number): Observable<DonationResponse>{
     return this.http.get<DonationResponse>(`${this.apiUrl}/${donationId}`);
   }
+
+  /**
+   * Cancel a donation (as a Donor)
+   * @param donationId
+   */
+  cancelDonationByDonor(donationId: number){
+    return this.http.post<void>(`${this.apiUrl}/${donationId}/cancel`, {donationId});
+  }
+
+  /**
+   * Reject a donation (as a Donor)
+   * @param donationId
+   */
+  rejectDonationByDonor(donationId: number){
+    return this.http.post<void>(`${this.apiUrl}/${donationId}/reject-driver`, {donationId});
+  }
+
+  /**
+   * Cancel a donation (as a Ngo)
+   * @param donationId
+   */
+  cancelDonationByNgo(donationId: number){
+    return this.http.post<void>(`${this.apiUrl}/${donationId}/cancel-ngo-donation`, {donationId});
+  }
 }

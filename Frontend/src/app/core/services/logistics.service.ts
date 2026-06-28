@@ -51,4 +51,20 @@ export class LogisticsService {
     const payload = { status: newStatus };
     return this.http.patch<void>(`${this.apiUrl}/trips/${tripId}/status`, payload);
   }
+
+  /**
+   * Cancels an assigned trip (Driver)
+   * @param tripId
+   */
+  cancelTrip(tripId: number): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/trips/${tripId}/cancel`, {});
+  }
+
+  /**
+   * Rejects a trip
+   * @param tripId
+   */
+  rejectTrip(tripId: number) {
+    return this.http.post<void>(`${this.apiUrl}/trips/${tripId}/reject`, {});
+  }
 }

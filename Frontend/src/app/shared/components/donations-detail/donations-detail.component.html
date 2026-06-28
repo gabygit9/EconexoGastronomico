@@ -97,9 +97,33 @@
               <p class="text-xs text-gray-400 mt-1">Te avisaremos cuando alguien tome el viaje.</p>
             </div>
           }
+
+          <div class="mt-6 flex flex-col gap-3">
+            @if (['AVAILABLE', 'REQUESTED', 'ASSIGNED'].includes(donation()!.status)) {
+              <button (click)="openModal('CANCEL')" class="w-full py-3 bg-red-50 text-red-600 font-bold rounded-xl hover:bg-red-100 transition-colors">
+                Cancelar Donación
+              </button>
+            }
+
+            @if (donation()!.status === 'ASSIGNED') {
+              <button (click)="openModal('REJECT')" class="w-full py-3 bg-orange-50 text-orange-600 font-bold rounded-xl hover:bg-orange-100 transition-colors">
+                Rechazar Conductor
+              </button>
+            }
+          </div>
         </div>
 
       </div>
+
+      @if (showModal() && donation()) {
+        <app-donation-confirm-modal
+          [donation]="donation()!"
+          [title]="modalTitle()"
+          [message]="modalMessage()"
+          (confirm)="handleConfirm()"
+          (close)="showModal.set(false)">
+        </app-donation-confirm-modal>
+      }
     }
   </main>
 
