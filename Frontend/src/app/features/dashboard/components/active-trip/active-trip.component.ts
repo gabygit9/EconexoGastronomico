@@ -32,6 +32,9 @@ export class ActiveTripComponent implements OnInit {
   isLoading = signal(true);
   isUpdatingStatus = signal(false);
 
+  //Modal rechazo
+  showRejectModal = signal(false);
+
   //Modal cancelación
   showCancelModal = signal(false);
   isCanceling = signal(false);
@@ -87,6 +90,14 @@ export class ActiveTripComponent implements OnInit {
 
   closeCancelModal(){
     this.showCancelModal.set(false);
+  }
+
+  openRejectModal(){
+    this.showRejectModal.set(true);
+  }
+
+  closeRejectModal(){
+    this.showRejectModal.set(false);
   }
 
   executeStatusUpdate(newStatus: 'IN_TRANSIT' | 'DELIVERED') {
@@ -161,6 +172,25 @@ export class ActiveTripComponent implements OnInit {
         this.toastr.error('Hubo un problema al cancelar el viaje. Intentá nuevamente.', 'Error');
       }
     })
+  }
+
+  confirmRejectTrip(){
+    const currentTrip = this.trip();
+    if(!currentTrip) return;
+
+    this.isCanceling.set(true);
+    this.logisticsService.rejectTrip(currentTrip.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.isCanceling.set(false);
+        this.closeRejectModal();
+        this.toastr.info('Donación marcada como rechazada y fuera de circulación.', 'Mercadería no apta');
+        this.goBack();
+      },
+      error: () => {
+        this.isCanceling.set(false);
+        this.toastr.error('Error al rechazar la donación.')
+      }
+    });
   }
 
 }

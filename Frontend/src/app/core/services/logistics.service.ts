@@ -59,4 +59,12 @@ export class LogisticsService {
   cancelTrip(tripId: number): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/trips/${tripId}/cancel`, {});
   }
+
+  /**
+   * Rejects a trip
+   * @param tripId
+   */
+  rejectTrip(tripId: number) {
+    return this.http.post<void>(`${this.apiUrl}/trips/${tripId}/reject`, {});
+  }
 }

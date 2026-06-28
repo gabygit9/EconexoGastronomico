@@ -75,6 +75,8 @@
 @if (selectedDonation()) {
   <app-donation-confirm-modal
     [donation]="selectedDonation()!"
+    title="Confirmar Solicitud"
+    message="Al confirmar, se asignará un conductor automáticamente a tu organización."
     (close)="closeModal()"
     (confirm)="confirmDonationRequest($event)">
   </app-donation-confirm-modal>

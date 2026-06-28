@@ -26,4 +26,7 @@ public interface DonationService {
     List<DonationResponseDTO> getMyDonations(String email);
     DonationResponseDTO getDonation(Long id);
     void cancelTrip(Long donationId, String driverEmail);
+    void rejectDonationByDriver(Long donationId, String driverEmail);
+    void cancelDonationByDonor(Long donationId, String donorEmail);
+    void rejectDriverByDonor(Long donationId, String donorEmail);
 }

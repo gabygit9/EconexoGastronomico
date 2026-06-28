@@ -87,4 +87,11 @@ export interface DonationSummaryResponse {
   items: DonationItemSummary[];
 }
 
-export type DonationStatus = 'AVAILABLE'| 'REQUESTED' | 'ASSIGNED' | 'IN_TRANSIT' | 'REJECTED' | 'DELIVERED' | 'CANCELED'
+export interface NotificationDto {
+  id:number;
+  message: string;
+  isRead: boolean;
+  createdAt: string;
+}
+
+export type DonationStatus = 'AVAILABLE'| 'REQUESTED' | 'ASSIGNED' | 'IN_TRANSIT' | 'REJECTED' | 'DELIVERED' | 'CANCELED' | 'EXPIRED'

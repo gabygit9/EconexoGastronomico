@@ -81,4 +81,14 @@ public class LogisticsController {
         donationService.cancelTrip(id, driverEmail);
         return ResponseEntity.noContent().build();
     }
+
+    @PreAuthorize("hasRole('DRIVER')")
+    @PostMapping("/trips/{id}/reject")
+    @Operation(summary = "Reject an assigned trip", description = "Reject a donation trip by a driver")
+    @ApiResponse(responseCode = "204", description = "Donation trip rejected successfully")
+    public ResponseEntity<Void> rejectTrip(@PathVariable Long id, Authentication authentication){
+        String driverEmail = authentication.getName();
+        donationService.rejectDonationByDriver(id, driverEmail);
+        return ResponseEntity.noContent().build();
+    }
 }

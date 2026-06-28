@@ -3,7 +3,6 @@ import {Router} from '@angular/router';
 import {AuthService} from '../../../core/services/auth.service';
 import {FooterComponent} from '../../../shared/components/footer/footer.component';
 import {NavbarComponent} from '../../../shared/components/navbar/navbar.component';
-import {DriverResponse} from '../../../shared/models/driver.model';
 import {DonorResponse} from '../../../shared/models/donor.model';
 import {map} from 'rxjs';
 import {AsyncPipe} from '@angular/common';
@@ -13,6 +12,9 @@ import {ToastrService} from 'ngx-toastr';
 import {DonationListComponent} from '../../../shared/components/donation-list/donation-list.component';
 import {DonationService} from '../../../core/services/donation.service';
 import {DonationResponse} from '../../../shared/models/donation.model';
+import {
+  DonationConfirmModalComponent
+} from '../../../shared/components/donation-confirm-modal/donation-confirm-modal.component';
 
 @Component({
   selector: 'app-dashboard-donor',
@@ -20,7 +22,8 @@ import {DonationResponse} from '../../../shared/models/donation.model';
     FooterComponent,
     NavbarComponent,
     AsyncPipe,
-    DonationListComponent
+    DonationListComponent,
+    DonationConfirmModalComponent
   ],
   templateUrl: './dashboard-donor.component.html',
   styleUrl: './dashboard-donor.component.css'
@@ -32,6 +35,10 @@ export class DashboardDonorComponent implements OnInit{
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly  toastr = inject(ToastrService);
+
+  showModal = signal(false);
+  selectedDonation = signal<DonationResponse | null>(null);
+  actionType = signal<'CANCEL' | 'REJECT'>('CANCEL');
 
   isLoading = true;
   donorProfile: DonorResponse | null = null;
@@ -86,5 +93,31 @@ export class DashboardDonorComponent implements OnInit{
 
   openDetail(donationId: number) {
     this.router.navigate(['/dashboard/donations', donationId]);
+  }
+
+  handleAction(event: {donationId: number, type: 'CANCEL' | 'REJECT'}) {
+    const donation = this.myDonations().find(d => d.id === event.donationId);
+    if (!donation) return;
+
+    this.selectedDonation.set(donation);
+    this.actionType.set(event.type);
+    this.showModal.set(true);
+  }
+
+  handleConfirm() {
+    const id = this.selectedDonation()!.id;
+    if (this.actionType() === 'CANCEL') {
+      this.donationService.cancelDonationByDonor(id).subscribe(() => {
+        this.toastr.success("Donación cancelada");
+        this.showModal.set(false);
+        this.loadMyDonations();
+      });
+    } else {
+      this.donationService.rejectDonationByDonor(id).subscribe(() => {
+        this.toastr.info("Conductor rechazado");
+        this.showModal.set(false);
+        this.loadMyDonations();
+      });
+    }
   }
 }

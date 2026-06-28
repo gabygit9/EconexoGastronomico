@@ -11,6 +11,7 @@ import {DriverInfoCardComponent} from '../driver-info-card/driver-info-card.comp
 import {FooterComponent} from '../footer/footer.component';
 import {AuthService} from '../../../core/services/auth.service';
 import {map} from 'rxjs';
+import {DonationConfirmModalComponent} from '../donation-confirm-modal/donation-confirm-modal.component';
 
 @Component({
   selector: 'app-donations-detail',
@@ -20,7 +21,8 @@ import {map} from 'rxjs';
     StatusTranslatePipe,
     DriverInfoCardComponent,
     FooterComponent,
-    AsyncPipe
+    AsyncPipe,
+    DonationConfirmModalComponent
   ],
   templateUrl: './donations-detail.component.html',
   styleUrl: './donations-detail.component.css'
@@ -35,6 +37,11 @@ export class DonationsDetailComponent implements OnInit{
 
   donation = signal<DonationResponse | null>(null);
   isLoading = signal<boolean>(true);
+
+  showModal = signal(false);
+  modalTitle = signal('');
+  modalMessage = signal('');
+  actionType = signal<'CANCEL' | 'REJECT'>('CANCEL');
 
   userName$ = this.authService.currentUser$.pipe(
     map(profile => {
@@ -71,5 +78,34 @@ export class DonationsDetailComponent implements OnInit{
 
   goBack(){
     window.history.back();
+  }
+
+  openModal(type: 'CANCEL' | 'REJECT') {
+    this.actionType.set(type);
+    if (type === 'CANCEL') {
+      this.modalTitle.set('Cancelar Donación');
+      this.modalMessage.set('¿Estás seguro de que deseas cancelar esta donación definitivamente?');
+    } else {
+      this.modalTitle.set('Rechazar Conductor');
+      this.modalMessage.set('¿Confirmás que querés rechazar al conductor asignado?');
+    }
+    this.showModal.set(true);
+  }
+
+  handleConfirm(){
+    const id = this.donation()!.id;
+    if (this.actionType() === 'CANCEL') {
+      this.donationService.cancelDonationByDonor(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+        this.toastr.success("Donación cancelada");
+        this.showModal.set(false);
+        this.goBack();
+      });
+    } else {
+      this.donationService.rejectDonationByDonor(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+        this.toastr.info("Conductor rechazado");
+        this.showModal.set(false);
+        this.loadDonation(id);
+      });
+    }
   }
 }

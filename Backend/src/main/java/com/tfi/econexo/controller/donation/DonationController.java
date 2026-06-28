@@ -37,8 +37,7 @@ public class DonationController {
             description = "Create a new donation")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Donation created"),
-            @ApiResponse(responseCode = "400", description = "Invalid request"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
+            @ApiResponse(responseCode = "400", description = "Invalid request")
     })
     public ResponseEntity<DonationResponseDTO> donate(@Valid @RequestBody DonationRequestDTO request){
         return new ResponseEntity<>(this.donationService.donate(request), HttpStatus.CREATED);
@@ -85,6 +84,19 @@ public class DonationController {
         return new ResponseEntity<>(this.donationService.getAvailableDonationsSummary(), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('NGO')")
+    @PatchMapping("/{id}/request")
+    @Operation(summary = "Request a donation",
+            description = "Request a donation")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Donation requested successfully")
+    })
+    public ResponseEntity<Void> requestDonation(@PathVariable Long id, Authentication authentication){
+        String email = authentication.getName();
+        this.donationService.requestDonation(id, email);
+        return ResponseEntity.noContent().build();
+    }
+
     @PreAuthorize("hasAnyRole('DONOR', 'NGO', 'DRIVER', 'ADMIN')")
     @GetMapping("/me")
     @Operation(summary = "Get my donations",
@@ -108,4 +120,24 @@ public class DonationController {
     public ResponseEntity<DonationResponseDTO> getDonation(@PathVariable Long id){
         return new ResponseEntity<>(this.donationService.getDonation(id), HttpStatus.OK);
     }
+
+    @PreAuthorize("hasAnyRole('DONOR', 'ADMIN')")
+    @PostMapping("/{id}/cancel")
+    @Operation(summary = "Cancel a donation", description = "Allows a donor to completely cancel a donation if it hasn't been picked up yet.")
+    public ResponseEntity<Void> cancelDonation(@PathVariable Long id, Authentication authentication){
+        String email = authentication.getName();
+        this.donationService.cancelDonationByDonor(id, email);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasAnyRole('DONOR', 'ADMIN')")
+    @PostMapping("/{id}/reject-driver")
+    @Operation(summary = "Reject assigned driver", description = "Allows a donor to reject a driver (e.g., lack of thermal equipment) and return the donation to the network.")
+    public ResponseEntity<Void> rejectDriver(@PathVariable Long id, Authentication authentication){
+        String email = authentication.getName();
+        this.donationService.rejectDriverByDonor(id, email);
+        return ResponseEntity.noContent().build();
+    }
+
+
 }

@@ -23,9 +23,20 @@
       <app-donation-list
         [donations]="myDonations()"
         [viewRole]="'DONOR'"
+        (actionRequested)="handleAction($event)"
         (rowClick)="openDetail($event)">
       </app-donation-list>
     </div>
+
+    @if (showModal()) {
+      <app-donation-confirm-modal
+        [donation]="selectedDonation()!"
+        [title]="actionType() === 'CANCEL' ? 'Cancelar Donación' : 'Rechazar Conductor'"
+        [message]="actionType() === 'CANCEL' ? '¿Estás seguro de cancelar esta donación?' : '¿Confirmás el rechazo del conductor?'"
+        (confirm)="handleConfirm()"
+        (close)="showModal.set(false)">
+      </app-donation-confirm-modal>
+    }
 
   </main>
 
