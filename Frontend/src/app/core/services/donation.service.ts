@@ -101,4 +101,12 @@ export class DonationService {
   rejectDonationByDonor(donationId: number){
     return this.http.post<void>(`${this.apiUrl}/${donationId}/reject-driver`, {donationId});
   }
+
+  /**
+   * Cancel a donation (as a Ngo)
+   * @param donationId
+   */
+  cancelDonationByNgo(donationId: number){
+    return this.http.post<void>(`${this.apiUrl}/${donationId}/cancel-ngo-donation`, {donationId});
+  }
 }

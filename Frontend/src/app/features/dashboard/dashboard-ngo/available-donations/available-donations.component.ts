@@ -32,7 +32,7 @@ export class AvailableDonationsComponent implements OnInit {
     this.loadAvailableDonations();
   }
 
-  private loadAvailableDonations() {
+  loadAvailableDonations() {
     this.donationService.getAvailableDonations()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({

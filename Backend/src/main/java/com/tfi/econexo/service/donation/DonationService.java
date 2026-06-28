@@ -29,4 +29,5 @@ public interface DonationService {
     void rejectDonationByDriver(Long donationId, String driverEmail);
     void cancelDonationByDonor(Long donationId, String donorEmail);
     void rejectDriverByDonor(Long donationId, String donorEmail);
+    void cancelDonationByNgo(Long donationId, String ngoEmail);
 }

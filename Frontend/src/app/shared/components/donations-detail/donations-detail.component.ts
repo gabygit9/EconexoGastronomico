@@ -94,11 +94,24 @@ export class DonationsDetailComponent implements OnInit{
 
   handleConfirm(){
     const id = this.donation()!.id;
+
     if (this.actionType() === 'CANCEL') {
-      this.donationService.cancelDonationByDonor(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-        this.toastr.success("Donación cancelada");
-        this.showModal.set(false);
-        this.goBack();
+      this.authService.currentUser$.subscribe(profile => {
+        if(profile && 'ngoName' in profile){
+          this.donationService.cancelDonationByNgo(id).subscribe({
+            next: () => {
+              this.toastr.success("Solicitud cancelada");
+              this.showModal.set(false);
+              this.goBack();
+            }
+          });
+        } else {
+          this.donationService.cancelDonationByDonor(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+            this.toastr.success("Donación cancelada");
+            this.showModal.set(false);
+            this.goBack();
+          });
+        }
       });
     } else {
       this.donationService.rejectDonationByDonor(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {

@@ -241,4 +241,23 @@ public class DonationServiceImpl implements DonationService {
         donation.setStatus(DonationStatus.REQUESTED);
         donationRepository.save(donation);
     }
+
+    @Transactional
+    @Override
+    public void cancelDonationByNgo(Long donationId, String ngoEmail) {
+        Donation donation = donationRepository.findById(donationId)
+                .orElseThrow(() -> new EntityNotFoundException("Donation not found"));
+        if(!donation.getNgo().getUser().getEmail().equals(ngoEmail)){
+            throw new AccessDeniedException("You are not allowed to cancel this donation");
+        }
+        if(donation.getStatus() != DonationStatus.REQUESTED){
+            throw new IllegalStateException("Only REQUESTED donations can be canceled by the NGO");
+        }
+
+        notificationService.notifyUser(donation.getDonor().getUser().getEmail(), "La ONG ha cancelado su solicitud. La donación vuelve a estado DISPONIBLE.", "Solicitud cancelada por la ONG");
+
+        donation.setStatus(DonationStatus.AVAILABLE);
+        donation.setNgo(null);
+        donationRepository.save(donation);
+    }
 }

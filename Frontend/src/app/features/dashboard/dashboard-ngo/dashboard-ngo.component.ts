@@ -1,4 +1,4 @@
-import {Component, DestroyRef, inject, OnInit, signal} from '@angular/core';
+import {Component, DestroyRef, inject, OnInit, signal, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
 import {AuthService} from '../../../core/services/auth.service';
 import {NgoResponseDTO} from '../../../shared/models/ngo.model';
@@ -7,7 +7,7 @@ import {NavbarComponent} from '../../../shared/components/navbar/navbar.componen
 import {map} from 'rxjs';
 import {AsyncPipe, DatePipe} from '@angular/common';
 import {DonationService} from '../../../core/services/donation.service';
-import {DonationResponse, DonationSummaryResponse} from '../../../shared/models/donation.model';
+import {DonationRequest, DonationResponse, DonationSummaryResponse} from '../../../shared/models/donation.model';
 import {NgoService} from '../../../core/services/ngo.service';
 import {ToastrService} from 'ngx-toastr';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
@@ -24,7 +24,8 @@ import {DonationListComponent} from '../../../shared/components/donation-list/do
     NavbarComponent,
     AsyncPipe,
     AvailableDonationsComponent,
-    DonationListComponent
+    DonationListComponent,
+    DonationConfirmModalComponent
   ],
   templateUrl: './dashboard-ngo.component.html',
   styleUrl: './dashboard-ngo.component.css'
@@ -37,11 +38,16 @@ export class DashboardNgoComponent implements OnInit{
   private readonly  toastr = inject(ToastrService);
   private readonly router = inject(Router);
 
+  @ViewChild(AvailableDonationsComponent) availableDonationsComp!: AvailableDonationsComponent;
+
   ngoProfile: NgoResponseDTO | null = null;
   isLoading = true;
 
   myDonations = signal<DonationResponse[]>([]);
   isLoadingDonations = signal<boolean>(true);
+
+  selectedDonationForCancel: DonationResponse | null = null;
+  showCancelModal = signal(false);
 
   userName$ = this.authService.currentUser$.pipe(
     map(profile => {
@@ -87,5 +93,37 @@ export class DashboardNgoComponent implements OnInit{
 
   openDetail(donationId: number) {
     this.router.navigate(['/dashboard/donations', donationId]);
+  }
+
+  handleCancelNgoDonation(event: {donationId: number, type: 'CANCEL' | 'REJECT'}){
+    if(event.type === 'CANCEL'){
+      const donation = this.myDonations().find(d => d.id === event.donationId);
+      if(donation) {
+        this.openCancelModal(donation);
+      }
+    }
+  }
+
+  openCancelModal(donation: DonationResponse) {
+    this.selectedDonationForCancel = donation;
+    this.showCancelModal.set(true);
+  }
+
+  confirmCancel(){
+    if(!this.selectedDonationForCancel) return;
+
+    this.donationService.cancelDonationByNgo(this.selectedDonationForCancel.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.toastr.success("Solicitud cancelada")
+        this.loadMyDonations();
+
+        if(this.availableDonationsComp){
+          this.availableDonationsComp.loadAvailableDonations();
+        }
+
+        this.showCancelModal.set(false);
+      },
+      error: () => this.toastr.error('Error al cancelar la solicitud')
+    });
   }
 }

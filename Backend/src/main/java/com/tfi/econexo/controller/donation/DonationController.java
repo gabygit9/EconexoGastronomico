@@ -139,5 +139,13 @@ public class DonationController {
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasAnyRole('NGO', 'ADMIN')")
+    @PostMapping("/{id}/cancel-ngo-donation")
+    @Operation(summary = "Cancel a donation by NGO", description = "Allows an NGO to completely cancel a donation if it hasn't been picked up yet.")
+    public ResponseEntity<Void> cancelDonationByNGO(@PathVariable Long id, Authentication authentication){
+        String email = authentication.getName();
+        this.donationService.cancelDonationByNgo(id, email);
+        return ResponseEntity.noContent().build();
+    }
 
 }

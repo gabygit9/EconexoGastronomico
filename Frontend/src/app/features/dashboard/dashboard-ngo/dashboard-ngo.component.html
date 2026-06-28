@@ -84,6 +84,7 @@
             <app-donation-list
               [donations]="myDonations()"
               [viewRole]="'NGO'"
+              (actionRequested)="handleCancelNgoDonation($event)"
               (rowClick)="openDetail($event)">
             </app-donation-list>
           </div>
@@ -92,6 +93,16 @@
 
       }
 
+    }
+
+    @if (showCancelModal()) {
+      <app-donation-confirm-modal
+        [donation]="selectedDonationForCancel!"
+        title="Cancelar solicitud"
+        message="¿Estás seguro de que deseas cancelar esta solicitud? La donación volverá a estar disponible."
+        (confirm)="confirmCancel()"
+        (close)="showCancelModal.set(false)">
+      </app-donation-confirm-modal>
     }
 
   </main>
