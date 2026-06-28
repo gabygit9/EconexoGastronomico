@@ -48,6 +48,9 @@ export class DonationsDetailComponent implements OnInit{
       if (!profile) return '';
       if ('tradeName' in profile) return profile.tradeName;
       if ('ngoName' in profile) return profile.ngoName;
+      if(profile && 'firstName' && 'lastName' in profile){
+        return profile.firstName + ' ' + profile.lastName;
+      }
       return '';
     })
   );

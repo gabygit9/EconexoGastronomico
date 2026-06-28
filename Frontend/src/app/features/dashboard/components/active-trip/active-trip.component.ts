@@ -8,6 +8,9 @@ import {ToastrService} from 'ngx-toastr';
 import {GenericModalComponent} from '../../../../shared/components/generic-modal/generic-modal.component';
 import {NavbarComponent} from '../../../../shared/components/navbar/navbar.component';
 import {FooterComponent} from '../../../../shared/components/footer/footer.component';
+import {AuthService} from '../../../../core/services/auth.service';
+import {map} from 'rxjs';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
   selector: 'app-active-trip',
@@ -15,7 +18,8 @@ import {FooterComponent} from '../../../../shared/components/footer/footer.compo
     MapComponent,
     GenericModalComponent,
     NavbarComponent,
-    FooterComponent
+    FooterComponent,
+    AsyncPipe
   ],
   templateUrl: './active-trip.component.html',
   styleUrl: './active-trip.component.css'
@@ -25,6 +29,7 @@ export class ActiveTripComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly logisticsService = inject(LogisticsService);
+  private readonly authService = inject(AuthService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly toastr = inject(ToastrService);
 
@@ -50,6 +55,15 @@ export class ActiveTripComponent implements OnInit {
   })
 
   private pendingStatus: 'IN_TRANSIT' | 'DELIVERED' | null = null;
+
+  userName$ = this.authService.currentUser$.pipe(
+    map(profile => {
+      if(profile && 'firstName' in profile && 'lastName' in profile){
+        return profile.firstName + ' ' + profile.lastName;
+      }
+      return '';
+    })
+  );
 
   openConfirmation(action: 'IN_TRANSIT' | 'DELIVERED'){
     this.pendingStatus = action;
