@@ -51,6 +51,7 @@ public class LogisticsServiceImpl implements LogisticsService {
     @Transactional
     @Override
     public void acceptTrip(Long donationId, String driverEmail, Long vehicleId) {
+
         Donation donation = donationService.findByIdDonation(donationId)
                 .orElseThrow(() -> new EntityNotFoundException("Donation not found"));
 
@@ -109,15 +110,16 @@ public class LogisticsServiceImpl implements LogisticsService {
             throw new IllegalArgumentException("The trip must be IN_TRANSIT before being finished.");
         }
 
-        if(donation.getStatus() == DonationStatus.IN_TRANSIT && requestedStatus != DonationStatus.DELIVERED){
-            throw new IllegalArgumentException("An IN_TRANSIT trip can only be DELIVERED.");
+        if(donation.getStatus() == DonationStatus.IN_TRANSIT && requestedStatus != DonationStatus.DELIVERED_PENDING_NGO){
+            throw new IllegalArgumentException("An IN_TRANSIT trip can only be DELIVERED_PENDING_NGO.");
         }
 
         if(donation.getStatus() == DonationStatus.DELIVERED){
-            throw new IllegalArgumentException("An DELIVERED trip can only be DELIVERED and can not be modified.");
+            if(donation.getDeliveryEvidence() == null || donation.getDeliveryEvidence().getNgoSignatureUrl() == null){
+                throw new IllegalArgumentException("Can mark as DELIVERED without NGO signature.");
+            }
         }
 
         donation.setStatus(requestedStatus);
     }
-
 }

@@ -131,7 +131,7 @@
             </button>
           } @else if (trip()?.status === 'IN_TRANSIT') {
             <button
-              (click)="openConfirmation('DELIVERED')"
+              (click)="openConfirmation('DELIVERED_PENDING_NGO')"
               [disabled]="isUpdatingStatus()"
               class="w-full bg-emerald-600 text-white py-5 rounded-2xl font-extrabold shadow-lg shadow-emerald-100 hover:bg-emerald-700 active:scale-[0.98] transition-all text-lg flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed">
               @if (isUpdatingStatus()) {
@@ -139,7 +139,7 @@
                 Procesando...
               } @else {
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                Confirmar Entrega en ONG
+                Registrar entrega y pedir firma
               }
             </button>
           }

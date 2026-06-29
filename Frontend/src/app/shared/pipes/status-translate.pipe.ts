@@ -20,6 +20,7 @@ export class StatusTranslatePipe implements PipeTransform {
     'REQUESTED': 'Solicitado',
     'ASSIGNED': 'Asignado',
     'IN_TRANSIT': 'En tránsito',
+    'DELIVERED_PENDING_NGO': 'Entregado (pendiente de ONG)',
     'DELIVERED': 'Entregado',
     'REJECTED': 'Rechazado',
     'CANCELED': 'Cancelado',
@@ -27,7 +28,7 @@ export class StatusTranslatePipe implements PipeTransform {
   }
 
   transform(value: Status | DonationStatus): string {
-    return value.valueOf().includes('PENDING') ?
+    return value.valueOf().includes('APPROVED') ?
       this.statusLoginDictionary[value as Status] : this.statusDonationDictionary[value as DonationStatus];
   }
 

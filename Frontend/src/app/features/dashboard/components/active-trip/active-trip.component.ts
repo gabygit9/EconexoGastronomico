@@ -54,7 +54,7 @@ export class ActiveTripComponent implements OnInit {
     confirmButtonClass: '',
   })
 
-  private pendingStatus: 'IN_TRANSIT' | 'DELIVERED' | null = null;
+  private pendingStatus: 'IN_TRANSIT' | 'DELIVERED_PENDING_NGO' | null = null;
 
   userName$ = this.authService.currentUser$.pipe(
     map(profile => {
@@ -65,7 +65,7 @@ export class ActiveTripComponent implements OnInit {
     })
   );
 
-  openConfirmation(action: 'IN_TRANSIT' | 'DELIVERED'){
+  openConfirmation(action: 'IN_TRANSIT' | 'DELIVERED_PENDING_NGO'){
     this.pendingStatus = action;
 
     if(action === 'IN_TRANSIT'){
@@ -114,7 +114,7 @@ export class ActiveTripComponent implements OnInit {
     this.showRejectModal.set(false);
   }
 
-  executeStatusUpdate(newStatus: 'IN_TRANSIT' | 'DELIVERED') {
+  executeStatusUpdate(newStatus: 'IN_TRANSIT' | 'DELIVERED_PENDING_NGO') {
     const currentTrip = this.trip();
     if(!currentTrip) return;
 
@@ -127,7 +127,7 @@ export class ActiveTripComponent implements OnInit {
 
         this.toastr.success('Estado actualizado correctamente', '¡Excelente!');
 
-        if(newStatus === 'DELIVERED'){
+        if(newStatus === 'DELIVERED_PENDING_NGO'){
           this.toastr.info('Has completado la entrega. ¡Gracias por tu ayuda!', 'Viaje Finalizado');
           this.goBack();
         }
