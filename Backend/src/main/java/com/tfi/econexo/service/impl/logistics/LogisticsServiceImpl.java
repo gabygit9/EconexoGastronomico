@@ -15,6 +15,8 @@ import com.tfi.econexo.repository.logistics.DeliverEvidenceRepository;
 import com.tfi.econexo.service.donation.DonationService;
 import com.tfi.econexo.service.logistics.DriverService;
 import com.tfi.econexo.service.logistics.LogisticsService;
+import com.tfi.econexo.service.upload.CloudinaryService;
+import com.tfi.econexo.utils.cloudinary.Base64ToMultipartConverter;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +26,9 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +38,7 @@ public class LogisticsServiceImpl implements LogisticsService {
 
     private final DriverService driverService;
     private final DonationService donationService;
+    private final CloudinaryService cloudinaryService;
     private final DeliverEvidenceRepository deliverEvidenceRepository;
     private final DonationMapper donationMapper;
 
@@ -136,6 +141,17 @@ public class LogisticsServiceImpl implements LogisticsService {
 
         if(!donation.getDriver().getUser().getEmail().equals(driverEmail)){
             throw new AccessDeniedException("You are not authorized to update this trip.");
+        }
+
+        //Cloudinary
+        MultipartFile signatureFile = Base64ToMultipartConverter.convert(dto.driverSignatureUrl(), "signature_" + tripId);
+        MultipartFile photoFile = Base64ToMultipartConverter.convert(dto.evidencePhotoUrl(), "photo_" + tripId);
+
+        try {
+            String signatureUrl = cloudinaryService.uploadFile(signatureFile, "evidence/signatures");
+            String photoUrl = cloudinaryService.uploadFile(photoFile, "evidence/photos");
+        } catch (IOException e) {
+            throw new RuntimeException("Error uploading files to Cloudinary", e);
         }
 
         DeliveryEvidence evidence = deliverEvidenceRepository.findByDonationId(tripId)
