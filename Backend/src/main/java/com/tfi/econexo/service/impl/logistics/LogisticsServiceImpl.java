@@ -1,14 +1,17 @@
 package com.tfi.econexo.service.impl.logistics;
 
 import com.tfi.econexo.dto.donation.DonationResponseDTO;
+import com.tfi.econexo.dto.logistics.DriverDeliveryEvidenceDTO;
 import com.tfi.econexo.exception.TripNotAvailableException;
 import com.tfi.econexo.exception.VehicleIncompatibleException;
 import com.tfi.econexo.mappers.DonationMapper;
 import com.tfi.econexo.model.donation.Donation;
 import com.tfi.econexo.model.donation.DonationItem;
 import com.tfi.econexo.model.enums.DonationStatus;
+import com.tfi.econexo.model.logistics.DeliveryEvidence;
 import com.tfi.econexo.model.logistics.Driver;
 import com.tfi.econexo.model.logistics.Vehicle;
+import com.tfi.econexo.repository.logistics.DeliverEvidenceRepository;
 import com.tfi.econexo.service.donation.DonationService;
 import com.tfi.econexo.service.logistics.DriverService;
 import com.tfi.econexo.service.logistics.LogisticsService;
@@ -31,6 +34,7 @@ public class LogisticsServiceImpl implements LogisticsService {
 
     private final DriverService driverService;
     private final DonationService donationService;
+    private final DeliverEvidenceRepository deliverEvidenceRepository;
     private final DonationMapper donationMapper;
 
     private final GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
@@ -116,10 +120,35 @@ public class LogisticsServiceImpl implements LogisticsService {
 
         if(donation.getStatus() == DonationStatus.DELIVERED){
             if(donation.getDeliveryEvidence() == null || donation.getDeliveryEvidence().getNgoSignatureUrl() == null){
-                throw new IllegalArgumentException("Can mark as DELIVERED without NGO signature.");
+                throw new IllegalArgumentException("Can't mark as DELIVERED without NGO signature.");
             }
+            throw new IllegalArgumentException("An DELIVERED trip cannot be modified.");
         }
 
         donation.setStatus(requestedStatus);
+    }
+
+    @Transactional
+    @Override
+    public void registerDriverDelivery(Long tripId, DriverDeliveryEvidenceDTO dto, String driverEmail) {
+        Donation donation = donationService.findByIdDonation(tripId)
+                .orElseThrow(() -> new EntityNotFoundException("Trip not found."));
+
+        if(!donation.getDriver().getUser().getEmail().equals(driverEmail)){
+            throw new AccessDeniedException("You are not authorized to update this trip.");
+        }
+
+        DeliveryEvidence evidence = deliverEvidenceRepository.findByDonationId(tripId)
+                .orElse(new DeliveryEvidence());
+
+        evidence.setDonation(donation);
+        evidence.setTemperature(dto.temperature());
+        evidence.setEvidencePhotoUrl(dto.evidencePhotoUrl());
+        evidence.setDriverSignatureUrl(dto.driverSignatureUrl());
+
+        deliverEvidenceRepository.save(evidence);
+
+        donation.setStatus(DonationStatus.DELIVERED_PENDING_NGO);
+        donationService.save(donation);
     }
 }
