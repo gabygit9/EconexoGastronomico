@@ -139,7 +139,7 @@ public class LogisticsServiceImpl implements LogisticsService {
         Donation donation = donationService.findByIdDonation(tripId)
                 .orElseThrow(() -> new EntityNotFoundException("Trip not found."));
 
-        if(!donation.getDriver().getUser().getEmail().equals(driverEmail)){
+        if(donation.getDriver() == null ||!donation.getDriver().getUser().getEmail().equals(driverEmail)){
             throw new AccessDeniedException("You are not authorized to update this trip.");
         }
 
@@ -147,9 +147,12 @@ public class LogisticsServiceImpl implements LogisticsService {
         MultipartFile signatureFile = Base64ToMultipartConverter.convert(dto.driverSignatureUrl(), "signature_" + tripId);
         MultipartFile photoFile = Base64ToMultipartConverter.convert(dto.evidencePhotoUrl(), "photo_" + tripId);
 
+        String signatureUrl;
+        String photoUrl;
+
         try {
-            String signatureUrl = cloudinaryService.uploadFile(signatureFile, "evidence/signatures");
-            String photoUrl = cloudinaryService.uploadFile(photoFile, "evidence/photos");
+            signatureUrl = cloudinaryService.uploadFile(signatureFile, "evidence/signatures");
+            photoUrl = cloudinaryService.uploadFile(photoFile, "evidence/photos");
         } catch (IOException e) {
             throw new RuntimeException("Error uploading files to Cloudinary", e);
         }
@@ -159,8 +162,8 @@ public class LogisticsServiceImpl implements LogisticsService {
 
         evidence.setDonation(donation);
         evidence.setTemperature(dto.temperature());
-        evidence.setEvidencePhotoUrl(dto.evidencePhotoUrl());
-        evidence.setDriverSignatureUrl(dto.driverSignatureUrl());
+        evidence.setEvidencePhotoUrl(photoUrl);
+        evidence.setDriverSignatureUrl(signatureUrl);
 
         deliverEvidenceRepository.save(evidence);
 
