@@ -1,13 +1,13 @@
 package com.tfi.econexo.config;
 
+import com.tfi.econexo.model.auth.Role;
+import com.tfi.econexo.model.auth.UserSec;
 import com.tfi.econexo.model.donation.catalog.Category;
 import com.tfi.econexo.model.donation.catalog.Product;
 import com.tfi.econexo.model.donation.catalog.ProductType;
 import com.tfi.econexo.model.donation.catalog.UnitOfMeasure;
 import com.tfi.econexo.model.location.City;
 import com.tfi.econexo.model.location.Neighborhood;
-import com.tfi.econexo.model.auth.Role;
-import com.tfi.econexo.model.auth.UserSec;
 import com.tfi.econexo.repository.auth.RoleRepository;
 import com.tfi.econexo.repository.auth.UserRepository;
 import com.tfi.econexo.repository.donation.catalog.CategoryRepository;
@@ -43,6 +43,7 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
+
         Role adminRole = getOrCreateRole("ADMIN");
         Role donorRole = getOrCreateRole("DONOR");
         Role ngoRole = getOrCreateRole("NGO");
@@ -63,6 +64,51 @@ public class DataInitializer implements CommandLineRunner {
             System.out.println("[DataInitializer] Usuario ADMIN creado con éxito: admin@econexo.com / admin1234");
         } else {
             System.out.println("[DataInitializer] El usuario ADMIN ya existe en la base de datos. Saltando inicialización.");
+        }
+
+        String ngoEmail = "ngo@mail.com";
+        if(userRepository.findUserEntityByEmail(ngoEmail).isEmpty()){
+            UserSec ngoUser = new UserSec();
+            ngoUser.setEmail(ngoEmail);
+            ngoUser.setPassword(passwordEncoder.encode("12345678"));
+            ngoUser.setEnabled(true);
+            ngoUser.setAccountNonExpired(true);
+            ngoUser.setAccountNonLocked(true);
+            ngoUser.setCredentialNonExpired(true);
+            ngoUser.setRolesList(Set.of(ngoRole));
+            userRepository.save(ngoUser);
+
+            System.out.println("[DataInitializer] Usuario NGO creado con éxito");
+        }
+
+        String donorEmail = "donor@mail.com";
+        if(userRepository.findUserEntityByEmail(donorEmail).isEmpty()){
+            UserSec donorUser = new UserSec();
+            donorUser.setEmail(donorEmail);
+            donorUser.setPassword(passwordEncoder.encode("12345678"));
+            donorUser.setEnabled(true);
+            donorUser.setAccountNonExpired(true);
+            donorUser.setAccountNonLocked(true);
+            donorUser.setCredentialNonExpired(true);
+            donorUser.setRolesList(Set.of(donorRole));
+            userRepository.save(donorUser);
+
+            System.out.println("[DataInitializer] Usuario DONOR creado con éxito");
+        }
+
+        String driverEmail = "driver@mail.com";
+        if(userRepository.findUserEntityByEmail(driverEmail).isEmpty()){
+            UserSec driverUser = new UserSec();
+            driverUser.setEmail(driverEmail);
+            driverUser.setPassword(passwordEncoder.encode("12345678"));
+            driverUser.setEnabled(true);
+            driverUser.setAccountNonExpired(true);
+            driverUser.setAccountNonLocked(true);
+            driverUser.setCredentialNonExpired(true);
+            driverUser.setRolesList(Set.of(driverRole));
+            userRepository.save(driverUser);
+
+            System.out.println("[DataInitializer] Usuario DRIVER creado con éxito");
         }
 
         if(cityRepository.count() == 0){
