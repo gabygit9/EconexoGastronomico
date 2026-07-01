@@ -6,6 +6,7 @@ public enum DonationStatus {
     ASSIGNED,
     IN_TRANSIT,
     REJECTED,
+    DELIVERED_PENDING_NGO,
     DELIVERED,
     CANCELED,
     EXPIRED

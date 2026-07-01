@@ -30,7 +30,7 @@ export class DonationListComponent {
       return all.filter(d => ['AVAILABLE', 'REQUESTED', 'ASSIGNED', 'IN_TRANSIT'].includes(d.status));
     }
     if(filter === 'HISTORY') {
-      return all.filter(d => ['DELIVERED', 'CANCELED', 'REJECTED', 'EXPIRED'].includes(d.status));
+      return all.filter(d => ['DELIVERED_PENDING_NGO', 'DELIVERED', 'CANCELED', 'REJECTED', 'EXPIRED'].includes(d.status));
     }
     return all;
   })
@@ -79,6 +79,7 @@ export class DonationListComponent {
       'REQUESTED': 'bg-purple-50 text-purple-700 border-purple-200',
       'ASSIGNED': 'bg-yellow-50 text-yellow-700 border-yellow-200',
       'IN_TRANSIT': 'bg-orange-50 text-orange-700 border-orange-200',
+      'DELIVERED_PENDING_NGO': 'bg-brown-50 text-brown-700 border-brown-200',
       'DELIVERED': 'bg-emerald-50 text-emerald-700 border-emerald-200',
       'CANCELED': 'bg-red-50 text-red-700 border-red-200',
       'EXPIRED': 'bg-gray-50 text-gray-600 border-gray-300'

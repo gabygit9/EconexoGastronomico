@@ -1,13 +1,13 @@
 package com.tfi.econexo.config;
 
+import com.tfi.econexo.model.auth.Role;
+import com.tfi.econexo.model.auth.UserSec;
 import com.tfi.econexo.model.donation.catalog.Category;
 import com.tfi.econexo.model.donation.catalog.Product;
 import com.tfi.econexo.model.donation.catalog.ProductType;
 import com.tfi.econexo.model.donation.catalog.UnitOfMeasure;
 import com.tfi.econexo.model.location.City;
 import com.tfi.econexo.model.location.Neighborhood;
-import com.tfi.econexo.model.auth.Role;
-import com.tfi.econexo.model.auth.UserSec;
 import com.tfi.econexo.repository.auth.RoleRepository;
 import com.tfi.econexo.repository.auth.UserRepository;
 import com.tfi.econexo.repository.donation.catalog.CategoryRepository;
@@ -43,6 +43,7 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
+
         Role adminRole = getOrCreateRole("ADMIN");
         Role donorRole = getOrCreateRole("DONOR");
         Role ngoRole = getOrCreateRole("NGO");

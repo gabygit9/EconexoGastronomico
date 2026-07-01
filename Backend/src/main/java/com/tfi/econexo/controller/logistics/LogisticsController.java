@@ -2,6 +2,7 @@ package com.tfi.econexo.controller.logistics;
 
 import com.tfi.econexo.dto.donation.DonationResponseDTO;
 import com.tfi.econexo.dto.logistics.AcceptTripRequestDTO;
+import com.tfi.econexo.dto.logistics.DriverDeliveryEvidenceDTO;
 import com.tfi.econexo.dto.logistics.TripStatusUpdateRequestDTO;
 import com.tfi.econexo.service.donation.DonationService;
 import com.tfi.econexo.service.logistics.LogisticsService;
@@ -89,6 +90,16 @@ public class LogisticsController {
     public ResponseEntity<Void> rejectTrip(@PathVariable Long id, Authentication authentication){
         String driverEmail = authentication.getName();
         donationService.rejectDonationByDriver(id, driverEmail);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasAnyRole('DRIVER', 'ADMIN')")
+    @PostMapping("/trips/{id}/driver-delivery")
+    @Operation(summary = "Register driver delivery", description = "Register a delivery by a driver")
+    @ApiResponse(responseCode = "204", description = "Driver delivery registered successfully")
+    public ResponseEntity<Void> driverDelivery(@PathVariable Long id, @RequestBody DriverDeliveryEvidenceDTO request, Authentication authentication){
+        String driverEmail = authentication.getName();
+        logisticsService.registerDriverDelivery(id, request, driverEmail);
         return ResponseEntity.noContent().build();
     }
 }

@@ -94,4 +94,10 @@ export interface NotificationDto {
   createdAt: string;
 }
 
-export type DonationStatus = 'AVAILABLE'| 'REQUESTED' | 'ASSIGNED' | 'IN_TRANSIT' | 'REJECTED' | 'DELIVERED' | 'CANCELED' | 'EXPIRED'
+export interface DeliveryEvidence {
+  temperature: number;
+  evidencePhotoUrl: string;
+  driverSignatureUrl: string;
+}
+
+export type DonationStatus = 'AVAILABLE'| 'REQUESTED' | 'ASSIGNED' | 'IN_TRANSIT' | 'REJECTED' | 'DELIVERED_PENDING_NGO' | 'DELIVERED' | 'CANCELED' | 'EXPIRED'

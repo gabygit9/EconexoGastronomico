@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Pattern;
 public record TripStatusUpdateRequestDTO(
 
         @Schema(description = "Status to update", example = "IN_TRANSIT")
-        @Pattern(regexp = "^(IN_TRANSIT|DELIVERED)$", message = "Transition status not allowed")
+        @Pattern(regexp = "^(IN_TRANSIT|DELIVERED_PENDING_NGO|DELIVERED)$", message = "Transition status not allowed")
         @NotBlank String status
 ) {
 }
