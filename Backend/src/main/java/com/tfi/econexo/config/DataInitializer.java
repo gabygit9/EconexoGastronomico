@@ -66,51 +66,6 @@ public class DataInitializer implements CommandLineRunner {
             System.out.println("[DataInitializer] El usuario ADMIN ya existe en la base de datos. Saltando inicialización.");
         }
 
-        String ngoEmail = "ngo@mail.com";
-        if(userRepository.findUserEntityByEmail(ngoEmail).isEmpty()){
-            UserSec ngoUser = new UserSec();
-            ngoUser.setEmail(ngoEmail);
-            ngoUser.setPassword(passwordEncoder.encode("12345678"));
-            ngoUser.setEnabled(true);
-            ngoUser.setAccountNonExpired(true);
-            ngoUser.setAccountNonLocked(true);
-            ngoUser.setCredentialNonExpired(true);
-            ngoUser.setRolesList(Set.of(ngoRole));
-            userRepository.save(ngoUser);
-
-            System.out.println("[DataInitializer] Usuario NGO creado con éxito");
-        }
-
-        String donorEmail = "donor@mail.com";
-        if(userRepository.findUserEntityByEmail(donorEmail).isEmpty()){
-            UserSec donorUser = new UserSec();
-            donorUser.setEmail(donorEmail);
-            donorUser.setPassword(passwordEncoder.encode("12345678"));
-            donorUser.setEnabled(true);
-            donorUser.setAccountNonExpired(true);
-            donorUser.setAccountNonLocked(true);
-            donorUser.setCredentialNonExpired(true);
-            donorUser.setRolesList(Set.of(donorRole));
-            userRepository.save(donorUser);
-
-            System.out.println("[DataInitializer] Usuario DONOR creado con éxito");
-        }
-
-        String driverEmail = "driver@mail.com";
-        if(userRepository.findUserEntityByEmail(driverEmail).isEmpty()){
-            UserSec driverUser = new UserSec();
-            driverUser.setEmail(driverEmail);
-            driverUser.setPassword(passwordEncoder.encode("12345678"));
-            driverUser.setEnabled(true);
-            driverUser.setAccountNonExpired(true);
-            driverUser.setAccountNonLocked(true);
-            driverUser.setCredentialNonExpired(true);
-            driverUser.setRolesList(Set.of(driverRole));
-            userRepository.save(driverUser);
-
-            System.out.println("[DataInitializer] Usuario DRIVER creado con éxito");
-        }
-
         if(cityRepository.count() == 0){
             City cordoba = new City();
             cordoba.setName("Córdoba");

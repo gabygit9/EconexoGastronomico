@@ -89,7 +89,4 @@ export class DashboardAdminComponent implements OnInit {
       }
     })
   }
-
-  protected readonly RoleTranslatePipe = RoleTranslatePipe;
-  protected readonly StatusTranslatePipe = StatusTranslatePipe;
 }

@@ -11,6 +11,7 @@ import {FooterComponent} from '../../../../shared/components/footer/footer.compo
 import {AuthService} from '../../../../core/services/auth.service';
 import {map} from 'rxjs';
 import {AsyncPipe} from '@angular/common';
+import {DeliveryEvidenceModalComponent} from '../delivery-evidence-modal/delivery-evidence-modal.component';
 
 @Component({
   selector: 'app-active-trip',
@@ -19,7 +20,8 @@ import {AsyncPipe} from '@angular/common';
     GenericModalComponent,
     NavbarComponent,
     FooterComponent,
-    AsyncPipe
+    AsyncPipe,
+    DeliveryEvidenceModalComponent
   ],
   templateUrl: './active-trip.component.html',
   styleUrl: './active-trip.component.css'
@@ -36,6 +38,7 @@ export class ActiveTripComponent implements OnInit {
   trip = signal<DonationResponse | null>(null);
   isLoading = signal(true);
   isUpdatingStatus = signal(false);
+  showEvidenceModal = signal(false);
 
   //Modal rechazo
   showRejectModal = signal(false);
@@ -69,12 +72,7 @@ export class ActiveTripComponent implements OnInit {
     this.pendingStatus = action;
 
     if(action === 'IN_TRANSIT'){
-      this.modalConfig.set({
-        title: '¿Retiraste la carga?',
-        message: 'Estás por notificar que ya tenés la mercadería y vas en camino a la ONG.',
-        confirmText: 'Sí, retirar',
-        confirmButtonClass: 'bg-[#eb5c0c] hover:bg-[#d4530b]'
-      });
+      this.showEvidenceModal.set(true);
     } else {
       this.modalConfig.set({
         title: '¿Entregaste la donación?',
@@ -82,8 +80,8 @@ export class ActiveTripComponent implements OnInit {
         confirmText: 'Sí, entregar',
         confirmButtonClass: 'bg-emerald-600 hover:bg-emerald-700'
       });
+      this.isModalOpen.set(true);
     }
-    this.isModalOpen.set(true);
   }
 
   onModalConfirm(){
@@ -205,6 +203,16 @@ export class ActiveTripComponent implements OnInit {
         this.toastr.error('Error al rechazar la donación.')
       }
     });
+  }
+
+  onEvidenceModalClose(success: boolean){
+    this.showEvidenceModal.set(false);
+    if(success){
+      const currentTrip = this.trip();
+      if(currentTrip){
+        this.loadTripDetails(currentTrip.id);
+      }
+    }
   }
 
 }

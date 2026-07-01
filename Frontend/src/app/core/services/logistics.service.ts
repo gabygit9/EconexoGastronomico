@@ -2,7 +2,7 @@ import {inject, Injectable} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {environment} from '../../../environments/environment.development';
 import {Observable} from 'rxjs';
-import {DonationResponse} from '../../shared/models/donation.model';
+import {DeliveryEvidence, DonationResponse} from '../../shared/models/donation.model';
 
 @Injectable({
   providedIn: 'root'
@@ -66,5 +66,14 @@ export class LogisticsService {
    */
   rejectTrip(tripId: number) {
     return this.http.post<void>(`${this.apiUrl}/trips/${tripId}/reject`, {});
+  }
+
+  /**
+   * Registers a driver delivery
+   * @param tripId
+   * @param evidence
+   */
+  registerDriverDelivery(tripId: number, evidence: DeliveryEvidence){
+    return this.http.post<void>(`${this.apiUrl}/trips/${tripId}/driver-delivery`, evidence);
   }
 }

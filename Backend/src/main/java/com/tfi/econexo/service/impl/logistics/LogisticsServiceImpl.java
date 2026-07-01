@@ -143,6 +143,14 @@ public class LogisticsServiceImpl implements LogisticsService {
             throw new AccessDeniedException("You are not authorized to update this trip.");
         }
 
+        if(donation.getStatus() != DonationStatus.ASSIGNED){
+            throw new IllegalArgumentException("Pickup evidence can only be registered when the trip is ASSIGNED. Current state: " + donation.getStatus());
+        }
+
+        if(dto.temperature() < -30 || dto.temperature() > 50){
+            throw new IllegalArgumentException("Temperature out of the bromatologic range.");
+        }
+
         //Cloudinary
         MultipartFile signatureFile = Base64ToMultipartConverter.convert(dto.driverSignatureUrl(), "signature_" + tripId);
         MultipartFile photoFile = Base64ToMultipartConverter.convert(dto.evidencePhotoUrl(), "photo_" + tripId);
@@ -167,7 +175,7 @@ public class LogisticsServiceImpl implements LogisticsService {
 
         deliverEvidenceRepository.save(evidence);
 
-        donation.setStatus(DonationStatus.DELIVERED_PENDING_NGO);
+        donation.setStatus(DonationStatus.IN_TRANSIT);
         donationService.save(donation);
     }
 }

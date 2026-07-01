@@ -11,7 +11,7 @@ public record DriverDeliveryEvidenceDTO(
         String evidencePhotoUrl,
 
         @Schema(description = "URL of the driver's signature")
-        String driverSignatureUrl //o el archivo multipart
+        String driverSignatureUrl
 
 ) {
 }
