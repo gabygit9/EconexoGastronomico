@@ -2,7 +2,9 @@ package com.tfi.econexo.service.impl.donation;
 
 import com.tfi.econexo.dto.donation.DonationRequestDTO;
 import com.tfi.econexo.dto.donation.DonationResponseDTO;
-import com.tfi.econexo.dto.donation.DonationSummaryResponseDTO;
+import com.tfi.econexo.dto.donation.summary.DonationSummaryResponseDTO;
+import com.tfi.econexo.dto.reception.DonationItemReceptionDTO;
+import com.tfi.econexo.dto.reception.ReceivedDonationDTO;
 import com.tfi.econexo.exception.ConflictException;
 import com.tfi.econexo.mappers.DonationMapper;
 import com.tfi.econexo.model.donation.Donation;
@@ -259,5 +261,37 @@ public class DonationServiceImpl implements DonationService {
         donation.setStatus(DonationStatus.AVAILABLE);
         donation.setNgo(null);
         donationRepository.save(donation);
+    }
+
+    @Transactional
+    @Override
+    public void receiveDonation(Long donationId, ReceivedDonationDTO dto) {
+        Donation donation = donationRepository.findById(donationId)
+                .orElseThrow(() -> new EntityNotFoundException("Donation not found"));
+
+        if(donation.getStatus() != DonationStatus.DELIVERED_PENDING_NGO){
+            throw new IllegalStateException("Only DELIVERED_PENDING_NGO donations can be received");
+        }
+
+        if(dto.comments() != null){
+            donation.setReceptionComments(dto.comments());
+        }
+
+        donation.setStatus(DonationStatus.DELIVERED);
+        donationRepository.save(donation);
+    }
+
+    @Override
+    public List<DonationItemReceptionDTO> getDonationItems(Long id) {
+        Donation donation = this.donationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Donation not found"));
+        return donation.getDonationItems().stream()
+                .map(item -> new DonationItemReceptionDTO(
+                        item.getId(),
+                        item.getProduct().getName(),
+                        item.getQuantity(),
+                        item.getUnitOfMeasure().getDescription(),
+                        item.getDescription()))
+                .toList();
     }
 }

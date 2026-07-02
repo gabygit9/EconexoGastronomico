@@ -1,7 +1,7 @@
 package com.tfi.econexo.mappers;
 
-import com.tfi.econexo.dto.donation.DonationItemSummaryDTO;
-import com.tfi.econexo.dto.donation.DonationSummaryResponseDTO;
+import com.tfi.econexo.dto.donation.summary.DonationItemSummaryDTO;
+import com.tfi.econexo.dto.donation.summary.DonationSummaryResponseDTO;
 import com.tfi.econexo.dto.donation.item.DonationItemRequestDTO;
 import com.tfi.econexo.dto.donation.item.DonationItemResponseDTO;
 import com.tfi.econexo.dto.donation.DonationResponseDTO;

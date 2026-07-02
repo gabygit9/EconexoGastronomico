@@ -57,6 +57,9 @@ public class Donation extends BaseEntity {
     @JoinColumn(name = "delivery_evidence_id", unique = true)
     private DeliveryEvidence deliveryEvidence;
 
+    @Column(name = "reception_comments")
+    private String receptionComments;
+
     public LocalDateTime getMinExpirationDate(){
         if(donationItems == null || donationItems.isEmpty()) return null;
         return donationItems.stream().map(DonationItem::getExpirationDate).min(LocalDateTime::compareTo).orElse(null);
