@@ -1,8 +1,9 @@
-import {Component, computed, input, output, signal} from '@angular/core';
+import {Component, computed, EventEmitter, inject, input, Output, output, signal} from '@angular/core';
 import {DatePipe, NgClass} from '@angular/common';
 import {DonationResponse} from '../../models/donation.model';
 import {StatusTranslatePipe} from '../../pipes/status-translate.pipe';
-import {RouterLink} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
+import {ToastrService} from 'ngx-toastr';
 
 @Component({
   selector: 'app-donation-list',
@@ -13,6 +14,10 @@ import {RouterLink} from '@angular/router';
   styleUrl: './donation-list.component.css'
 })
 export class DonationListComponent {
+  private readonly router = inject(Router);
+  private readonly toastr = inject(ToastrService);
+
+  @Output() onReceive = new EventEmitter<number>();
 
   donations = input.required<DonationResponse[]>();
   viewRole = input<'DONOR' | 'NGO'>();
@@ -86,5 +91,4 @@ export class DonationListComponent {
     };
     return statusMap[status] || 'bg-gray-50 text-gray-700 border-gray-200';
   }
-
 }

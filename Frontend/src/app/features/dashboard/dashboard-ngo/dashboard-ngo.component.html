@@ -83,6 +83,7 @@
               [donations]="myDonations()"
               [viewRole]="'NGO'"
               (actionRequested)="handleCancelNgoDonation($event)"
+              (onReceive)="handleReceiveDonation($event)"
               (rowClick)="openDetail($event)">
             </app-donation-list>
           </div>
