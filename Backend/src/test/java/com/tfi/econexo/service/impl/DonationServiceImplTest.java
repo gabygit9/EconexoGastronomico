@@ -5,6 +5,7 @@ import com.tfi.econexo.dto.donation.item.DonationItemRequestDTO;
 import com.tfi.econexo.dto.donation.item.DonationItemResponseDTO;
 import com.tfi.econexo.dto.donation.DonationRequestDTO;
 import com.tfi.econexo.dto.donation.DonationResponseDTO;
+import com.tfi.econexo.dto.reception.ReceivedDonationDTO;
 import com.tfi.econexo.mappers.DonationMapper;
 import com.tfi.econexo.model.donation.Donation;
 import com.tfi.econexo.model.donation.DonationItem;
@@ -272,5 +273,32 @@ class DonationServiceImplTest {
         assertThrows(EntityNotFoundException.class, () -> {
             donationService.cancelTrip(donationId, driverEmail);
         });
+    }
+
+    @Test
+    void receiveDonation_ShouldChangeStatusToDelivered_WhenStatusIsPendingNgo() {
+        Long donationId = 1L;
+        Donation donation = new Donation();
+        donation.setStatus(DonationStatus.DELIVERED_PENDING_NGO);
+        ReceivedDonationDTO dto = new ReceivedDonationDTO("Todo recibido correctamente");
+
+        when(donationRepository.findById(donationId)).thenReturn(Optional.of(donation));
+
+        donationService.receiveDonation(donationId, dto);
+
+        assertEquals(DonationStatus.DELIVERED, donation.getStatus());
+        assertEquals("Todo recibido correctamente", donation.getReceptionComments());
+        verify(donationRepository, times(1)).save(donation);
+    }
+
+    @Test
+    void receiveDonation_ShouldThrowException_WhenStatusIsNotPendingNgo() {
+        Long donationId = 1L;
+        Donation donation = new Donation();
+        donation.setStatus(DonationStatus.ASSIGNED);
+
+        when(donationRepository.findById(donationId)).thenReturn(Optional.of(donation));
+
+        assertThrows(IllegalStateException.class, () -> donationService.receiveDonation(donationId, new ReceivedDonationDTO("")));
     }
 }
