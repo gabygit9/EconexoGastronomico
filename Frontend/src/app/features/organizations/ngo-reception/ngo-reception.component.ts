@@ -24,10 +24,10 @@ export class NgoReceptionComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   donationId = signal<number | null>(null);
-  items = signal<DonationItemReception[]>([]);
-  isLoading = signal<boolean>(true);
+  items = signal<(DonationItemReception & { received: boolean })[]>([]);
+  isLoading = signal(true);
   comments = signal('');
-  isScanning = signal<boolean>(false);
+  isScanning = signal(false);
 
   @ViewChild('action') scanner!: NgxScannerQrcodeComponent;
 
@@ -42,7 +42,8 @@ export class NgoReceptionComponent implements OnInit {
   loadItems(id: number){
     this.donationService.getDonationItems(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
-        this.items.set(data);
+        const itemsWithReceived = data.map(item => ({ ...item, received: true}));
+        this.items.set(itemsWithReceived);
         this.isLoading.set(false);
       },
       error: () => {
@@ -55,7 +56,26 @@ export class NgoReceptionComponent implements OnInit {
   confirmReception(){
     if(!this.donationId()) return;
 
-    this.donationService.receiveDonations(this.donationId()!, { comments: this.comments() }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    const lostItems = this.items().filter(i => !i.received);
+
+    if(lostItems.length > 0 && this.comments().trim().length > 5){
+      this.toastr.warning('Hay items no recibidos. Por favor, explícalo en los comentarios.');
+      return;
+    }
+
+    const itemsToSend = this.items()
+      .filter(i => i.received)
+      .map(i => ({
+        itemId: i.itemId,
+        receivedQuantity: i.expectedQuantity
+      }));
+
+    const payload = {
+      comments: this.comments(),
+      receivedItems: itemsToSend,
+    }
+
+    this.donationService.receiveDonations(this.donationId()!, payload).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.toastr.success('Donación recibida correctamente');
         this.goBack();
