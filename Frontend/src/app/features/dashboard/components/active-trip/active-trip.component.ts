@@ -12,6 +12,7 @@ import {AuthService} from '../../../../core/services/auth.service';
 import {map} from 'rxjs';
 import {AsyncPipe} from '@angular/common';
 import {DeliveryEvidenceModalComponent} from '../delivery-evidence-modal/delivery-evidence-modal.component';
+import { QRCodeComponent } from 'angularx-qrcode';
 
 @Component({
   selector: 'app-active-trip',
@@ -21,7 +22,8 @@ import {DeliveryEvidenceModalComponent} from '../delivery-evidence-modal/deliver
     NavbarComponent,
     FooterComponent,
     AsyncPipe,
-    DeliveryEvidenceModalComponent
+    DeliveryEvidenceModalComponent,
+    QRCodeComponent
   ],
   templateUrl: './active-trip.component.html',
   styleUrl: './active-trip.component.css'
@@ -39,6 +41,8 @@ export class ActiveTripComponent implements OnInit {
   isLoading = signal(true);
   isUpdatingStatus = signal(false);
   showEvidenceModal = signal(false);
+
+  showQr = signal(false);
 
   //Modal rechazo
   showRejectModal = signal(false);
@@ -213,6 +217,25 @@ export class ActiveTripComponent implements OnInit {
         this.loadTripDetails(currentTrip.id);
       }
     }
+  }
+
+  generateQrAndNotifyArrival(){
+    const currentTrip = this.trip();
+    if(!currentTrip) return;
+
+    this.isUpdatingStatus.set(true);
+
+    this.logisticsService.updateTripStatus(currentTrip.id, 'DELIVERED_PENDING_NGO').pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.isUpdatingStatus.set(false);
+        this.showQr.set(true);
+        this.toastr.success('Has notificado tu llegada.', 'Mostrá este código a la ONG');
+      },
+      error: () => {
+        this.isUpdatingStatus.set(false);
+        this.toastr.error('Error al notificar tu llegada.')
+      }
+    })
   }
 
 }
