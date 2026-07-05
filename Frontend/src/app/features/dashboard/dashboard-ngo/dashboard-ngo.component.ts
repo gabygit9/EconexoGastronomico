@@ -126,4 +126,8 @@ export class DashboardNgoComponent implements OnInit{
       error: () => this.toastr.error('Error al cancelar la solicitud')
     });
   }
+
+  handleReceiveDonation(donationId: number){
+    this.router.navigate(['/ngo/reception', donationId]);
+  }
 }

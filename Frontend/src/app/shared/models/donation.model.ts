@@ -100,4 +100,22 @@ export interface DeliveryEvidence {
   driverSignatureUrl: string;
 }
 
+export interface DonationItemReception {
+  itemId: number,
+  productName: string,
+  expectedQuantity: number,
+  unitOfMeasure: string,
+  description: string
+}
+
+export interface ReceivedItem {
+  itemId: number,
+  receivedQuantity: number
+}
+
+export interface ReceivedDonation {
+  comments: string,
+  receivedItems: ReceivedItem[]
+}
+
 export type DonationStatus = 'AVAILABLE'| 'REQUESTED' | 'ASSIGNED' | 'IN_TRANSIT' | 'REJECTED' | 'DELIVERED_PENDING_NGO' | 'DELIVERED' | 'CANCELED' | 'EXPIRED'
