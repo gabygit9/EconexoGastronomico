@@ -114,7 +114,7 @@
             </button>
           }
 
-          @if(donation.status === 'DELIVERED_PENDING_NGO'){
+          @if(viewRole() === 'NGO' && donation.status === 'DELIVERED_PENDING_NGO'){
             <button (click)="onReceive.emit(donation.id); $event.stopPropagation()"
                     class="bg-emerald-600 text-whitepx-4 p-3 rounded-lg font-bold hover:bg-emerald-700 transition-all flex items-center gap-2">
               Recibir

@@ -6,12 +6,14 @@ import {DonationItemReception} from '../../../shared/models/donation.model';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {FormsModule} from '@angular/forms';
 import {NgxScannerQrcodeComponent} from 'ngx-scanner-qrcode';
+import {GenericModalComponent} from '../../../shared/components/generic-modal/generic-modal.component';
 
 @Component({
   selector: 'app-ngo-reception',
   imports: [
     FormsModule,
     NgxScannerQrcodeComponent,
+    GenericModalComponent,
   ],
   templateUrl: './ngo-reception.component.html',
   styleUrl: './ngo-reception.component.css'
@@ -28,6 +30,7 @@ export class NgoReceptionComponent implements OnInit {
   isLoading = signal(true);
   comments = signal('');
   isScanning = signal(false);
+  isModalOpen = signal(false);
 
   @ViewChild('action') scanner!: NgxScannerQrcodeComponent;
 
@@ -58,10 +61,20 @@ export class NgoReceptionComponent implements OnInit {
 
     const lostItems = this.items().filter(i => !i.received);
 
-    if(lostItems.length > 0 && this.comments().trim().length > 5){
-      this.toastr.warning('Hay items no recibidos. Por favor, explícalo en los comentarios.');
+    if(lostItems.length > 0 && this.comments().trim().length < 5){
+      this.toastr.warning('Por favor, explica en los comentarios por qué faltan ítems.');
       return;
     }
+
+    if(lostItems.length > 0) {
+      this.isModalOpen.set(true);
+    } else {
+      this.executeReception();
+    }
+  }
+
+  executeReception(){
+    this.isModalOpen.set(false);
 
     const itemsToSend = this.items()
       .filter(i => i.received)
@@ -104,8 +117,6 @@ export class NgoReceptionComponent implements OnInit {
       if (scannedId === this.donationId()) {
         this.scanner.stop();
         this.isScanning.set(false);
-        this.donationId.set(scannedId);
-        this.confirmReception();
         this.toastr.success('¡Validación exitosa! Donación confirmada.');
       } else {
         this.isScanning.set(false);

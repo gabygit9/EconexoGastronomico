@@ -71,3 +71,13 @@
     }
   </div>
 </div>
+
+<app-generic-modal
+  [isOpen]="isModalOpen()"
+  title="¿Confirmar recepción parcial?"
+  message="Has marcado ítems como no recibidos. Esta acción quedará registrada en el sistema. ¿Deseas continuar?"
+  confirmText="Sí, confirmar"
+  cancelText="Revisar ítems"
+  (confirm)="executeReception()"
+  (cancel)="isModalOpen.set(false)">
+</app-generic-modal>
