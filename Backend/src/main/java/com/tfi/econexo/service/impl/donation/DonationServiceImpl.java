@@ -35,6 +35,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -271,7 +272,7 @@ public class DonationServiceImpl implements DonationService {
 
     @Transactional
     @Override
-    public void receiveDonation(Long donationId, ReceivedDonationDTO dto) {
+    public void receiveDonation(Long donationId, ReceivedDonationDTO dto, String email) {
         Donation donation = donationRepository.findById(donationId)
                 .orElseThrow(() -> new EntityNotFoundException("Donation not found"));
 
@@ -296,6 +297,11 @@ public class DonationServiceImpl implements DonationService {
         }).toList();
 
         record.setItems(receivedItems);
+        record.setAcceptedDisclaimer(dto.acceptedDisclaimer());
+        record.setSignatureUrl(dto.signatureUrl());
+        record.setAcceptanceTimestamp(LocalDateTime.now());
+        record.setReceivedByEmail(email);
+
         receptionRecordRepository.save(record);
 
         donation.setStatus(DonationStatus.DELIVERED);

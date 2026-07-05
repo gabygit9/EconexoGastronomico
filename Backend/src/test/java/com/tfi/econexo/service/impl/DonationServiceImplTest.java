@@ -280,11 +280,11 @@ class DonationServiceImplTest {
         Long donationId = 1L;
         Donation donation = new Donation();
         donation.setStatus(DonationStatus.DELIVERED_PENDING_NGO);
-        ReceivedDonationDTO dto = new ReceivedDonationDTO("Todo recibido correctamente");
+        ReceivedDonationDTO dto = new ReceivedDonationDTO("Todo recibido correctamente", List.of(), true, "");
 
         when(donationRepository.findById(donationId)).thenReturn(Optional.of(donation));
 
-        donationService.receiveDonation(donationId, dto);
+        donationService.receiveDonation(donationId, dto, anyString());
 
         assertEquals(DonationStatus.DELIVERED, donation.getStatus());
         assertEquals("Todo recibido correctamente", donation.getReceptionComments());
@@ -299,6 +299,6 @@ class DonationServiceImplTest {
 
         when(donationRepository.findById(donationId)).thenReturn(Optional.of(donation));
 
-        assertThrows(IllegalStateException.class, () -> donationService.receiveDonation(donationId, new ReceivedDonationDTO("")));
+        assertThrows(IllegalStateException.class, () -> donationService.receiveDonation(donationId, new ReceivedDonationDTO("", List.of(), true, ""), anyString()));
     }
 }

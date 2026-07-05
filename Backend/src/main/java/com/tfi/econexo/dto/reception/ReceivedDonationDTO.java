@@ -11,6 +11,12 @@ public record ReceivedDonationDTO(
         String comments,
 
         @Schema(description = "List of items received")
-        List<ReceivedItemDTO> receivedItems
+        List<ReceivedItemDTO> receivedItems,
+
+        @Schema(description = "Accepted law disclaimer")
+        boolean acceptedDisclaimer,
+
+        @Schema(description = "Signature URL")
+        String signatureUrl
 ) {
 }

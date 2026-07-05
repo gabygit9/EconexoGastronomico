@@ -114,13 +114,13 @@ class DonationControllerTest {
     @WithMockUser(roles = "NGO")
     void receiveDonation_ShouldReturnNoContent() throws Exception {
         Long donationId = 1L;
-        ReceivedDonationDTO dto = new ReceivedDonationDTO("Todo correcto");
+        ReceivedDonationDTO dto = new ReceivedDonationDTO("Todo correcto", List.of(),true, "");
 
         mockMvc.perform(post("/api/v1/donations/{id}/receive", donationId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isNoContent());
 
-        verify(donationService, times(1)).receiveDonation(eq(donationId), any(ReceivedDonationDTO.class));
+        verify(donationService, times(1)).receiveDonation(eq(donationId), any(ReceivedDonationDTO.class), anyString());
     }
 }
