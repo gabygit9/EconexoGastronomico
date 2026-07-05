@@ -25,7 +25,9 @@ import com.tfi.econexo.repository.ngo.NgoRepository;
 import com.tfi.econexo.service.donation.DonationService;
 import com.tfi.econexo.service.donation.DonorService;
 import com.tfi.econexo.service.impl.GeocodingService;
+import com.tfi.econexo.service.upload.CloudinaryService;
 import com.tfi.econexo.utils.GeometryUtils;
+import com.tfi.econexo.utils.cloudinary.Base64ToMultipartConverter;
 import com.tfi.econexo.utils.notification.NotificationService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -34,7 +36,9 @@ import org.locationtech.jts.geom.Point;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -52,6 +56,7 @@ public class DonationServiceImpl implements DonationService {
     private final UnitOfMeasureRepository unitOfMeasureRepository;
     private final NgoRepository ngoRepository;
     private final NotificationService notificationService;
+    private final CloudinaryService cloudinaryService;
 
     private final DonationMapper donationMapper;
 
@@ -284,6 +289,15 @@ public class DonationServiceImpl implements DonationService {
             donation.setReceptionComments(dto.comments());
         }
 
+        MultipartFile signatureFile = Base64ToMultipartConverter.convert(dto.signatureUrl(), "ngo_signature_" + donationId);
+        String signatureUrl;
+
+        try {
+            signatureUrl = cloudinaryService.uploadFile(signatureFile, "reception/signatures");
+        } catch (IOException e) {
+            throw new RuntimeException("Error uploading signature to Cloudinary", e);
+        }
+
         ReceptionRecord record = new ReceptionRecord();
         record.setDonation(donation);
 
@@ -298,7 +312,7 @@ public class DonationServiceImpl implements DonationService {
 
         record.setItems(receivedItems);
         record.setAcceptedDisclaimer(dto.acceptedDisclaimer());
-        record.setSignatureUrl(dto.signatureUrl());
+        record.setSignatureUrl(signatureUrl);
         record.setAcceptanceTimestamp(LocalDateTime.now());
         record.setReceivedByEmail(email);
 
