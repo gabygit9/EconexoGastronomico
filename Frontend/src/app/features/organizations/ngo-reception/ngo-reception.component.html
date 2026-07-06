@@ -106,13 +106,22 @@
 </app-generic-modal>
 
 @if (isSignatureOpen()) {
-  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-    <div class="bg-white p-6 rounded-3xl w-full max-w-sm">
-      <h3 class="font-bold text-lg mb-4">Firma del encargado de la ONG</h3>
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/40 backdrop-blur-sm p-4">
+    <div class="bg-white p-8 rounded-3xl w-full max-w-sm shadow-2xl">
+      <h3 class="font-extrabold text-xl text-gray-900 mb-6">Firma del encargado</h3>
+
+      <!-- Ahora el canvas se verá integrado -->
       <app-signature-pad #signaturePad></app-signature-pad>
-      <div class="flex gap-3 mt-6">
-        <button (click)="isSignatureOpen.set(false)" class="flex-1 py-3 font-bold text-gray-500">Cancelar</button>
-        <button (click)="saveSignature()" class="flex-1 py-3 bg-[#eb5c0c] text-white font-bold rounded-xl">Firmar y enviar</button>
+
+      <div class="flex gap-3 mt-8">
+        <button (click)="isSignatureOpen.set(false)"
+                class="flex-1 py-3 font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition-all">
+          Cancelar
+        </button>
+        <button (click)="saveSignature()"
+                class="flex-1 py-3 bg-[#eb5c0c] text-white font-extrabold rounded-xl hover:bg-[#d4530b] shadow-lg shadow-orange-200 transition-all">
+          Firmar y enviar
+        </button>
       </div>
     </div>
   </div>
