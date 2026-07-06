@@ -32,6 +32,6 @@ public interface DonationService {
     void cancelDonationByDonor(Long donationId, String donorEmail);
     void rejectDriverByDonor(Long donationId, String donorEmail);
     void cancelDonationByNgo(Long donationId, String ngoEmail);
-    void receiveDonation(Long donationId, ReceivedDonationDTO dto);
+    void receiveDonation(Long donationId, ReceivedDonationDTO dto, String email);
     List<DonationItemReceptionDTO> getDonationItems(Long id);
 }

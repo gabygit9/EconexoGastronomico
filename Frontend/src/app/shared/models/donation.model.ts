@@ -115,7 +115,9 @@ export interface ReceivedItem {
 
 export interface ReceivedDonation {
   comments: string,
-  receivedItems: ReceivedItem[]
+  receivedItems: ReceivedItem[],
+  acceptedDisclaimer: boolean,
+  signatureUrl: string | null
 }
 
 export type DonationStatus = 'AVAILABLE'| 'REQUESTED' | 'ASSIGNED' | 'IN_TRANSIT' | 'REJECTED' | 'DELIVERED_PENDING_NGO' | 'DELIVERED' | 'CANCELED' | 'EXPIRED'

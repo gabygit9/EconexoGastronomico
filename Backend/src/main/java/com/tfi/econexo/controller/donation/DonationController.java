@@ -163,8 +163,9 @@ public class DonationController {
     @PreAuthorize("hasAnyRole('NGO', 'ADMIN')")
     @PostMapping("/{id}/receive")
     @Operation(summary = "Confirm donation reception", description = "Allows an NGO to receive a donation after it has been picked up by a driver.")
-    public ResponseEntity<Void> receiveDonation(@PathVariable Long id, @RequestBody ReceivedDonationDTO dto){
-        this.donationService.receiveDonation(id, dto);
+    public ResponseEntity<Void> receiveDonation(@PathVariable Long id, @RequestBody ReceivedDonationDTO dto, Authentication authentication){
+        String email = authentication.getName();
+        this.donationService.receiveDonation(id, dto, email);
         return ResponseEntity.noContent().build();
     }
 

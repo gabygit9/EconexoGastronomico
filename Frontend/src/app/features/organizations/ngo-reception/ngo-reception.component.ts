@@ -7,6 +7,7 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {FormsModule} from '@angular/forms';
 import {NgxScannerQrcodeComponent} from 'ngx-scanner-qrcode';
 import {GenericModalComponent} from '../../../shared/components/generic-modal/generic-modal.component';
+import {SignaturePadComponent} from '../../../shared/components/signature-pad/signature-pad.component';
 
 @Component({
   selector: 'app-ngo-reception',
@@ -14,6 +15,7 @@ import {GenericModalComponent} from '../../../shared/components/generic-modal/ge
     FormsModule,
     NgxScannerQrcodeComponent,
     GenericModalComponent,
+    SignaturePadComponent,
   ],
   templateUrl: './ngo-reception.component.html',
   styleUrl: './ngo-reception.component.css'
@@ -31,8 +33,13 @@ export class NgoReceptionComponent implements OnInit {
   comments = signal('');
   isScanning = signal(false);
   isModalOpen = signal(false);
+  acceptedDisclaimer = signal(false);
+  signatureUrl = signal<string | null>(null);
+  isSignatureOpen = signal(false);
+  isLegalTermsOpen = signal(false);
 
   @ViewChild('action') scanner!: NgxScannerQrcodeComponent;
+  @ViewChild('signaturePad') signaturePad!: SignaturePadComponent;
 
   ngOnInit(){
     const id = this.route.snapshot.paramMap.get('id');
@@ -59,6 +66,11 @@ export class NgoReceptionComponent implements OnInit {
   confirmReception(){
     if(!this.donationId()) return;
 
+    if (!this.acceptedDisclaimer()) {
+      this.toastr.error('Debes aceptar los términos y condiciones para continuar.');
+      return;
+    }
+
     const lostItems = this.items().filter(i => !i.received);
 
     if(lostItems.length > 0 && this.comments().trim().length < 5){
@@ -69,12 +81,17 @@ export class NgoReceptionComponent implements OnInit {
     if(lostItems.length > 0) {
       this.isModalOpen.set(true);
     } else {
-      this.executeReception();
+      this.openSignaturePad();
     }
   }
 
   executeReception(){
     this.isModalOpen.set(false);
+
+    if (!this.signatureUrl()) {
+      this.toastr.error('Es necesaria la firma digital para confirmar la recepción.');
+      return;
+    }
 
     const itemsToSend = this.items()
       .filter(i => i.received)
@@ -86,6 +103,8 @@ export class NgoReceptionComponent implements OnInit {
     const payload = {
       comments: this.comments(),
       receivedItems: itemsToSend,
+      acceptedDisclaimer: this.acceptedDisclaimer(),
+      signatureUrl: this.signatureUrl()
     }
 
     this.donationService.receiveDonations(this.donationId()!, payload).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
@@ -134,5 +153,25 @@ export class NgoReceptionComponent implements OnInit {
     isBeep: true,
     isDraw: true
   };
+
+  openSignaturePad(){
+    this.isSignatureOpen.set(true);
+  }
+
+  async saveSignature(){
+    const dataUrl = this.signaturePad.toDataURL();
+    if(!dataUrl){
+      this.toastr.error('La firma está vacía');
+      return;
+    }
+
+    this.signatureUrl.set(dataUrl);
+    this.isSignatureOpen.set(false);
+    this.executeReception();
+  }
+
+  openLegalTerms(){
+    this.isLegalTermsOpen.set(true);
+  }
 
 }

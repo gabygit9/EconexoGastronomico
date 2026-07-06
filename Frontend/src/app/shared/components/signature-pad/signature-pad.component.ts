@@ -4,7 +4,9 @@ import SignaturePad from 'signature_pad';
 @Component({
   selector: 'app-signature-pad',
   imports: [],
-  template: `<canvas #canvas style="border: 1px solid #000; width: 100%; height: 200px;"></canvas>`,
+  template: `<div class="border-2 border-dashed border-gray-200 rounded-2xl p-2 bg-gray-50">
+    <canvas #canvas class="w-full h-48 rounded-xl cursor-crosshair"></canvas>
+  </div>`,
   styleUrl: './signature-pad.component.css'
 })
 export class SignaturePadComponent implements AfterViewInit {

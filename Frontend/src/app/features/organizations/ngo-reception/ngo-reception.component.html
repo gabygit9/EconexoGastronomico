@@ -64,10 +64,23 @@
                   placeholder="¿Faltó algo? Indicalo aquí..."></textarea>
       </div>
 
+      <div class="mt-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
+        <div class="flex items-start gap-3">
+          <input type="checkbox" id="disclaimer" [(ngModel)]="acceptedDisclaimer"
+                 class="mt-1 w-5 h-5 accent-[#eb5c0c] cursor-pointer">
+          <label for="disclaimer" class="text-sm text-gray-600">
+            Declaro haber recibido los productos detallados en conformidad y acepto los
+            <button (click)="openLegalTerms()" class="text-[#eb5c0c] font-bold underline">términos y condiciones</button> de EcoNexo.
+          </label>
+        </div>
+      </div>
+
       <button (click)="confirmReception()"
-              class="mt-6 w-full bg-emerald-600 text-white py-4 rounded-xl font-extrabold hover:bg-emerald-700 transition-all active:scale-[0.98]">
-        Confirmar Recepción
+              [disabled]="!acceptedDisclaimer()"
+              class="mt-6 w-full bg-emerald-600 text-white py-4 rounded-xl font-extrabold disabled:bg-gray-400">
+        Firmar y Confirmar Recepción
       </button>
+
     }
   </div>
 </div>
@@ -78,6 +91,40 @@
   message="Has marcado ítems como no recibidos. Esta acción quedará registrada en el sistema. ¿Deseas continuar?"
   confirmText="Sí, confirmar"
   cancelText="Revisar ítems"
-  (confirm)="executeReception()"
+  (confirm)="isModalOpen.set(false); openSignaturePad()"
   (cancel)="isModalOpen.set(false)">
 </app-generic-modal>
+
+<app-generic-modal
+  [isOpen]="isLegalTermsOpen()"
+  title="Términos y Condiciones de EcoNexo"
+  [message]="'Al confirmar la recepción de esta donación, usted declara bajo juramento que los productos recibidos coinciden con el remito digital. Cualquier discrepancia deberá ser informada en la sección de comentarios al momento de la firma. EcoNexo no se responsabiliza por el estado de los productos una vez aceptada la entrega por parte del encargado de la ONG.'"
+  confirmText="Entendido"
+  [cancelText]="''"
+  (confirm)="isLegalTermsOpen.set(false)"
+  (cancel)="isLegalTermsOpen.set(false)">
+</app-generic-modal>
+
+@if (isSignatureOpen()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/40 backdrop-blur-sm p-4">
+    <div class="bg-white p-8 rounded-3xl w-full max-w-sm shadow-2xl">
+      <h3 class="font-extrabold text-xl text-gray-900 mb-6">Firma del encargado</h3>
+
+      <!-- Ahora el canvas se verá integrado -->
+      <app-signature-pad #signaturePad></app-signature-pad>
+
+      <div class="flex gap-3 mt-8">
+        <button (click)="isSignatureOpen.set(false)"
+                class="flex-1 py-3 font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition-all">
+          Cancelar
+        </button>
+        <button (click)="saveSignature()"
+                class="flex-1 py-3 bg-[#eb5c0c] text-white font-extrabold rounded-xl hover:bg-[#d4530b] shadow-lg shadow-orange-200 transition-all">
+          Firmar y enviar
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+
