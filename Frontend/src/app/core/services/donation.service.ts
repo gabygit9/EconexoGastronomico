@@ -126,4 +126,12 @@ export class DonationService {
   receiveDonations(donationId: number, dto: ReceivedDonation){
     return this.http.post<void>(`${this.apiUrl}/${donationId}/receive`, dto);
   }
+
+  /**
+   * Download a certificate for a donation
+   * @param donationId
+   */
+  downloadCertificate(donationId: number){
+    return this.http.get<Blob>(`${this.apiUrl}/${donationId}/certificate`, { responseType: 'blob' as 'json' });
+  }
 }

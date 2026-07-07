@@ -34,4 +34,5 @@ public interface DonationService {
     void cancelDonationByNgo(Long donationId, String ngoEmail);
     void receiveDonation(Long donationId, ReceivedDonationDTO dto, String email);
     List<DonationItemReceptionDTO> getDonationItems(Long id);
+    byte[] getCertificateBytes(Long id);
 }

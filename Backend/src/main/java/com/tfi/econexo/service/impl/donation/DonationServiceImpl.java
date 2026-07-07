@@ -28,7 +28,9 @@ import com.tfi.econexo.service.impl.GeocodingService;
 import com.tfi.econexo.service.upload.CloudinaryService;
 import com.tfi.econexo.utils.GeometryUtils;
 import com.tfi.econexo.utils.cloudinary.Base64ToMultipartConverter;
+import com.tfi.econexo.utils.notification.EmailService;
 import com.tfi.econexo.utils.notification.NotificationService;
+import com.tfi.econexo.utils.pdf.PdfCertificateService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -57,6 +59,8 @@ public class DonationServiceImpl implements DonationService {
     private final NgoRepository ngoRepository;
     private final NotificationService notificationService;
     private final CloudinaryService cloudinaryService;
+    private final PdfCertificateService pdfCertificateService;
+    private final EmailService emailService;
 
     private final DonationMapper donationMapper;
 
@@ -320,6 +324,10 @@ public class DonationServiceImpl implements DonationService {
 
         donation.setStatus(DonationStatus.DELIVERED);
         donationRepository.save(donation);
+
+        byte[] pdfBytes = pdfCertificateService.generateCertificate(record);
+        emailService.sendCertificateEmail(record.getDonation().getDonor().getUser().getEmail(), "Certificado de Donación", "Adjunto encontrará el certificado de su reciente donación.", pdfBytes, "Certificado_" + record.getId() + ".pdf");
+        emailService.sendCertificateEmail(record.getReceivedByEmail(), "Certificado de Donación", "Adjunto encontrará su certificado.", pdfBytes, "Certificado_" + record.getId() + ".pdf");
     }
 
     @Override
@@ -334,6 +342,14 @@ public class DonationServiceImpl implements DonationService {
                         item.getUnitOfMeasure().getDescription(),
                         item.getDescription()))
                 .toList();
+    }
+
+    @Override
+    public byte[] getCertificateBytes(Long id){
+        ReceptionRecord record = receptionRecordRepository.findByDonationId(id)
+                .orElseThrow(() -> new EntityNotFoundException("Reception record not found"));
+
+        return pdfCertificateService.generateCertificate(record);
     }
 
 }

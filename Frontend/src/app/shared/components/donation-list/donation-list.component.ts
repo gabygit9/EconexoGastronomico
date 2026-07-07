@@ -1,9 +1,11 @@
-import {Component, computed, EventEmitter, inject, input, Output, output, signal} from '@angular/core';
+import {Component, computed, DestroyRef, EventEmitter, inject, input, Output, output, signal} from '@angular/core';
 import {DatePipe, NgClass} from '@angular/common';
 import {DonationResponse} from '../../models/donation.model';
 import {StatusTranslatePipe} from '../../pipes/status-translate.pipe';
 import {Router, RouterLink} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
+import {DonationService} from '../../../core/services/donation.service';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-donation-list',
@@ -16,6 +18,8 @@ import {ToastrService} from 'ngx-toastr';
 export class DonationListComponent {
   private readonly router = inject(Router);
   private readonly toastr = inject(ToastrService);
+  private readonly donationService = inject(DonationService);
+  private readonly destroyRef = inject(DestroyRef);
 
   @Output() onReceive = new EventEmitter<number>();
 
@@ -76,6 +80,17 @@ export class DonationListComponent {
     if(this.currentPage() > 1){
       this.currentPage.update(p => p - 1);
     }
+  }
+
+  downloadCertificate(id:number){
+    this.donationService.downloadCertificate(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe((blob: Blob) => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Certificado_Econexo_${id}.pdf`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    })
   }
 
   getStatusClass(status: string) {
