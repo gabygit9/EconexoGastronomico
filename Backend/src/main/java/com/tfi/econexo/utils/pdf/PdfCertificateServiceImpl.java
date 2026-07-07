@@ -45,7 +45,7 @@ public class PdfCertificateServiceImpl implements  PdfCertificateService {
             //info general
             document.add(new Paragraph("\n"));
             document.add(new Paragraph("N° de Certificado: ECN-2026" + record.getAcceptanceTimestamp().getYear() +"-" + record.getId()));
-            document.add(new Paragraph("Fecha de Entrege: " + record.getAcceptanceTimestamp().format(DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm")) + " hs.").setFont(regular));
+            document.add(new Paragraph("Fecha de Entrega: " + record.getAcceptanceTimestamp().format(DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm")) + " hs.").setFont(regular));
 
             //datos donante/ong
             addSection(document, "DATOS DEL DONANTE", bold);

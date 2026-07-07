@@ -344,4 +344,12 @@ public class DonationServiceImpl implements DonationService {
                 .toList();
     }
 
+    @Override
+    public byte[] getCertificateBytes(Long id){
+        ReceptionRecord record = receptionRecordRepository.findByDonationId(id)
+                .orElseThrow(() -> new EntityNotFoundException("Reception record not found"));
+
+        return pdfCertificateService.generateCertificate(record);
+    }
+
 }
