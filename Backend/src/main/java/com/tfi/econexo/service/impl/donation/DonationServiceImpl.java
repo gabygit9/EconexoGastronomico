@@ -327,7 +327,7 @@ public class DonationServiceImpl implements DonationService {
 
         byte[] pdfBytes = pdfCertificateService.generateCertificate(record);
         emailService.sendCertificateEmail(record.getDonation().getDonor().getUser().getEmail(), "Certificado de Donación", "Adjunto encontrará el certificado de su reciente donación.", pdfBytes, "Certificado_" + record.getId() + ".pdf");
-        emailService.sendCertificateEmail(record.getReceivedByEmail(), "Certificado de Donaión", "Adjunto encontrará su certificado.", pdfBytes, "Certificado_" + record.getId() + ".pdf");
+        emailService.sendCertificateEmail(record.getReceivedByEmail(), "Certificado de Donación", "Adjunto encontrará su certificado.", pdfBytes, "Certificado_" + record.getId() + ".pdf");
     }
 
     @Override
