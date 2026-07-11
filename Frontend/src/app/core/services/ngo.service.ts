@@ -23,4 +23,8 @@ export class NgoService {
       })
     );
   }
+
+  getActiveNgos(){
+    return this.http.get<NgoResponseDTO[]>(`${this.apiUrl}/active`);
+  }
 }

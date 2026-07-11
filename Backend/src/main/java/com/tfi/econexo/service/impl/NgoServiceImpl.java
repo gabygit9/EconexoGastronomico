@@ -9,6 +9,8 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -43,5 +45,15 @@ public class NgoServiceImpl implements NgoService {
         Ngo ngo = ngoRepository.findByUser_Email(email)
                 .orElseThrow(() -> new EntityNotFoundException("Ngo not found"));
         return ngoMapper.toResponseDTO(ngo);
+    }
+
+    @Override
+    public List<NgoResponseDTO> getActiveNgos() {
+        List<Ngo> ngos = ngoRepository.findAllActive();
+        List<NgoResponseDTO> ngoResponseDTOList = new ArrayList<>();
+        for (Ngo ngo : ngos) {
+            ngoResponseDTOList.add(ngoMapper.toResponseDTO(ngo));
+        }
+        return ngoResponseDTOList;
     }
 }

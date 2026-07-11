@@ -1,4 +1,4 @@
-import {Component, DestroyRef, inject, OnInit} from '@angular/core';
+import {Component, DestroyRef, inject, OnInit, signal} from '@angular/core';
 import {Router, RouterLink} from '@angular/router';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {AuthService} from '../../../core/services/auth.service';
@@ -6,10 +6,12 @@ import {ToastrService} from 'ngx-toastr';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {NgClass} from '@angular/common';
 import {BaseFormComponent} from "../../../shared/utils/base-form.component";
+import {DonationBannerComponent} from '../../../shared/components/donation-banner/donation-banner.component';
+import {DonationPaymentComponent} from '../../../shared/components/donation-payment/donation-payment.component';
 
 @Component({
   selector: 'app-login',
-  imports: [RouterLink, ReactiveFormsModule, NgClass],
+  imports: [RouterLink, ReactiveFormsModule, NgClass, DonationBannerComponent, DonationPaymentComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
@@ -24,6 +26,8 @@ export class LoginComponent extends BaseFormComponent implements OnInit{
   loginForm!: FormGroup;
   isSubmitting = false;
   showPassword = false;
+
+  showPaymentModal = signal(false);
 
   get form() {
     return this.loginForm;
