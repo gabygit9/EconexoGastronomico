@@ -50,6 +50,7 @@ public class PaymentServiceImpl implements PaymentService {
                     .items(Collections.singletonList(itemRequest))
                     .backUrls(backUrls)
                     .metadata(Map.of("ngo_id", dto.ngoId().toString()))
+                    // TODO: Habilitar autoReturn una vez configurado entorno de producción.
                     //.autoReturn("approved")
                     .build();
 
