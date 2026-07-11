@@ -1,5 +1,6 @@
 package com.tfi.econexo.controller.payment;
 
+import com.tfi.econexo.service.payment.WebhookService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -20,6 +21,7 @@ import java.util.Map;
 public class WebhookController {
 
     private static final Logger logger = LoggerFactory.getLogger(WebhookController.class);
+    private final WebhookService webhookService;
 
     @PostMapping("/webhook")
     @Operation(summary = "Handle payment webhook", description = "Handles payment webhook events")
@@ -33,6 +35,14 @@ public class WebhookController {
             @RequestHeader(value = "x-signature", required = false) String signature) {
 
         logger.info("Received webhook payload: {}", payload);
+
+        String type = (String) payload.get("type");
+
+        if ("topic_merchant_order_wh".equals(type)) {
+            String merchantOrderId = String.valueOf(payload.get("id"));
+            webhookService.processWebhook(merchantOrderId);
+        }
+
         return ResponseEntity.ok().build();
     }
 }

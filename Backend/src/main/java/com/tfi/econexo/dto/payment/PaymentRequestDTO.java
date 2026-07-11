@@ -7,6 +7,9 @@ import java.math.BigDecimal;
 @Schema(description = "Payment request")
 public record PaymentRequestDTO(
 
+        @Schema(description = "Donation id")
+        Long donationId,
+
         @Schema(description = "NGO id")
         Long ngoId,
 

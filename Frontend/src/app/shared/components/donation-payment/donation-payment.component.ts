@@ -7,6 +7,7 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {PaymentRequest} from '../../models/payment.model';
 import {NgoResponseDTO} from '../../models/ngo.model';
 import {FormsModule} from '@angular/forms';
+import {lastValueFrom} from 'rxjs';
 
 @Component({
   selector: 'app-donation-payment',
@@ -46,8 +47,9 @@ export class DonationPaymentComponent implements OnInit{
     return ngo ? ngo.ngoName : 'la organización';
   }
 
-  onDonate() {
+  async onDonate() {
     const request: PaymentRequest = {
+      donationId: null,
       ngoId: this.selectedNgoId(),
       amount: this.amount(),
       description: `Donación a EcoNexo para ${this.getSelectedNgoName()}`
@@ -58,14 +60,15 @@ export class DonationPaymentComponent implements OnInit{
       return;
     }
 
-    this.paymentService.createPreference(request).subscribe({
-      next: (response) => {
-        // Redirigimos a Mercado Pago
-        window.location.href = response.initPoint;
-      },
-      error: (er) => {
-        this.toastr.error('Hubo un error al iniciar el pago');
-      }
-    });
+    try {
+
+      request.donationId = await lastValueFrom(this.paymentService.initiateDonation(request));
+      const response = await lastValueFrom(this.paymentService.createPreference(request));
+      window.location.href = response.initPoint;
+
+    } catch (error) {
+      console.error("Error al iniciar donación", error);
+      this.toastr.error('Hubo un error al iniciar el pago');
+    }
   }
 }
