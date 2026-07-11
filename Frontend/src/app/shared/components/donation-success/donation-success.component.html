@@ -1,0 +1,21 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-50 p-6">
+  <div class="bg-white p-10 rounded-3xl shadow-lg border border-gray-100 text-center max-w-lg w-full">
+    <!-- Icono de éxito -->
+    <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+      <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+      </svg>
+    </div>
+
+    <h1 class="text-3xl font-extrabold text-gray-900 mb-2">¡Muchas gracias!</h1>
+    <p class="text-gray-600 mb-8">
+      Tu donación ha sido procesada con éxito. Tu aporte es fundamental para que nuestra red de distribución de alimentos siga creciendo.
+    </p>
+
+    <button
+      (click)="goHome()"
+      class="inline-block bg-[#eb5c0c] text-white font-bold py-3 px-8 rounded-xl hover:bg-[#d1520a] transition-all">
+      Volver al inicio
+    </button>
+  </div>
+</div>

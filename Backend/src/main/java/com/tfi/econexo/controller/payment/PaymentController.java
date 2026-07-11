@@ -24,7 +24,7 @@ public class PaymentController {
     @PostMapping("/create-preference")
     @Operation(summary = "Create a payment preference", description = "Create a payment preference")
     public ResponseEntity<Map<String, String>> createPreference(@RequestBody PaymentRequestDTO dto){
-        String initPoint = paymentService.createPreference(dto.amount(), dto.description());
+        String initPoint = paymentService.createPreference(dto);
         return ResponseEntity.ok(Map.of("initPoint", initPoint));
     }
 }

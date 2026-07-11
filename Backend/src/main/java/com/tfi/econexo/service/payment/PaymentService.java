@@ -1,8 +1,8 @@
 package com.tfi.econexo.service.payment;
 
-import java.math.BigDecimal;
+import com.tfi.econexo.dto.payment.PaymentRequestDTO;
 
 public interface PaymentService {
 
-    String createPreference(BigDecimal amount, String description);
+    String createPreference(PaymentRequestDTO dto);
 }
