@@ -21,4 +21,14 @@ export class PaymentService {
   createPreference(dto: PaymentRequest): Observable<{ initPoint: string }> {
     return this.http.post<{ initPoint: string }>(`${this.apiUrl}/create-preference`, dto);
   }
+
+  /**
+   * Initiate a donation
+   * @param dto - The payment request
+   * @returns An Observable of the donation id
+   */
+  initiateDonation(dto: PaymentRequest){
+    return this.http.post<number>(`${this.apiUrl}/money-donations`, dto);
+  }
+
 }

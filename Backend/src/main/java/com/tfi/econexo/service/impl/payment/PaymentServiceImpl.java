@@ -28,7 +28,6 @@ public class PaymentServiceImpl implements PaymentService {
         try {
             PreferenceClient client = new PreferenceClient();
 
-
             if (dto.amount() == null || dto.amount().compareTo(BigDecimal.ZERO) <= 0) {
                 throw new IllegalArgumentException("El monto es inválido");
             }
@@ -40,17 +39,16 @@ public class PaymentServiceImpl implements PaymentService {
                     .unitPrice(dto.amount())
                     .build();
 
-            PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
-                    .success("http://localhost:4200/donations/success")
-                    .failure("http://localhost:4200/donations/failure")
-                    .pending("http://localhost:4200/donations/pending")
-                    .build();
-
             PreferenceRequest request = PreferenceRequest.builder()
                     .items(Collections.singletonList(itemRequest))
-                    .backUrls(backUrls)
-                    .metadata(Map.of("ngo_id", dto.ngoId().toString()))
-                    //.autoReturn("approved")
+                    .externalReference(String.valueOf(dto.donationId()))
+                    .backUrls(PreferenceBackUrlsRequest.builder()
+                            .success("https://effects-vagrantly-implosive.ngrok-free.dev/donations/success")
+                            .pending("https://effects-vagrantly-implosive.ngrok-free.dev/donations/pending")
+                            .failure("https://effects-vagrantly-implosive.ngrok-free.dev/donations/failure")
+                            .build())
+                    .autoReturn("approved")
+                    .metadata(Map.of("ngo_id", String.valueOf(dto.ngoId())))
                     .build();
 
             Preference preference = client.create(request);

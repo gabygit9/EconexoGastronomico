@@ -67,6 +67,9 @@
               "buildTarget": "finalPIII:build:development"
             }
           },
+          "options": {
+            "allowedHosts": ["effects-vagrantly-implosive.ngrok-free.dev"]
+          },
           "defaultConfiguration": "development"
         },
         "extract-i18n": {

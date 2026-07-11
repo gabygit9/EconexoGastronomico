@@ -16,6 +16,7 @@ export class StatusTranslatePipe implements PipeTransform {
   }
 
   private readonly statusDonationDictionary: Record<DonationStatus, string> = {
+    'PENDING_PAYMENT': "Pendiente de pago",
     'AVAILABLE': 'Disponible',
     'REQUESTED': 'Solicitado',
     'ASSIGNED': 'Asignado',
@@ -24,7 +25,8 @@ export class StatusTranslatePipe implements PipeTransform {
     'DELIVERED': 'Entregado',
     'REJECTED': 'Rechazado',
     'CANCELED': 'Cancelado',
-    'EXPIRED': 'Expirado'
+    'EXPIRED': 'Expirado',
+    'COMPLETED': 'Completado'
   }
 
   transform(value: Status | DonationStatus): string {

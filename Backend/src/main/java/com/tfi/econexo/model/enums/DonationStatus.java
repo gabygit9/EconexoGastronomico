@@ -1,6 +1,7 @@
 package com.tfi.econexo.model.enums;
 
 public enum DonationStatus {
+    PENDING_PAYMENT,
     AVAILABLE,
     REQUESTED,
     ASSIGNED,
@@ -9,5 +10,6 @@ public enum DonationStatus {
     DELIVERED_PENDING_NGO,
     DELIVERED,
     CANCELED,
-    EXPIRED
+    EXPIRED,
+    COMPLETED
 }
