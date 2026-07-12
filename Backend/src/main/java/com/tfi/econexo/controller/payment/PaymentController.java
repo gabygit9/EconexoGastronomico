@@ -52,7 +52,7 @@ public class PaymentController {
     public ResponseEntity<Page<MoneyDonationDTO>> getMyDonations(
             Authentication authentication,
             @RequestParam(required = false) DonationStatus status,
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+            @PageableDefault(size = 10, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable) {
         String ngoEmail = authentication.getName();
         return ResponseEntity.ok(moneyDonationService.getDonations(ngoEmail, status, pageable ));
     }

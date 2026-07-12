@@ -44,19 +44,21 @@ public class MoneyDonationServiceImpl implements MoneyDonationService {
     public Page<MoneyDonationDTO> getDonations(String ngoEmail, DonationStatus status, Pageable pageable) {
         Ngo ngo = ngoRepository.findByUser_Email(ngoEmail)
                 .orElseThrow(() -> new RuntimeException("Ngo not found"));
+
         return moneyDonationRepository.findAll((root, query, cb) -> {
             Predicate p = cb.equal(root.get("ngo").get("id"), ngo.getId());
             if(status != null){
-                p = cb.equal(root.get("status"), status);
+                p = cb.and(p, cb.equal(root.get("status"), status));
             }
             return p;
         }, pageable).map(d -> new MoneyDonationDTO(
+                d.getId(),
                 d.getAmount(),
                 d.getStatus(),
                 ngo.getId(),
-                d.getDonor().getId()
+                d.getDonor() != null ? d.getDonor().getId() : null,
+                d.getCreatedDate()
         ));
-
     }
 
 }

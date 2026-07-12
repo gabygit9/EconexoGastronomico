@@ -129,10 +129,12 @@ export interface Page<T> {
 }
 
 export interface MoneyDonation {
+  id: number,
   amount: number,
-  status: DonationStatus,
+  status: 'COMPLETED' | 'PENDING_PAYMENT' | 'REJECTED'
   ngoId: number,
-  donorId: number
+  donorId: number,
+  createdDate: string
 }
 
 export type DonationStatus = 'PENDING_PAYMENT' | 'AVAILABLE'| 'REQUESTED' | 'ASSIGNED' | 'IN_TRANSIT' | 'REJECTED' | 'DELIVERED_PENDING_NGO' | 'DELIVERED' | 'CANCELED' | 'EXPIRED' | 'COMPLETED'

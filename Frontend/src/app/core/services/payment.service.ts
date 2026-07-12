@@ -38,11 +38,11 @@ export class PaymentService {
    * @param size
    * @param status
    */
-  getMyDonations(page: number = 0, size: number= 10, status?: string): Observable<Page<MoneyDonation>> {
+  getMyDonations(page: number = 0, size: number= 5, status?: string): Observable<Page<MoneyDonation>> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString())
-      .set('sort', 'createdAt,desc');
+      .set('sort', 'createdDate,desc');
 
     if(status){
       params = params.set('status', status);
