@@ -120,4 +120,21 @@ export interface ReceivedDonation {
   signatureUrl: string | null
 }
 
+export interface Page<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+}
+
+export interface MoneyDonation {
+  id: number,
+  amount: number,
+  status: 'COMPLETED' | 'PENDING_PAYMENT' | 'REJECTED'
+  ngoId: number,
+  donorId: number,
+  createdDate: string
+}
+
 export type DonationStatus = 'PENDING_PAYMENT' | 'AVAILABLE'| 'REQUESTED' | 'ASSIGNED' | 'IN_TRANSIT' | 'REJECTED' | 'DELIVERED_PENDING_NGO' | 'DELIVERED' | 'CANCELED' | 'EXPIRED' | 'COMPLETED'
