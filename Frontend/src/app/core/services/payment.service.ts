@@ -1,8 +1,9 @@
 import {inject, Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import {environment} from '../../../environments/environment.development';
 import {PaymentRequest} from '../../shared/models/payment.model';
 import {Observable} from 'rxjs';
+import {MoneyDonation, Page} from '../../shared/models/donation.model';
 
 @Injectable({
   providedIn: 'root'
@@ -31,4 +32,22 @@ export class PaymentService {
     return this.http.post<number>(`${this.apiUrl}/money-donations`, dto);
   }
 
+  /**
+   * Get the donations of the current user
+   * @param page
+   * @param size
+   * @param status
+   */
+  getMyDonations(page: number = 0, size: number= 10, status?: string): Observable<Page<MoneyDonation>> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString())
+      .set('sort', 'createdAt,desc');
+
+    if(status){
+      params = params.set('status', status);
+    }
+
+    return this.http.get<Page<MoneyDonation>>(`${this.apiUrl}/my-donations`, { params });
+  }
 }

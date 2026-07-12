@@ -1,14 +1,19 @@
 package com.tfi.econexo.service.impl.payment;
 
+import com.tfi.econexo.dto.payment.MoneyDonationDTO;
 import com.tfi.econexo.dto.payment.PaymentRequestDTO;
 import com.tfi.econexo.model.donation.MoneyDonation;
 import com.tfi.econexo.model.enums.DonationStatus;
+import com.tfi.econexo.model.ngo.Ngo;
 import com.tfi.econexo.repository.donation.MoneyDonationRepository;
 import com.tfi.econexo.repository.ngo.NgoRepository;
 import com.tfi.econexo.service.donation.DonorService;
 import com.tfi.econexo.service.payment.MoneyDonationService;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -34,4 +39,24 @@ public class MoneyDonationServiceImpl implements MoneyDonationService {
 
         return moneyDonationRepository.save(donation).getId();
     }
+
+    @Override
+    public Page<MoneyDonationDTO> getDonations(String ngoEmail, DonationStatus status, Pageable pageable) {
+        Ngo ngo = ngoRepository.findByUser_Email(ngoEmail)
+                .orElseThrow(() -> new RuntimeException("Ngo not found"));
+        return moneyDonationRepository.findAll((root, query, cb) -> {
+            Predicate p = cb.equal(root.get("ngo").get("id"), ngo.getId());
+            if(status != null){
+                p = cb.equal(root.get("status"), status);
+            }
+            return p;
+        }, pageable).map(d -> new MoneyDonationDTO(
+                d.getAmount(),
+                d.getStatus(),
+                ngo.getId(),
+                d.getDonor().getId()
+        ));
+
+    }
+
 }
