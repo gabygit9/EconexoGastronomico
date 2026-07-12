@@ -23,7 +23,8 @@
             "assets": [
               {
                 "glob": "**/*",
-                "input": "public"
+                "input": "node_modules/ngx-scanner-qrcode/assets",
+                "output": "assets/"
               },
               "src/assets"
             ],
@@ -65,6 +66,9 @@
             "development": {
               "buildTarget": "finalPIII:build:development"
             }
+          },
+          "options": {
+            "allowedHosts": ["effects-vagrantly-implosive.ngrok-free.dev"]
           },
           "defaultConfiguration": "development"
         },

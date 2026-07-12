@@ -130,18 +130,33 @@
               }
             </button>
           } @else if (trip()?.status === 'IN_TRANSIT') {
-            <button
-              (click)="openConfirmation('DELIVERED')"
-              [disabled]="isUpdatingStatus()"
-              class="w-full bg-emerald-600 text-white py-5 rounded-2xl font-extrabold shadow-lg shadow-emerald-100 hover:bg-emerald-700 active:scale-[0.98] transition-all text-lg flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed">
-              @if (isUpdatingStatus()) {
-                <svg class="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                Procesando...
+            <div class="space-y-3">
+              @if (!showQr()) {
+                <button
+                  (click)="generateQrAndNotifyArrival()"
+                  [disabled]="isUpdatingStatus()"
+                  class="w-full bg-emerald-600 text-white py-5 rounded-2xl font-extrabold shadow-lg shadow-emerald-100 hover:bg-emerald-700 active:scale-[0.98] transition-all text-lg flex items-center justify-center gap-3">
+                  Generar QR
+                </button>
               } @else {
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                Confirmar Entrega en ONG
+                <div class="flex flex-col items-center p-4 bg-white rounded-2xl border-2 border-emerald-500">
+                  <qrcode [qrdata]="trip()!.id.toString()" [width]="200"></qrcode>
+                  <p class="mt-4 font-bold text-gray-700">Mostrá este código a la ONG</p>
+                  <button (click)="goBack()" class="mt-4 text-sm text-gray-500 underline">Cerrar</button>
+                </div>
               }
-            </button>
+              <button
+                (click)="openConfirmation('DELIVERED_PENDING_NGO')"
+                [disabled]="isUpdatingStatus()"
+                class="w-full bg-emerald-600 text-white py-5 rounded-2xl font-extrabold shadow-lg shadow-emerald-100 hover:bg-emerald-700 active:scale-[0.98] transition-all text-lg flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed">
+                @if (isUpdatingStatus()) {
+                  <svg class="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                  Procesando...
+                } @else {
+                  Registrar entrega
+                }
+              </button>
+            </div>
           }
         </div>
       </div>
@@ -226,5 +241,12 @@
   (confirm)="onModalConfirm()"
   (cancel)="onModalCancel()">
 </app-generic-modal>
+
+@if(showEvidenceModal()){
+  <app-delivery-evidence-modal
+    [tripId]="trip()!.id"
+    (close)="onEvidenceModalClose($event)">
+  </app-delivery-evidence-modal>
+}
 
 <app-footer></app-footer>

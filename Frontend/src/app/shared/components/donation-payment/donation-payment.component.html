@@ -1,0 +1,55 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+
+    <div class="flex items-center gap-4 mb-8 pb-4 border-b border-gray-100">
+      <div class="p-3 bg-orange-50 rounded-xl">
+        <svg class="w-8 h-8 text-[#eb5c0c]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+        </svg>
+      </div>
+      <div>
+        <h2 class="text-2xl font-bold text-gray-900">Apoyá la labor de las ONGs</h2>
+        <p class="text-gray-600 mt-1">Tu aporte económico ayuda a sostener el rescate y distribución de alimentos.</p>
+      </div>
+    </div>
+
+    <div class="mb-6">
+      <label class="block text-sm font-bold text-gray-700 mb-2">¿A qué organización querés donar?</label>
+      <div class="relative">
+        <select
+          [(ngModel)]="selectedNgoId"
+          class="w-full p-3 pl-4 pr-10 bg-white border border-gray-200 rounded-xl appearance-none focus:ring-2 focus:ring-[#eb5c0c] focus:border-[#eb5c0c] transition-all text-gray-900 font-medium shadow-inner">
+          <option [value]="null" disabled selected>-- Seleccioná una ONG --</option>
+          @for (ngo of ngoList(); track ngo.id) {
+            <option [value]="ngo.id">{{ ngo.ngoName }}</option>
+          }
+        </select>
+        <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8">
+      <label class="block text-sm font-bold text-gray-700 mb-2">Monto a donar ($ ARS)</label>
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+          <span class="text-gray-500 font-bold">$</span>
+        </div>
+        <input
+          type="number"
+          [(ngModel)]="amount"
+          placeholder="Ej: 5000"
+          class="w-full p-3 pl-10 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#eb5c0c] focus:border-[#eb5c0c] transition-all text-lg font-semibold text-gray-900 shadow-inner placeholder:text-gray-400">
+      </div>
+    </div>
+
+    <button
+      (click)="onDonate()"
+      [disabled]="!selectedNgoId() || amount() <= 0"
+      class="w-full bg-[#eb5c0c] text-white py-4 px-6 rounded-xl font-bold text-lg hover:bg-[#d1520a] transition-all duration-200 flex items-center justify-center gap-3 shadow-md disabled:bg-gray-300 disabled:cursor-not-allowed disabled:shadow-none">
+       Donar
+    </button>
+
+  </div>
+</div>

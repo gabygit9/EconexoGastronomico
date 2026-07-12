@@ -11,6 +11,7 @@ import {BehaviorSubject, catchError, Observable, tap, throwError} from 'rxjs';
 import {AuthLoginRequest, AuthResponse} from '../../shared/models/login.model';
 import {NgoRegistrationDTO, NgoResponseDTO, NgoTypeLookup} from '../../shared/models/ngo.model';
 import {DriverRegistrationDTO, DriverResponse} from '../../shared/models/driver.model';
+import {UserAdminResponse} from '../../shared/models/admin.model';
 
 @Injectable({
   providedIn: 'root'
@@ -152,5 +153,13 @@ export class AuthService {
    */
   confirmPassword(token: string, newPassword: string){
     return this.http.post(`${this.apiUrl}/password-reset/confirm`, { token, newPassword }, { responseType: 'text' });
+  }
+
+  /**
+   * Checks if the user is authenticated
+   * @returns {boolean} - True if the user is authenticated, false otherwise
+   */
+  isAuthenticated(): boolean {
+    return this.isAuthenticatedSubject.value;
   }
 }

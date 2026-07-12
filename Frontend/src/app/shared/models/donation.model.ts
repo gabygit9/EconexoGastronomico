@@ -94,4 +94,47 @@ export interface NotificationDto {
   createdAt: string;
 }
 
-export type DonationStatus = 'AVAILABLE'| 'REQUESTED' | 'ASSIGNED' | 'IN_TRANSIT' | 'REJECTED' | 'DELIVERED' | 'CANCELED' | 'EXPIRED'
+export interface DeliveryEvidence {
+  temperature: number;
+  evidencePhotoUrl: string;
+  driverSignatureUrl: string;
+}
+
+export interface DonationItemReception {
+  itemId: number,
+  productName: string,
+  expectedQuantity: number,
+  unitOfMeasure: string,
+  description: string
+}
+
+export interface ReceivedItem {
+  itemId: number,
+  receivedQuantity: number
+}
+
+export interface ReceivedDonation {
+  comments: string,
+  receivedItems: ReceivedItem[],
+  acceptedDisclaimer: boolean,
+  signatureUrl: string | null
+}
+
+export interface Page<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+}
+
+export interface MoneyDonation {
+  id: number,
+  amount: number,
+  status: 'COMPLETED' | 'PENDING_PAYMENT' | 'REJECTED'
+  ngoId: number,
+  donorId: number,
+  createdDate: string
+}
+
+export type DonationStatus = 'PENDING_PAYMENT' | 'AVAILABLE'| 'REQUESTED' | 'ASSIGNED' | 'IN_TRANSIT' | 'REJECTED' | 'DELIVERED_PENDING_NGO' | 'DELIVERED' | 'CANCELED' | 'EXPIRED' | 'COMPLETED'

@@ -24,7 +24,7 @@
   <div class="hidden lg:grid grid-cols-12 gap-4 p-4 bg-gray-50 border-b border-gray-100 text-xs font-bold text-gray-500 uppercase tracking-wider">
     <div class="col-span-4">Detalle de Carga</div>
     <div class="col-span-3">{{ viewRole() === 'DONOR' ? 'Destino (ONG)' : 'Origen (Comercio)' }}</div>
-    <div class="col-span-2">Fecha de Publicación</div>
+    <div class="col-span-2">Publicación</div>
     <div class="col-span-2">Estado</div>
     <div class="col-span-1 text-right">Acción</div>
   </div>
@@ -111,6 +111,26 @@
                     title="Cancelar solicitud"
                     class="p-2 text-red-400 hover:text-red-600 transition-colors">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          }
+
+          @if(viewRole() === 'NGO' && donation.status === 'DELIVERED_PENDING_NGO'){
+            <button (click)="onReceive.emit(donation.id); $event.stopPropagation()"
+                    title="Confirmar recepción"
+                    class="p-2 text-emerald-600 hover:text-emerald-800 transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </button>
+          }
+
+          @if(donation.status === 'DELIVERED'){
+            <button (click)="downloadCertificate(donation.id)"
+                    title="Descargar Certificado"
+                    class="p-2 text-emerald-600 hover:text-emerald-800 transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+              </svg>
             </button>
           }
         </div>

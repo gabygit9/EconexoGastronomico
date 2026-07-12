@@ -50,4 +50,13 @@ public class NgoController {
         NgoResponseDTO profile = this.ngoService.getProfileByEmail(email);
         return ResponseEntity.ok(profile);
     }
+
+    @GetMapping("/active")
+    @Operation(summary = "Get active NGOs", description = "Return a list of active NGOs.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Active NGO List successfully retrieved")
+    })
+    public ResponseEntity<List<NgoResponseDTO>> getActiveNgos() {
+        return ResponseEntity.ok(this.ngoService.getActiveNgos());
+    }
 }

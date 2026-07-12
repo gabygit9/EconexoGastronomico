@@ -2,25 +2,35 @@ package com.tfi.econexo.service.impl.donation;
 
 import com.tfi.econexo.dto.donation.DonationRequestDTO;
 import com.tfi.econexo.dto.donation.DonationResponseDTO;
-import com.tfi.econexo.dto.donation.DonationSummaryResponseDTO;
+import com.tfi.econexo.dto.reception.DonationItemReceptionDTO;
+import com.tfi.econexo.dto.reception.ReceivedDonationDTO;
+import com.tfi.econexo.dto.donation.summary.DonationSummaryResponseDTO;
 import com.tfi.econexo.exception.ConflictException;
 import com.tfi.econexo.mappers.DonationMapper;
 import com.tfi.econexo.model.donation.Donation;
 import com.tfi.econexo.model.donation.DonationItem;
+import com.tfi.econexo.model.donation.ReceivedItem;
+import com.tfi.econexo.model.donation.ReceptionRecord;
 import com.tfi.econexo.model.donation.catalog.Product;
 import com.tfi.econexo.model.donation.catalog.UnitOfMeasure;
 import com.tfi.econexo.model.donation.donor.Donor;
 import com.tfi.econexo.model.enums.DonationStatus;
 import com.tfi.econexo.model.ngo.Ngo;
+import com.tfi.econexo.repository.donation.DonationItemRepository;
 import com.tfi.econexo.repository.donation.DonationRepository;
+import com.tfi.econexo.repository.donation.ReceptionRecordRepository;
 import com.tfi.econexo.repository.donation.catalog.ProductRepository;
 import com.tfi.econexo.repository.donation.catalog.UnitOfMeasureRepository;
 import com.tfi.econexo.repository.ngo.NgoRepository;
 import com.tfi.econexo.service.donation.DonationService;
 import com.tfi.econexo.service.donation.DonorService;
 import com.tfi.econexo.service.impl.GeocodingService;
+import com.tfi.econexo.service.upload.CloudinaryService;
 import com.tfi.econexo.utils.GeometryUtils;
+import com.tfi.econexo.utils.cloudinary.Base64ToMultipartConverter;
+import com.tfi.econexo.utils.notification.EmailService;
 import com.tfi.econexo.utils.notification.NotificationService;
+import com.tfi.econexo.utils.pdf.PdfCertificateService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +38,10 @@ import org.locationtech.jts.geom.Point;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,12 +50,17 @@ import java.util.Optional;
 public class DonationServiceImpl implements DonationService {
 
     private final DonationRepository donationRepository;
+    private final DonationItemRepository donationItemRepository;
+    private final ReceptionRecordRepository receptionRecordRepository;
     private final GeocodingService geocodingService;
     private final DonorService donorService;
     private final ProductRepository productRepository;
     private final UnitOfMeasureRepository unitOfMeasureRepository;
     private final NgoRepository ngoRepository;
     private final NotificationService notificationService;
+    private final CloudinaryService cloudinaryService;
+    private final PdfCertificateService pdfCertificateService;
+    private final EmailService emailService;
 
     private final DonationMapper donationMapper;
 
@@ -260,4 +278,78 @@ public class DonationServiceImpl implements DonationService {
         donation.setNgo(null);
         donationRepository.save(donation);
     }
+
+    @Transactional
+    @Override
+    public void receiveDonation(Long donationId, ReceivedDonationDTO dto, String email) {
+        Donation donation = donationRepository.findById(donationId)
+                .orElseThrow(() -> new EntityNotFoundException("Donation not found"));
+
+        if(donation.getStatus() != DonationStatus.DELIVERED_PENDING_NGO){
+            throw new IllegalStateException("Only DELIVERED_PENDING_NGO donations can be received");
+        }
+
+        if(dto.comments() != null){
+            donation.setReceptionComments(dto.comments());
+        }
+
+        MultipartFile signatureFile = Base64ToMultipartConverter.convert(dto.signatureUrl(), "ngo_signature_" + donationId);
+        String signatureUrl;
+
+        try {
+            signatureUrl = cloudinaryService.uploadFile(signatureFile, "reception/signatures");
+        } catch (IOException e) {
+            throw new RuntimeException("Error uploading signature to Cloudinary", e);
+        }
+
+        ReceptionRecord record = new ReceptionRecord();
+        record.setDonation(donation);
+
+        List<ReceivedItem> receivedItems = dto.receivedItems().stream().map(dtoItem -> {
+            DonationItem originalItem = donationItemRepository.findById(dtoItem.itemId())
+                    .orElseThrow(()-> new EntityNotFoundException("Item not found"));
+            ReceivedItem received = new ReceivedItem();
+            received.setDonationItem(originalItem);
+            received.setReceivedQuantity(dtoItem.receivedQuantity());
+            return received;
+        }).toList();
+
+        record.setItems(receivedItems);
+        record.setAcceptedDisclaimer(dto.acceptedDisclaimer());
+        record.setSignatureUrl(signatureUrl);
+        record.setAcceptanceTimestamp(LocalDateTime.now());
+        record.setReceivedByEmail(email);
+
+        receptionRecordRepository.save(record);
+
+        donation.setStatus(DonationStatus.DELIVERED);
+        donationRepository.save(donation);
+
+        byte[] pdfBytes = pdfCertificateService.generateCertificate(record);
+        emailService.sendCertificateEmail(record.getDonation().getDonor().getUser().getEmail(), "Certificado de Donación", "Adjunto encontrará el certificado de su reciente donación.", pdfBytes, "Certificado_" + record.getId() + ".pdf");
+        emailService.sendCertificateEmail(record.getReceivedByEmail(), "Certificado de Donación", "Adjunto encontrará su certificado.", pdfBytes, "Certificado_" + record.getId() + ".pdf");
+    }
+
+    @Override
+    public List<DonationItemReceptionDTO> getDonationItems(Long id){
+        Donation donation = this.donationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Donation not found"));
+        return donation.getDonationItems().stream()
+                .map(item -> new DonationItemReceptionDTO(
+                        item.getId(),
+                        item.getProduct().getName(),
+                        item.getQuantity(),
+                        item.getUnitOfMeasure().getDescription(),
+                        item.getDescription()))
+                .toList();
+    }
+
+    @Override
+    public byte[] getCertificateBytes(Long id){
+        ReceptionRecord record = receptionRecordRepository.findByDonationId(id)
+                .orElseThrow(() -> new EntityNotFoundException("Reception record not found"));
+
+        return pdfCertificateService.generateCertificate(record);
+    }
+
 }

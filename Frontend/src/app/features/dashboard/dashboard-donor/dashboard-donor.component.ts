@@ -1,5 +1,5 @@
 import {Component, DestroyRef, inject, OnInit, signal} from '@angular/core';
-import {Router} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {AuthService} from '../../../core/services/auth.service';
 import {FooterComponent} from '../../../shared/components/footer/footer.component';
 import {NavbarComponent} from '../../../shared/components/navbar/navbar.component';
@@ -15,6 +15,7 @@ import {DonationResponse} from '../../../shared/models/donation.model';
 import {
   DonationConfirmModalComponent
 } from '../../../shared/components/donation-confirm-modal/donation-confirm-modal.component';
+import {DonationPaymentComponent} from '../../../shared/components/donation-payment/donation-payment.component';
 
 @Component({
   selector: 'app-dashboard-donor',
@@ -23,7 +24,8 @@ import {
     NavbarComponent,
     AsyncPipe,
     DonationListComponent,
-    DonationConfirmModalComponent
+    DonationConfirmModalComponent,
+    DonationPaymentComponent
   ],
   templateUrl: './dashboard-donor.component.html',
   styleUrl: './dashboard-donor.component.css'
@@ -45,6 +47,7 @@ export class DashboardDonorComponent implements OnInit{
 
   myDonations = signal<DonationResponse[]>([]);
   isLoadingDonations = signal<boolean>(true);
+  showPaymentModal = signal(false);
 
   userName$ = this.authService.currentUser$.pipe(
     map(profile => {
@@ -119,5 +122,9 @@ export class DashboardDonorComponent implements OnInit{
         this.loadMyDonations();
       });
     }
+  }
+
+  openPaymentModal(){
+    this.showPaymentModal.set(true);
   }
 }

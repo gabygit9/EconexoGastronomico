@@ -2,11 +2,11 @@ import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../../../environments/environment.development';
 import {
-  Category,
+  Category, DonationItemReception,
   DonationRequest,
   DonationResponse,
   DonationSummaryResponse,
-  Product,
+  Product, ReceivedDonation,
   UnitOfMeasure
 } from '../../shared/models/donation.model';
 import {Observable} from 'rxjs';
@@ -108,5 +108,30 @@ export class DonationService {
    */
   cancelDonationByNgo(donationId: number){
     return this.http.post<void>(`${this.apiUrl}/${donationId}/cancel-ngo-donation`, {donationId});
+  }
+
+  /**
+   * Get the items of a donation
+   * @param donationId
+   */
+  getDonationItems(donationId: number): Observable<DonationItemReception[]> {
+    return this.http.get<DonationItemReception[]>(`${this.apiUrl}/${donationId}/items`);
+  }
+
+  /**
+   * Receive a donation (as a Ngo)
+   * @param donationId
+   * @param dto
+   */
+  receiveDonations(donationId: number, dto: ReceivedDonation){
+    return this.http.post<void>(`${this.apiUrl}/${donationId}/receive`, dto);
+  }
+
+  /**
+   * Download a certificate for a donation
+   * @param donationId
+   */
+  downloadCertificate(donationId: number){
+    return this.http.get<Blob>(`${this.apiUrl}/${donationId}/certificate`, { responseType: 'blob' as 'json' });
   }
 }

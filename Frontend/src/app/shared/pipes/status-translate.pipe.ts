@@ -16,19 +16,24 @@ export class StatusTranslatePipe implements PipeTransform {
   }
 
   private readonly statusDonationDictionary: Record<DonationStatus, string> = {
+    'PENDING_PAYMENT': "Pendiente",
     'AVAILABLE': 'Disponible',
     'REQUESTED': 'Solicitado',
     'ASSIGNED': 'Asignado',
     'IN_TRANSIT': 'En tránsito',
+    'DELIVERED_PENDING_NGO': 'En destino',
     'DELIVERED': 'Entregado',
     'REJECTED': 'Rechazado',
     'CANCELED': 'Cancelado',
-    'EXPIRED': 'Expirado'
+    'EXPIRED': 'Expirado',
+    'COMPLETED': 'Completado'
   }
 
   transform(value: Status | DonationStatus): string {
-    return value.valueOf().includes('PENDING') ?
-      this.statusLoginDictionary[value as Status] : this.statusDonationDictionary[value as DonationStatus];
+    if(value in this.statusLoginDictionary){
+      return this.statusLoginDictionary[value as Status];
+    }
+    return this.statusDonationDictionary[value as DonationStatus] ?? value;
   }
 
 }

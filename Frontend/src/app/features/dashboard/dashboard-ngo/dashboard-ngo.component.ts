@@ -7,7 +7,13 @@ import {NavbarComponent} from '../../../shared/components/navbar/navbar.componen
 import {map} from 'rxjs';
 import {AsyncPipe, DatePipe} from '@angular/common';
 import {DonationService} from '../../../core/services/donation.service';
-import {DonationRequest, DonationResponse, DonationSummaryResponse} from '../../../shared/models/donation.model';
+import {
+  DonationRequest,
+  DonationResponse,
+  DonationSummaryResponse,
+  MoneyDonation,
+  Page
+} from '../../../shared/models/donation.model';
 import {NgoService} from '../../../core/services/ngo.service';
 import {ToastrService} from 'ngx-toastr';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
@@ -16,6 +22,9 @@ import {
 } from '../../../shared/components/donation-confirm-modal/donation-confirm-modal.component';
 import {AvailableDonationsComponent} from './available-donations/available-donations.component';
 import {DonationListComponent} from '../../../shared/components/donation-list/donation-list.component';
+import {PaymentService} from '../../../core/services/payment.service';
+import {StatusColorPipe} from '../../../shared/pipes/status-color.pipe';
+import {StatusTranslatePipe} from '../../../shared/pipes/status-translate.pipe';
 
 @Component({
   selector: 'app-dashboard-ngo',
@@ -25,7 +34,10 @@ import {DonationListComponent} from '../../../shared/components/donation-list/do
     AsyncPipe,
     AvailableDonationsComponent,
     DonationListComponent,
-    DonationConfirmModalComponent
+    DonationConfirmModalComponent,
+    DatePipe,
+    StatusColorPipe,
+    StatusTranslatePipe
   ],
   templateUrl: './dashboard-ngo.component.html',
   styleUrl: './dashboard-ngo.component.css'
@@ -33,9 +45,10 @@ import {DonationListComponent} from '../../../shared/components/donation-list/do
 export class DashboardNgoComponent implements OnInit{
   private readonly authService = inject(AuthService);
   private readonly ngoService = inject(NgoService);
+  private readonly paymentService = inject(PaymentService);
   private readonly donationService = inject(DonationService);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly  toastr = inject(ToastrService);
+  private readonly toastr = inject(ToastrService);
   private readonly router = inject(Router);
 
   @ViewChild(AvailableDonationsComponent) availableDonationsComp!: AvailableDonationsComponent;
@@ -45,9 +58,13 @@ export class DashboardNgoComponent implements OnInit{
 
   myDonations = signal<DonationResponse[]>([]);
   isLoadingDonations = signal<boolean>(true);
+  donationsPage = signal<Page<MoneyDonation> | null >(null)
 
   selectedDonationForCancel: DonationResponse | null = null;
   showCancelModal = signal(false);
+
+  currentPaymentFilter = signal<string | undefined>(undefined);
+  Math = Math;
 
   userName$ = this.authService.currentUser$.pipe(
     map(profile => {
@@ -61,6 +78,7 @@ export class DashboardNgoComponent implements OnInit{
   ngOnInit(){
     this.loadNgoProfile();
     this.loadMyDonations();
+    this.loadMyDonationsPayments();
   }
 
   loadNgoProfile(){
@@ -73,6 +91,20 @@ export class DashboardNgoComponent implements OnInit{
         console.error('Error loading NGO profile:', err);
         this.isLoading = false;
         this.toastr.error('No se pudo cargar la información de tu perfil.', 'Error de conexión')
+      }
+    })
+  }
+
+  loadMyDonationsPayments(page: number = 0, status = this.currentPaymentFilter()){
+    this.isLoadingDonations.set(true);
+    this.paymentService.getMyDonations(page, 5, status).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (donations) => {
+        this.donationsPage.set(donations);
+        this.isLoadingDonations.set(false);
+      },
+      error: (err) => {
+        this.isLoadingDonations.set(false);
+        this.toastr.error('No se pudo cargar el historial de donaciones.', 'Error')
       }
     })
   }
@@ -115,7 +147,7 @@ export class DashboardNgoComponent implements OnInit{
     this.donationService.cancelDonationByNgo(this.selectedDonationForCancel.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.toastr.success("Solicitud cancelada")
-        this.loadMyDonations();
+        this.loadMyDonationsPayments();
 
         if(this.availableDonationsComp){
           this.availableDonationsComp.loadAvailableDonations();
@@ -126,4 +158,14 @@ export class DashboardNgoComponent implements OnInit{
       error: () => this.toastr.error('Error al cancelar la solicitud')
     });
   }
+
+  handleReceiveDonation(donationId: number){
+    this.router.navigate(['/ngo/reception', donationId]);
+  }
+
+  filterPayments(status?: string){
+    this.currentPaymentFilter.set(status);
+    this.loadMyDonationsPayments(0, status);
+  }
+
 }

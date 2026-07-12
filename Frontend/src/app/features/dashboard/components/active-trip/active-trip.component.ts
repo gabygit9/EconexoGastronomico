@@ -11,6 +11,8 @@ import {FooterComponent} from '../../../../shared/components/footer/footer.compo
 import {AuthService} from '../../../../core/services/auth.service';
 import {map} from 'rxjs';
 import {AsyncPipe} from '@angular/common';
+import {DeliveryEvidenceModalComponent} from '../delivery-evidence-modal/delivery-evidence-modal.component';
+import { QRCodeComponent } from 'angularx-qrcode';
 
 @Component({
   selector: 'app-active-trip',
@@ -19,7 +21,9 @@ import {AsyncPipe} from '@angular/common';
     GenericModalComponent,
     NavbarComponent,
     FooterComponent,
-    AsyncPipe
+    AsyncPipe,
+    DeliveryEvidenceModalComponent,
+    QRCodeComponent
   ],
   templateUrl: './active-trip.component.html',
   styleUrl: './active-trip.component.css'
@@ -36,6 +40,9 @@ export class ActiveTripComponent implements OnInit {
   trip = signal<DonationResponse | null>(null);
   isLoading = signal(true);
   isUpdatingStatus = signal(false);
+  showEvidenceModal = signal(false);
+
+  showQr = signal(false);
 
   //Modal rechazo
   showRejectModal = signal(false);
@@ -54,7 +61,7 @@ export class ActiveTripComponent implements OnInit {
     confirmButtonClass: '',
   })
 
-  private pendingStatus: 'IN_TRANSIT' | 'DELIVERED' | null = null;
+  private pendingStatus: 'IN_TRANSIT' | 'DELIVERED_PENDING_NGO' | null = null;
 
   userName$ = this.authService.currentUser$.pipe(
     map(profile => {
@@ -65,16 +72,11 @@ export class ActiveTripComponent implements OnInit {
     })
   );
 
-  openConfirmation(action: 'IN_TRANSIT' | 'DELIVERED'){
+  openConfirmation(action: 'IN_TRANSIT' | 'DELIVERED_PENDING_NGO'){
     this.pendingStatus = action;
 
     if(action === 'IN_TRANSIT'){
-      this.modalConfig.set({
-        title: '¿Retiraste la carga?',
-        message: 'Estás por notificar que ya tenés la mercadería y vas en camino a la ONG.',
-        confirmText: 'Sí, retirar',
-        confirmButtonClass: 'bg-[#eb5c0c] hover:bg-[#d4530b]'
-      });
+      this.showEvidenceModal.set(true);
     } else {
       this.modalConfig.set({
         title: '¿Entregaste la donación?',
@@ -82,8 +84,8 @@ export class ActiveTripComponent implements OnInit {
         confirmText: 'Sí, entregar',
         confirmButtonClass: 'bg-emerald-600 hover:bg-emerald-700'
       });
+      this.isModalOpen.set(true);
     }
-    this.isModalOpen.set(true);
   }
 
   onModalConfirm(){
@@ -114,7 +116,7 @@ export class ActiveTripComponent implements OnInit {
     this.showRejectModal.set(false);
   }
 
-  executeStatusUpdate(newStatus: 'IN_TRANSIT' | 'DELIVERED') {
+  executeStatusUpdate(newStatus: 'IN_TRANSIT' | 'DELIVERED_PENDING_NGO') {
     const currentTrip = this.trip();
     if(!currentTrip) return;
 
@@ -127,7 +129,7 @@ export class ActiveTripComponent implements OnInit {
 
         this.toastr.success('Estado actualizado correctamente', '¡Excelente!');
 
-        if(newStatus === 'DELIVERED'){
+        if(newStatus === 'DELIVERED_PENDING_NGO'){
           this.toastr.info('Has completado la entrega. ¡Gracias por tu ayuda!', 'Viaje Finalizado');
           this.goBack();
         }
@@ -205,6 +207,35 @@ export class ActiveTripComponent implements OnInit {
         this.toastr.error('Error al rechazar la donación.')
       }
     });
+  }
+
+  onEvidenceModalClose(success: boolean){
+    this.showEvidenceModal.set(false);
+    if(success){
+      const currentTrip = this.trip();
+      if(currentTrip){
+        this.loadTripDetails(currentTrip.id);
+      }
+    }
+  }
+
+  generateQrAndNotifyArrival(){
+    const currentTrip = this.trip();
+    if(!currentTrip) return;
+
+    this.isUpdatingStatus.set(true);
+
+    this.logisticsService.updateTripStatus(currentTrip.id, 'DELIVERED_PENDING_NGO').pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.isUpdatingStatus.set(false);
+        this.showQr.set(true);
+        this.toastr.success('Has notificado tu llegada.', 'Mostrá este código a la ONG');
+      },
+      error: () => {
+        this.isUpdatingStatus.set(false);
+        this.toastr.error('Error al notificar tu llegada.')
+      }
+    })
   }
 
 }

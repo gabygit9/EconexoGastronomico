@@ -1,8 +1,11 @@
-import {Component, computed, input, output, signal} from '@angular/core';
+import {Component, computed, DestroyRef, EventEmitter, inject, input, Output, output, signal} from '@angular/core';
 import {DatePipe, NgClass} from '@angular/common';
 import {DonationResponse} from '../../models/donation.model';
 import {StatusTranslatePipe} from '../../pipes/status-translate.pipe';
-import {RouterLink} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
+import {ToastrService} from 'ngx-toastr';
+import {DonationService} from '../../../core/services/donation.service';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-donation-list',
@@ -13,6 +16,12 @@ import {RouterLink} from '@angular/router';
   styleUrl: './donation-list.component.css'
 })
 export class DonationListComponent {
+  private readonly router = inject(Router);
+  private readonly toastr = inject(ToastrService);
+  private readonly donationService = inject(DonationService);
+  private readonly destroyRef = inject(DestroyRef);
+
+  @Output() onReceive = new EventEmitter<number>();
 
   donations = input.required<DonationResponse[]>();
   viewRole = input<'DONOR' | 'NGO'>();
@@ -27,7 +36,7 @@ export class DonationListComponent {
     const filter = this.currentFilter();
     if(filter === 'ALL') return all;
     if(filter === 'ACTIVE') {
-      return all.filter(d => ['AVAILABLE', 'REQUESTED', 'ASSIGNED', 'IN_TRANSIT'].includes(d.status));
+      return all.filter(d => ['AVAILABLE', 'REQUESTED', 'ASSIGNED', 'IN_TRANSIT', 'DELIVERED_PENDING_NGO'].includes(d.status));
     }
     if(filter === 'HISTORY') {
       return all.filter(d => ['DELIVERED', 'CANCELED', 'REJECTED', 'EXPIRED'].includes(d.status));
@@ -73,17 +82,28 @@ export class DonationListComponent {
     }
   }
 
+  downloadCertificate(id:number){
+    this.donationService.downloadCertificate(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe((blob: Blob) => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Certificado_Econexo_${id}.pdf`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    })
+  }
+
   getStatusClass(status: string) {
     const statusMap: Record<string, string> = {
       'AVAILABLE': 'bg-blue-50 text-blue-700 border-blue-200',
       'REQUESTED': 'bg-purple-50 text-purple-700 border-purple-200',
       'ASSIGNED': 'bg-yellow-50 text-yellow-700 border-yellow-200',
       'IN_TRANSIT': 'bg-orange-50 text-orange-700 border-orange-200',
+      'DELIVERED_PENDING_NGO': 'bg-amber-50 text-amber-700 border-amber-200',
       'DELIVERED': 'bg-emerald-50 text-emerald-700 border-emerald-200',
       'CANCELED': 'bg-red-50 text-red-700 border-red-200',
       'EXPIRED': 'bg-gray-50 text-gray-600 border-gray-300'
     };
     return statusMap[status] || 'bg-gray-50 text-gray-700 border-gray-200';
   }
-
 }
