@@ -45,5 +45,44 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
             "ORDER BY d.createdDate DESC")
     List<Donation> findMyDonationsOrderByCreatedDateDesc(@Param("email") String email);
 
+    // Métricas ONG
+    @Query("SELECT SUM(di.quantity) FROM Donation d JOIN d.donationItems di " +
+            "WHERE d.ngo.user.email = :email AND d.status = 'DELIVERED'")
+    Double sumQuantityByNgo(@Param("email") String email);
+
+    @Query("SELECT COUNT(DISTINCT d.donor.id) FROM Donation d WHERE d.ngo.user.email = :email AND d.status = 'DELIVERED'")
+    Long countUniqueDonorsByNgo(@Param("email") String email);
+
+    @Query("SELECT COUNT(d) FROM Donation d WHERE d.ngo.user.email = :email")
+    Long countTotalRequestedByNgo(@Param("email") String email);
+
+    //Métricas Donante
+    @Query("SELECT di.product.category.description, SUM(di.quantity) FROM Donation d JOIN d.donationItems di " +
+            "WHERE d.donor.user.email = :email GROUP BY di.product.category.description ORDER BY SUM(di.quantity) DESC")
+    List<Object[]> getMostDonatedCategories(@Param("email") String email);
+
+    @Query("SELECT SUM(di.quantity) FROM Donation d JOIN d.donationItems di " +
+            "WHERE d.donor.user.email = :email AND d.status = 'DELIVERED'")
+    Double sumQuantityByDonor(@Param("email") String email);
+
+    //Métricas Driver
+    @Query("SELECT d FROM Donation d WHERE d.driver.user.email = :email AND d.status = 'DELIVERED'")
+    List<Donation> findCompletedDeliveriesByDriver(@Param("email") String email);
+
+    @Query("SELECT COUNT(d) FROM Donation d WHERE d.driver.user.email = :email AND d.status = 'DELIVERED'")
+    Long countDeliveriesByDriver(@Param("email") String email);
+
+    @Query("SELECT SUM(di.quantity) FROM Donation d JOIN d.donationItems di " +
+            "WHERE d.driver.user.email = :email AND d.status = 'DELIVERED'")
+    Double sumQuantitiesTransportedByDriver(@Param("email") String email);
+
+    @Query("SELECT SUM(di.quantity) FROM Donation d JOIN d.donationItems di " +
+            "WHERE d.ngo.user.email = :email AND d.status = 'DELIVERED' AND d.createdDate BETWEEN :start AND :end")
+    Double sumQuantityByNgoAndDateRange(@Param("email") String email, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+
+    @Query("SELECT COUNT(d) FROM Donation d WHERE d.driver.user.email = :email AND d.status = 'DELIVERED'" +
+            "AND d.deliveryEvidence.acceptedAt <= d.pickupEndTime")
+    Long countPunctualDeliveriesByDriver(@Param("email") String email);
 }
 
