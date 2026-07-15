@@ -1,0 +1,37 @@
+<div class="min-h-screen bg-gray-50 flex flex-col">
+
+  <app-navbar [userName]="(userName$ | async) || '' "></app-navbar>
+
+  <main class="flex-1 p-6 lg:p-8 max-w-7xl mx-auto w-full">
+
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+      <div>
+        <h1 class="text-3xl font-extrabold text-[#161c28] tracking-tight">Panel de Impacto</h1>
+        <p class="text-gray-500 mt-1 text-sm">Visualiza tus métricas</p>
+      </div>
+
+      @if (loading) {
+        <p>Cargando métricas...</p>
+      } @else {
+        @switch (userRole) {
+          @case ('ROLE_NGO') {
+            <app-ngo-stats [stats]="stats" />
+          }
+          @case ('ROLE_DONOR') {
+            <app-donor-stats [stats]="stats" />
+          }
+          @case ('ROLE_DRIVER') {
+            <app-driver-stats [stats]="stats" />
+          }
+          @case ('ROLE_ADMIN') {
+            <app-admin-stats [stats]="stats" />
+          }
+          @default {
+            <p>No tienes permisos para ver este panel.</p>
+          }
+        }
+      }
+    </div>
+  </main>
+  <app-footer></app-footer>
+</div>

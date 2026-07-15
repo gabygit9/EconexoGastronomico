@@ -12,6 +12,7 @@ import {AuthLoginRequest, AuthResponse} from '../../shared/models/login.model';
 import {NgoRegistrationDTO, NgoResponseDTO, NgoTypeLookup} from '../../shared/models/ngo.model';
 import {DriverRegistrationDTO, DriverResponse} from '../../shared/models/driver.model';
 import {UserAdminResponse} from '../../shared/models/admin.model';
+import {jwtDecode} from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root'
@@ -161,5 +162,20 @@ export class AuthService {
    */
   isAuthenticated(): boolean {
     return this.isAuthenticatedSubject.value;
+  }
+
+  /**
+   * Gets the current user's role
+   * @returns {string | null} - The user's role or null if not authenticated
+   */
+  getUserRole(): string | null {
+    const token = localStorage.getItem('econexo_token');
+    if(!token) return null;
+    try {
+      const decoded: any = jwtDecode(token);
+      return decoded.role || decoded.authorities || null;
+    } catch (error) {
+      return null;
+    }
   }
 }
