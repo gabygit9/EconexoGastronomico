@@ -3,6 +3,7 @@ package com.tfi.econexo.repository.donation;
 import com.tfi.econexo.model.donation.Donation;
 import com.tfi.econexo.model.enums.DonationStatus;
 import org.locationtech.jts.geom.Point;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -84,5 +85,13 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
     @Query("SELECT COUNT(d) FROM Donation d WHERE d.driver.user.email = :email AND d.status = 'DELIVERED'" +
             "AND d.deliveryEvidence.acceptedAt <= d.pickupEndTime")
     Long countPunctualDeliveriesByDriver(@Param("email") String email);
+
+    @Query("SELECT di.product.category.description, SUM(di.quantity) FROM Donation d JOIN d.donationItems di " +
+            "WHERE d.ngo.user.email = :email AND d.status = 'DELIVERED' " +
+            "GROUP BY di.product.category.description ORDER BY SUM(di.quantity) DESC")
+    List<Object[]> getTopCategoriesByNgo(@Param("email") String email);
+
+    @Query("SELECT d FROM Donation d WHERE d.ngo.user.email = :email AND d.status = 'DELIVERED' ORDER BY d.createdDate DESC")
+    List<Donation> findRecentDonationsByNgo(@Param("email") String email, Pageable page);
 }
 

@@ -1,14 +1,47 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, ViewChild} from '@angular/core';
 import {NgoStats} from '../../../shared/models/stats.model';
+import {ChartComponent, NgApexchartsModule} from 'ng-apexcharts';
+import {DatePipe, DecimalPipe, PercentPipe} from '@angular/common';
 
 @Component({
   selector: 'app-ngo-stats',
-  imports: [],
+  imports: [NgApexchartsModule, PercentPipe, DecimalPipe, DatePipe],
   templateUrl: './ngo-stats.component.html',
   styleUrl: './ngo-stats.component.css'
 })
 export class NgoStatsComponent {
 
-  @Input() stats!: NgoStats;
+  @ViewChild("chart") chart!: ChartComponent;
 
+  @Input() set stats(value: NgoStats){
+    if(value){
+      this._stats = value;
+      this.initChart();
+    }
+  }
+
+  private _stats!: NgoStats;
+  public chartOptions: any;
+  public donutOptions: any;
+
+  get stats() { return this._stats; }
+
+  initChart(){
+    this.chartOptions = {
+      series: [{
+        name: 'Kilos',
+        data: [this.stats.prevMonthImpact, this.stats.monthlyImpact]
+      }],
+      chart: { type: 'bar', height: 350 },
+      title: { text: 'Comparativa de Impacto Mensual' },
+      xaxis: { categories: ['Mes Anterior', 'Mes Actual'] }
+    };
+
+    this.donutOptions = {
+      series: this.stats.topCategories.map(category => category.quantity),
+      chart: { type: 'donut', height: 350 },
+      labels: this.stats.topCategories.map(category => category.categoryName),
+      title: { text: 'Distribución por Categoría' }
+    }
+  }
 }

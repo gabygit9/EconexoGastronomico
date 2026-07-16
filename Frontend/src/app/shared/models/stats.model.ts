@@ -2,7 +2,16 @@ export interface NgoStats {
   totalKilos: number;
   uniqueDonors: number;
   efficiencyRatio: number;
-  monthlyImpactComparison: number;
+  monthlyImpact: number;
+  prevMonthImpact: number;
+  topCategories: CategoryStat[];
+  recentDonations: RecentDonation[];
+}
+
+export interface RecentDonation {
+  donorName: string;
+  date: string;
+  quantity: number;
 }
 
 export interface CategoryStat {
