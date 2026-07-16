@@ -1,11 +1,11 @@
 import {Component, Input, ViewChild} from '@angular/core';
 import {NgoStats} from '../../../shared/models/stats.model';
 import {ChartComponent, NgApexchartsModule} from 'ng-apexcharts';
-import {DatePipe, DecimalPipe, PercentPipe} from '@angular/common';
+import {CurrencyPipe, DatePipe, DecimalPipe, PercentPipe} from '@angular/common';
 
 @Component({
   selector: 'app-ngo-stats',
-  imports: [NgApexchartsModule, PercentPipe, DecimalPipe, DatePipe],
+  imports: [NgApexchartsModule, PercentPipe, DecimalPipe, DatePipe, CurrencyPipe],
   templateUrl: './ngo-stats.component.html',
   styleUrl: './ngo-stats.component.css'
 })
@@ -33,8 +33,9 @@ export class NgoStatsComponent {
         data: [this.stats.prevMonthImpact, this.stats.monthlyImpact]
       }],
       chart: { type: 'bar', height: 350 },
-      title: { text: 'Comparativa de Impacto Mensual' },
-      xaxis: { categories: ['Mes Anterior', 'Mes Actual'] }
+      title: { text: 'Impacto Mensual (kg)' },
+      xaxis: { categories: ['Mes Anterior', 'Mes Actual'] },
+      colors: ['#059669']
     };
 
     this.donutOptions = {

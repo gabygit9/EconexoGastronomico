@@ -57,6 +57,14 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
     @Query("SELECT COUNT(d) FROM Donation d WHERE d.ngo.user.email = :email")
     Long countTotalRequestedByNgo(@Param("email") String email);
 
+    @Query("SELECT di.product.category.description, SUM(di.quantity) FROM Donation d JOIN d.donationItems di " +
+            "WHERE d.ngo.user.email = :email AND d.status = 'DELIVERED' " +
+            "GROUP BY di.product.category.description ORDER BY SUM(di.quantity) DESC")
+    List<Object[]> getTopCategoriesByNgo(@Param("email") String email);
+
+    @Query("SELECT d FROM Donation d WHERE d.ngo.user.email = :email AND d.status = 'DELIVERED' ORDER BY d.createdDate DESC")
+    List<Donation> findRecentDonationsByNgo(@Param("email") String email, Pageable page);
+
     //Métricas Donante
     @Query("SELECT di.product.category.description, SUM(di.quantity) FROM Donation d JOIN d.donationItems di " +
             "WHERE d.donor.user.email = :email GROUP BY di.product.category.description ORDER BY SUM(di.quantity) DESC")
@@ -65,6 +73,16 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
     @Query("SELECT SUM(di.quantity) FROM Donation d JOIN d.donationItems di " +
             "WHERE d.donor.user.email = :email AND d.status = 'DELIVERED'")
     Double sumQuantityByDonor(@Param("email") String email);
+
+    @Query("SELECT d FROM Donation d WHERE d.donor.user.email = :email AND d.status = 'DELIVERED' ORDER BY d.createdDate DESC")
+    List<Donation> findRecentDonationsByDonor(@Param("email") String email, Pageable page);
+
+    @Query("SELECT SUM(di.quantity) FROM Donation d JOIN d.donationItems di " +
+            "WHERE d.donor.user.email = :email AND d.status = 'DELIVERED' AND d.createdDate BETWEEN :start AND :end")
+    Double sumQuantityByDonorAndDateRange(@Param("email") String email, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT COUNT(d) FROM Donation d WHERE d.donor.user.email = :email")
+    Long countTotalDonationsByDonor(@Param("email") String email);
 
     //Métricas Driver
     @Query("SELECT d FROM Donation d WHERE d.driver.user.email = :email AND d.status = 'DELIVERED'")
@@ -86,12 +104,5 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
             "AND d.deliveryEvidence.acceptedAt <= d.pickupEndTime")
     Long countPunctualDeliveriesByDriver(@Param("email") String email);
 
-    @Query("SELECT di.product.category.description, SUM(di.quantity) FROM Donation d JOIN d.donationItems di " +
-            "WHERE d.ngo.user.email = :email AND d.status = 'DELIVERED' " +
-            "GROUP BY di.product.category.description ORDER BY SUM(di.quantity) DESC")
-    List<Object[]> getTopCategoriesByNgo(@Param("email") String email);
-
-    @Query("SELECT d FROM Donation d WHERE d.ngo.user.email = :email AND d.status = 'DELIVERED' ORDER BY d.createdDate DESC")
-    List<Donation> findRecentDonationsByNgo(@Param("email") String email, Pageable page);
 }
 

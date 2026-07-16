@@ -4,7 +4,7 @@
   </div>
 } @else {
   <div class="space-y-6">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
       <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
         <h3 class="text-gray-500 text-sm">Kilos Totales Recibidos</h3>
         <p class="text-3xl font-bold text-[#161c28]">{{ stats.totalKilos | number:'1.1-2' }} kg</p>
@@ -17,6 +17,11 @@
            title="Porcentaje de donaciones recibidas respecto a las solicitadas originalmente.">
         <h3 class="text-gray-500 text-sm cursor-help">Eficiencia de Logística</h3>
         <p class="text-3xl font-bold text-emerald-600">{{ stats.efficiencyRatio | percent }}</p>
+      </div>
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <h3 class="text-gray-500 text-sm">Dinero Recibido</h3>
+        <p class="text-3xl font-bold text-[#161c28]">{{ stats.totalMoney | currency:'ARS':'symbol':'1.0-0' }}</p>
+        <p class="text-xs text-emerald-600 mt-2 font-medium">{{ stats.currentMoney | currency:'ARS':'symbol':'1.0-0' }} este mes</p>
       </div>
     </div>
 

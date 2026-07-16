@@ -22,6 +22,12 @@ public record NgoStatsDTO(
         @Schema(description = "Previous month impact")
         Double prevMonthImpact,
 
+        @Schema(description = "Total money donated")
+        Double totalMoney,
+
+        @Schema(description = "Current month money donated")
+        Double currentMoney,
+
         @Schema(description = "Top categories")
         List<CategoryStatsDTO> topCategories,
 

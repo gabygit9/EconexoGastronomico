@@ -41,6 +41,9 @@ public class ReportsServiceImpl implements ReportsService {
 
     @Override
     public NgoStatsDTO getNgoStats(String email) {
+        LocalDateTime startOfMonth = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0);
+        LocalDateTime startOfPrevMonth = startOfMonth.minusMonths(1);
+
         Double totalKilos = donationRepository.sumQuantityByNgo(email);
         Long uniqueDonors = donationRepository.countUniqueDonorsByNgo(email);
         Long totalRequested = donationRepository.countTotalRequestedByNgo(email);
@@ -48,11 +51,11 @@ public class ReportsServiceImpl implements ReportsService {
         Double efficiency = (totalRequested == null || totalRequested == 0) ? 0.0 :
                 (totalKilos != null ? totalKilos : 0.0) / totalRequested;
 
-        LocalDateTime startOfMonth = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0);
-        LocalDateTime startOfPrevMonth = startOfMonth.minusMonths(1);
-
         Double currentMonth = donationRepository.sumQuantityByNgoAndDateRange(email, startOfMonth, LocalDateTime.now());
         Double prevMonth = donationRepository.sumQuantityByNgoAndDateRange(email, startOfPrevMonth, startOfMonth);
+
+        Double currentMoney = moneyDonationRepository.sumMoneyByNgoAndDateRange(email, startOfMonth, LocalDateTime.now());
+        Double totalMoney = moneyDonationRepository.sumMoneyReceivedByNgo(email);
 
         List<Object[]> rawTopCategories = donationRepository.getTopCategoriesByNgo(email);
         List<CategoryStatsDTO> topCategories = rawTopCategories.stream()
@@ -69,26 +72,53 @@ public class ReportsServiceImpl implements ReportsService {
                 efficiency,
                 currentMonth != null ? currentMonth : 0.0,
                 prevMonth != null ? prevMonth : 0.0,
+                totalMoney != null ? totalMoney : 0.0,
+                currentMoney != null ? currentMoney : 0.0,
                 topCategories,
                 recentDonations);
     }
 
     @Override
     public DonorStatsDTO getDonorStats(String email) {
-        List<Object[]> rawCategories = donationRepository.getMostDonatedCategories(email);
-        List<CategoryStatsDTO> categories = rawCategories.stream()
+        //Fechas
+        LocalDateTime startOfMonth = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0);
+        LocalDateTime startOfPrevMonth = startOfMonth.minusMonths(1);
+
+        //comida
+        Double totalKilos = donationRepository.sumQuantityByDonor(email);
+        Double currentMonthImpact = donationRepository.sumQuantityByDonorAndDateRange(email, startOfMonth, LocalDateTime.now());
+        Double prevMonthImpact = donationRepository.sumQuantityByDonorAndDateRange(email, startOfPrevMonth, startOfMonth);
+        Long totalDonations = donationRepository.countTotalDonationsByDonor(email);
+
+        //dinero
+        Double totalMoney = moneyDonationRepository.sumDonatedAmountByDonor(email);
+        Double currentMoney = moneyDonationRepository.sumMoneyByDonorAndDateRange(email, startOfMonth, LocalDateTime.now());
+        Double prevMoney = moneyDonationRepository.sumMoneyByDonorAndDateRange(email, startOfPrevMonth, startOfMonth);
+
+        //categorías
+        List<CategoryStatsDTO> categories = donationRepository.getMostDonatedCategories(email).stream()
                 .map(obj -> new CategoryStatsDTO((String) obj[0], (Double) obj[1]))
                 .toList();
 
-        Double totalKilos = donationRepository.sumQuantityByDonor(email);
-        Double totalMoney = moneyDonationRepository.sumDonatedAmountByDonor(email);
+        //últimas 5 donaciones
+        List<RecentDonationDTO> recentDonations = donationRepository.findRecentDonationsByDonor(email, PageRequest.of(0, 5))
+                .stream()
+                .map(d -> new RecentDonationDTO(
+                        d.getNgo().getNgoName(),
+                        d.getCreatedDate(),
+                        d.getDonationItems().stream().mapToDouble(DonationItem::getQuantity).sum()))
+                .toList();
 
         return new DonorStatsDTO(
                 totalKilos != null ? totalKilos : 0.0,
                 totalMoney != null ? totalMoney : 0.0,
-                0L,
+                totalDonations != null ? totalDonations : 0L,
                 categories,
-                (totalKilos != null ? totalKilos : 0.0) * 2);
+                currentMonthImpact != null ? currentMonthImpact : 0.0,
+                prevMonthImpact != null ? prevMonthImpact : 0.0,
+                currentMoney != null ? currentMoney : 0.0,
+                prevMoney != null ? prevMoney : 0.0,
+                recentDonations);
     }
 
     @Override

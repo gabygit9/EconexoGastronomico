@@ -4,6 +4,8 @@ export interface NgoStats {
   efficiencyRatio: number;
   monthlyImpact: number;
   prevMonthImpact: number;
+  totalMoney: number;
+  currentMoney: number;
   topCategories: CategoryStat[];
   recentDonations: RecentDonation[];
 }
@@ -20,11 +22,15 @@ export interface CategoryStat {
 }
 
 export interface DonorStats {
-  totalKilosDonated: number;
-  totalMoneyDonated: number;
-  charitiesHelped: number;
+  totalKilos: number;
+  totalMoney: number;
+  totalDonations: number;
   topCategories: CategoryStat[];
-  estimatedMeals: number;
+  currentMonthImpact: number;
+  prevMonthImpact: number;
+  currentMoney: number;
+  prevMoney: number;
+  recentDonations: RecentDonation[];
 }
 
 export interface DriverStats {

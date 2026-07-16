@@ -8,18 +8,30 @@ import java.util.List;
 public record DonorStatsDTO(
 
         @Schema(description = "Total kilograms of donations")
-        Double totalKilosDonated,
+        Double totalKilos,
 
         @Schema(description = "Total money donated")
-        Double totalMoneyDonated,
+        Double totalMoney,
 
-        @Schema(description = "Number of charities helped")
-        Long charitiesHelped,
+        @Schema(description = "Total donations")
+        Long totalDonations,
 
         @Schema(description = "List of top categories")
         List<CategoryStatsDTO> topCategories,
 
-        @Schema(description = "Estimated meals")
-        Double estimatedMeals
+        @Schema(description = "Current month impact")
+        Double currentMonthImpact,
+
+        @Schema(description = "Previous month impact")
+        Double prevMonthImpact,
+
+        @Schema(description = "Current money")
+        Double currentMoney,
+
+        @Schema(description = "Previous month money")
+        Double prevMoney,
+
+        @Schema(description = "Recent donations")
+        List<RecentDonationDTO> recentDonations
 ) {
 }
