@@ -1,1 +1,70 @@
-<p>admin-stats works!</p>
+@if (!stats) {
+  <div class="text-center py-20 bg-white rounded-xl shadow-sm border border-dashed border-gray-300">
+    <p class="text-gray-500">Cargando estadísticas del sistema...</p>
+  </div>
+} @else {
+  <div class="space-y-6">
+    <!-- Fila de KPIs Globales -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+        <h3 class="text-xs uppercase text-gray-500 font-bold">Total Donaciones</h3>
+        <p class="text-3xl font-bold text-emerald-600">{{ stats['totalDonations'] }}</p>
+      </div>
+      <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+        <h3 class="text-xs uppercase text-gray-500 font-bold">Total Donantes</h3>
+        <p class="text-3xl font-bold text-[#161c28]">{{ stats['totalDonors'] }}</p>
+      </div>
+      <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+        <h3 class="text-xs uppercase text-gray-500 font-bold">Total Organizaciones</h3>
+        <p class="text-3xl font-bold text-emerald-600">{{ stats['totalNgos'] }}</p>
+      </div>
+      <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+        <h3 class="text-xs uppercase text-gray-500 font-bold">Total Conductores</h3>
+        <p class="text-3xl font-bold text-[#161c28]">{{ stats['totalDrivers'] }}</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+        <apx-chart [series]="heatmapOptions.series"
+                   [chart]="heatmapOptions.chart"
+                   [title]="heatmapOptions.title"
+                   [plotOptions]="heatmapOptions.plotOptions">
+        </apx-chart>
+      </div>
+      <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+        <apx-chart [series]="funnelOptions.series"
+                   [chart]="funnelOptions.chart"
+                   [plotOptions]="funnelOptions.plotOptions"
+                   [legend]="funnelOptions.legend"
+                   [title]="funnelOptions.title">
+        </apx-chart>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+        <apx-chart [series]="treeMapOptions.series"
+                   [chart]="treeMapOptions.chart"
+                   [dataLabels]="treeMapOptions.dataLabels"
+                   [plotOptions]="treeMapOptions.plotOptions"
+                   [colors]="treeMapOptions.colors"
+                   [title]="treeMapOptions.title">
+        </apx-chart>
+      </div>
+      <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+        <apx-chart [series]="barOptions.series"
+                   [chart]="barOptions.chart"
+                   [colors]="barOptions.colors"
+                   [plotOptions]="barOptions.plotOptions"
+                   [legend]="barOptions.legend"
+                   [dataLabels]="barOptions.dataLabels"
+                   [tooltip]="barOptions.tooltip"
+                   [yaxis]="barOptions.yaxis"
+                   [xaxis]="barOptions.xaxis"
+                   [title]="barOptions.title">
+        </apx-chart>
+      </div>
+    </div>
+  </div>
+}

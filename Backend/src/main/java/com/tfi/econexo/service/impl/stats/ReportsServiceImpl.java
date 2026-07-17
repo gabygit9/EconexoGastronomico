@@ -178,12 +178,18 @@ public class ReportsServiceImpl implements ReportsService {
     }
 
     @Override
-    public AdminStatsDTO getAdminStats(String email) {
-        Long totalDonations = donationRepository.count();
-        Long totalUsers = userRepository.count();
-        Double totalMoney = moneyDonationRepository.sumAllDonatedAmount();
+    public Map<String, Object> getAdminStats(String email) {
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("heatmap", donationRepository.getDonationHeatmap());
+        stats.put("funnel", donationRepository.getDonationFunnel());
+        stats.put("treemap", donationRepository.getCategoryVolume());
+        stats.put("topDrivers", donationRepository.getTopDrivers());
 
-        return new AdminStatsDTO(totalDonations, totalUsers, totalMoney);
+        stats.put("totalDonors", donationRepository.countAllDonors());
+        stats.put("totalNgos", donationRepository.countAllNgos());
+        stats.put("totalDrivers", donationRepository.countAllDrivers());
+        stats.put("totalDonations", donationRepository.count());
+        return stats;
     }
 
     private double calculateDistance(Point p1, Point p2) {

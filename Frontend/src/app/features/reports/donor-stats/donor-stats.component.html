@@ -23,10 +23,21 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-        <apx-chart [series]="chartOptions.series" [chart]="chartOptions.chart" [xaxis]="chartOptions.xaxis" [title]="chartOptions.title"></apx-chart>
+        <apx-chart
+          [series]="chartOptions.series"
+          [chart]="chartOptions.chart"
+          [xaxis]="chartOptions.xaxis"
+          [tooltip]="chartOptions.tooltip"
+          [stroke]="chartOptions.stroke"
+          [title]="chartOptions.title">
+        </apx-chart>
       </div>
       <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-        <apx-chart [series]="donutOptions.series" [labels]="donutOptions.labels" [chart]="donutOptions.chart" [title]="donutOptions.title"></apx-chart>
+        <apx-chart [series]="donutOptions.series"
+                   [labels]="donutOptions.labels"
+                   [chart]="donutOptions.chart"
+                   [title]="donutOptions.title">
+        </apx-chart>
       </div>
     </div>
 

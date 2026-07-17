@@ -45,7 +45,5 @@ export interface DriverStats {
 }
 
 export interface AdminStats {
-  totalDonations: number;
-  totalUsers: number;
-  totalPlatformRevenue: number;
+  [key: string]: any;
 }

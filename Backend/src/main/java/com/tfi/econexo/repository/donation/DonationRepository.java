@@ -115,5 +115,37 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
             "AND d.deliveryEvidence.acceptedAt <= d.pickupEndTime")
     Long countPunctualDeliveriesByDriver(@Param("email") String email);
 
+    //Métricas Admin
+    @Query(value = "SELECT EXTRACT(DOW FROM created_date) as day, EXTRACT(HOUR FROM created_date) as hour, COUNT(*) " +
+            "FROM donations GROUP BY day, hour", nativeQuery = true)
+    List<Object[]> getDonationHeatmap();
+
+    @Query("SELECT d.status, COUNT(d) FROM Donation d GROUP BY d.status")
+    List<Object[]> getDonationFunnel();
+
+    @Query("SELECT c.description, COUNT(di) " +
+            "FROM Donation d " +
+            "JOIN d.donationItems di " +
+            "JOIN di.product p " +
+            "JOIN p.category c "+
+            "GROUP BY c.description")
+    List<Object[]> getCategoryVolume();
+
+    @Query("SELECT dr.id, COUNT(d) " +
+            "FROM Donation d " +
+            "JOIN d.driver dr " +
+            "WHERE d.status = 'DELIVERED' " +
+            "GROUP BY dr.id ORDER BY COUNT(d) DESC")
+    List<Object[]> getTopDrivers();
+
+    @Query("SELECT COUNT(d) FROM Donor d")
+    long countAllDonors();
+
+    @Query("SELECT COUNT(n) FROM Ngo n")
+    long countAllNgos();
+
+    @Query("SELECT COUNT(dr) FROM Driver dr")
+    long countAllDrivers();
+
 }
 
