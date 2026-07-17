@@ -65,6 +65,10 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
     @Query("SELECT d FROM Donation d WHERE d.ngo.user.email = :email AND d.status = 'DELIVERED' ORDER BY d.createdDate DESC")
     List<Donation> findRecentDonationsByNgo(@Param("email") String email, Pageable page);
 
+    @Query("SELECT SUM(di.quantity) FROM Donation d JOIN d.donationItems di " +
+            "WHERE d.ngo.user.email = :email AND d.status = 'DELIVERED' AND d.createdDate BETWEEN :start AND :end")
+    Double sumQuantityByNgoAndDateRange(@Param("email") String email, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
     //Métricas Donante
     @Query("SELECT di.product.category.description, SUM(di.quantity) FROM Donation d JOIN d.donationItems di " +
             "WHERE d.donor.user.email = :email GROUP BY di.product.category.description ORDER BY SUM(di.quantity) DESC")
@@ -95,10 +99,17 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
             "WHERE d.driver.user.email = :email AND d.status = 'DELIVERED'")
     Double sumQuantitiesTransportedByDriver(@Param("email") String email);
 
-    @Query("SELECT SUM(di.quantity) FROM Donation d JOIN d.donationItems di " +
-            "WHERE d.ngo.user.email = :email AND d.status = 'DELIVERED' AND d.createdDate BETWEEN :start AND :end")
-    Double sumQuantityByNgoAndDateRange(@Param("email") String email, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
-
+    @Query(value = "SELECT EXTRACT(MONTH FROM de.accepted_at) as mes, " +
+            "AVG(CASE WHEN de.accepted_at <= d.pickup_end_time THEN 100.0 ELSE 0.0 END) " +
+            "FROM donations d " +
+            "JOIN delivery_evidences de ON d.id = de.id " +
+            "JOIN drivers dr ON d.driver_id = dr.id " +
+            "JOIN users u ON dr.user_id = u.id " +
+            "WHERE u.email = :email " +
+            "AND d.status = 'DELIVERED' " +
+            "GROUP BY mes ORDER BY mes ASC",
+            nativeQuery = true)
+    List<Object[]> getMonthlyPunctuality(@Param("email") String email);
 
     @Query("SELECT COUNT(d) FROM Donation d WHERE d.driver.user.email = :email AND d.status = 'DELIVERED'" +
             "AND d.deliveryEvidence.acceptedAt <= d.pickupEndTime")

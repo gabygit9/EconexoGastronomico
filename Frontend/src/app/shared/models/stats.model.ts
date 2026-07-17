@@ -38,6 +38,10 @@ export interface DriverStats {
   totalKilosTransported: number;
   averageDistanceKm: number;
   punctualityPercentage: number;
+  activityByHour: number[];
+  avgKilosPerDelivery: number;
+  activeDays: number;
+  monthlyPunctuality: number[];
 }
 
 export interface AdminStats {

@@ -13,7 +13,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -128,16 +131,49 @@ public class ReportsServiceImpl implements ReportsService {
         Double totalKilos = donationRepository.sumQuantitiesTransportedByDriver(email);
         Long punctual = donationRepository.countPunctualDeliveriesByDriver(email);
 
-        double totalDist = 0;
-        for(Donation d : deliveries){
-            totalDist += calculateDistance(d.getDonor().getLocation(), d.getNgo().getLocation());
-        }
+        List<Donation> validDeliveries = deliveries.stream()
+                .filter(d -> d.getDeliveryEvidence() != null && d.getDeliveryEvidence().getAcceptedAt() != null)
+                .toList();
+
+        //Actividad por hora (Array de 24 posiciones)
+        List<Integer> activityByHour = new ArrayList<>(java.util.Collections.nCopies(24,0));
+        validDeliveries.forEach(d -> {
+            if(d.getDeliveryEvidence() != null && d.getDeliveryEvidence().getAcceptedAt() != null) {
+                int hour = d.getDeliveryEvidence().getAcceptedAt().getHour();
+                activityByHour.set(hour, activityByHour.get(hour) + 1);
+            }
+        });
+
+        List<Map<String, Object>> monthlyPunctuality = donationRepository.getMonthlyPunctuality(email).stream()
+                .filter(obj -> obj[0] != null && obj[1] != null)
+                .map(obj -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("month", ((Number) obj[0]).intValue());
+                    map.put("value", ((Number) obj[1]).doubleValue());
+                    return map;
+                })
+                .toList();
+
+        Double avgKilos = (totalDeliveries > 0) ? (totalKilos / totalDeliveries) : 0.0;
+
+        long activeDays = validDeliveries.stream()
+                .map(d -> d.getDeliveryEvidence().getAcceptedAt().toLocalDate())
+                .distinct()
+                .count();
+
+        double totalDist = deliveries.stream()
+                .mapToDouble(d -> calculateDistance(d.getDonor().getLocation(), d.getNgo().getLocation()))
+                .sum();
 
         return new DriverStatsDTO(
-                totalDeliveries != null ? totalDeliveries : 0L,
+                totalDeliveries,
                 totalKilos != null ? totalKilos : 0.0,
                 deliveries.isEmpty() ? 0.0 : totalDist / deliveries.size(),
-                totalDeliveries == null || totalDeliveries == 0 ? 0.0 : (double) (punctual != null ? punctual : 0) / totalDeliveries * 100
+                totalDeliveries == 0 ? 0.0 : (double) (punctual != null ? punctual : 0) / totalDeliveries * 100,
+                activityByHour,
+                avgKilos,
+                activeDays,
+                monthlyPunctuality
         );
     }
 
