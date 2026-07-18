@@ -106,4 +106,8 @@ export class DonationListComponent {
     };
     return statusMap[status] || 'bg-gray-50 text-gray-700 border-gray-200';
   }
+
+  goToStats(){
+    this.router.navigate(['/reports']);
+  }
 }

@@ -1,7 +1,7 @@
 import {Component, DestroyRef, inject, OnInit} from '@angular/core';
 import {AdminService} from '../../../core/services/admin.service';
 import {UserAdminResponse} from '../../../shared/models/admin.model';
-import {BehaviorSubject, map} from 'rxjs';
+import {BehaviorSubject, filter, map, startWith} from 'rxjs';
 import {Status} from '../../../shared/models/login.model';
 import {AsyncPipe, DatePipe, NgClass} from '@angular/common';
 import {ToastrService} from 'ngx-toastr';
@@ -11,6 +11,7 @@ import {NavbarComponent} from '../../../shared/components/navbar/navbar.componen
 import {FooterComponent} from '../../../shared/components/footer/footer.component';
 import {StatusTranslatePipe} from '../../../shared/pipes/status-translate.pipe';
 import {RoleTranslatePipe} from '../../../shared/pipes/role-translate.pipe';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-dashboard-admin',
@@ -32,19 +33,28 @@ export class DashboardAdminComponent implements OnInit {
   private readonly adminService = inject(AdminService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly toastr = inject(ToastrService);
+  private readonly router = inject(Router);
 
   users$ = new BehaviorSubject<UserAdminResponse[]>([]);
   isLoading = true;
   updatingUserId: number | null = null;
 
   userName$ = this.authService.currentUser$.pipe(
-    map(profile => {
-      if (profile && 'email' in profile) {
-        return profile.email;
-      }
-      return "Administrador";
-    })
+    map(profile => (profile as any)?.name || this.decodeTokenName()),
+    startWith(this.decodeTokenName())
   );
+
+  private decodeTokenName(): string {
+    const token = localStorage.getItem('econexo_token');
+    if (!token) return 'Administrador';
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.sub || 'Administrador';
+    } catch (e) {
+      return 'Administrador';
+    }
+  }
 
   ngOnInit(): void {
     this.loadUsers();
@@ -88,5 +98,9 @@ export class DashboardAdminComponent implements OnInit {
         console.error(error);
       }
     })
+  }
+
+  goToStats(){
+    this.router.navigate(['/reports']);
   }
 }

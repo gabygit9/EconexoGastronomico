@@ -1,5 +1,4 @@
 import {Component, DestroyRef, inject, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
 import {AuthService} from '../../../core/services/auth.service';
 import {StatsService} from '../../../core/services/reports/stats.service';
@@ -11,7 +10,7 @@ import {AdminStatsComponent} from '../admin-stats/admin-stats.component';
 import {AsyncPipe} from '@angular/common';
 import {NavbarComponent} from '../../../shared/components/navbar/navbar.component';
 import {FooterComponent} from '../../../shared/components/footer/footer.component';
-import {map} from 'rxjs';
+import {map, startWith} from 'rxjs';
 import {DonorResponse} from '../../../shared/models/donor.model';
 import {NgoResponseDTO} from '../../../shared/models/ngo.model';
 import {DriverResponse} from '../../../shared/models/driver.model';
@@ -32,8 +31,6 @@ import {UserAdminResponse} from '../../../shared/models/admin.model';
   styleUrl: './dashboard-stats.component.css'
 })
 export class DashboardStatsComponent implements OnInit {
-  private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
   private readonly statsService = inject(StatsService);
   private readonly toastr = inject(ToastrService);
@@ -45,19 +42,21 @@ export class DashboardStatsComponent implements OnInit {
 
   userName$ = this.authService.currentUser$.pipe(
     map(profile => {
-      if(!profile) return '';
-
-      if(this.isDonor(profile)) {
-        return profile.tradeName;
-      } else if (this.isAdmin(profile)) {
-        return profile.email;
-      } else if(this.isDriver(profile)){
-        return profile.firstName + ' ' + profile.lastName;
-      } else if(this.isNgo(profile)){
-        return profile.ngoName;
+      if(profile) {
+        if(this.isDonor(profile)) {
+          return profile.tradeName;
+        } else if(this.isNgo(profile)){
+          return profile.ngoName;
+        } else if(this.isDriver(profile)){
+          return profile.firstName + ' ' + profile.lastName;
+        } else if(this.isAdmin(profile)){
+          return this.decodeTokenName();
+        }
       }
-      return '';
-    })
+
+      return this.decodeTokenName();
+    }),
+    startWith(this.decodeTokenName())
   );
 
   ngOnInit() {
@@ -89,5 +88,17 @@ export class DashboardStatsComponent implements OnInit {
 
   private isAdmin(profile:any): profile is UserAdminResponse{
     return 'email' in profile;
+  }
+
+  private decodeTokenName(): string {
+    const token = localStorage.getItem('econexo_token');
+    if (!token) return 'Administrador';
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.sub || 'Administrador';
+    } catch (e) {
+      return 'Administrador';
+    }
   }
 }

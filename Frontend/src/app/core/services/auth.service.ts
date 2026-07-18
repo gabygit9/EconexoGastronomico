@@ -44,7 +44,7 @@ export class AuthService {
    * Sets the current user
    * @param user - The user to set
    */
-  setCurrentUser(user: DonorResponse | NgoResponseDTO | DriverResponse | null){
+  setCurrentUser(user: DonorResponse | NgoResponseDTO | DriverResponse | UserAdminResponse | null){
     this.currentUserSubject.next(user);
   }
 
