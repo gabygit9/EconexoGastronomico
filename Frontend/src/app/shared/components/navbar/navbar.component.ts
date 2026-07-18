@@ -96,5 +96,22 @@ export class NavbarComponent implements OnInit{
     }
   }
 
+  deleteNotification(id: number, event: Event) {
+    event.stopPropagation(); // Evita que se cierre el dropdown al hacer clic
+    this.notificationService.deleteNotification(id).subscribe(() => {
+      this.notifications.update(list => list.filter(n => n.id !== id));
+      this.unreadCount = Math.max(0, this.unreadCount - 1);
+      //this.toastr.success("Notificación eliminada");
+    });
+  }
+
+  deleteAll() {
+    this.notificationService.deleteAllNotifications().subscribe(() => {
+      this.notifications.set([]);
+      this.unreadCount = 0;
+      //this.toastr.success("Todas las notificaciones eliminadas");
+    });
+  }
+
 
 }

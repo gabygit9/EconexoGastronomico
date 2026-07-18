@@ -5,6 +5,7 @@ import com.tfi.econexo.model.notifications.Notification;
 import com.tfi.econexo.repository.notification.NotificationRepository;
 import com.tfi.econexo.service.auth.UserService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -41,5 +42,21 @@ public class NotificationService {
 
     public void markAllAsRead(String email) {
         notificationRepository.markAllAsReadByUserEmail(email);
+    }
+
+    public void deleteNotification(Long id, String email){
+        Notification not = notificationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Notification not found"));
+
+        if(!not.getUser().getEmail().equals(email)){
+            throw new SecurityException("Do not allowed to delete this message");
+        }
+
+        notificationRepository.delete(not);
+    }
+
+    @Transactional
+    public void deleteAllNotifications(String email){
+        notificationRepository.deleteByUser_Email(email);
     }
 }

@@ -35,4 +35,21 @@ export class NotificationService {
   markAllAsRead(){
     return this.http.put<void>(`${this.apiUrl}/read`, {});
   }
+
+  /**
+   * Delete a specific notification
+   * @param id - The ID of the notification to delete
+   * @returns Observable<void>
+   */
+  deleteNotification(id: number) {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  /**
+   * Delete all notifications for the current user
+   * @returns Observable<void>
+   */
+  deleteAllNotifications() {
+    return this.http.delete<void>(`${this.apiUrl}/all`);
+  }
 }
