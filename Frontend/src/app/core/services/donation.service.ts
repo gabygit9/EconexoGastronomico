@@ -6,7 +6,7 @@ import {
   DonationRequest,
   DonationResponse,
   DonationSummaryResponse,
-  Product, ReceivedDonation,
+  Product, ReceivedDonation, RejectionRequest,
   UnitOfMeasure
 } from '../../shared/models/donation.model';
 import {Observable} from 'rxjs';
@@ -133,5 +133,14 @@ export class DonationService {
    */
   downloadCertificate(donationId: number){
     return this.http.get<Blob>(`${this.apiUrl}/${donationId}/certificate`, { responseType: 'blob' as 'json' });
+  }
+
+  /**
+   * Reject a donation with details (as a Ngo or Driver)
+   * @param donationId
+   * @param rejection
+   */
+  rejectDonationWithDetails(donationId: number, rejection: RejectionRequest){
+    return this.http.post<void>(`${this.apiUrl}/${donationId}/reject-full`, rejection);
   }
 }

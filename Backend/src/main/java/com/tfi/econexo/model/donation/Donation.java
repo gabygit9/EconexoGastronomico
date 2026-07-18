@@ -60,6 +60,15 @@ public class Donation extends BaseEntity {
     @Column(name = "reception_comments")
     private String receptionComments;
 
+    @Column(name = "rejection_reason", columnDefinition = "TEXT")
+    private String rejectionReason;
+
+    @Column(name = "rejection_photo_url")
+    private String rejectionPhotoUrl;
+
+    @Column(name = "rejection_date")
+    private LocalDateTime rejectionDate;
+
     public LocalDateTime getMinExpirationDate(){
         if(donationItems == null || donationItems.isEmpty()) return null;
         return donationItems.stream().map(DonationItem::getExpirationDate).min(LocalDateTime::compareTo).orElse(null);
