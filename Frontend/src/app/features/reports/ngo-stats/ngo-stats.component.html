@@ -1,0 +1,87 @@
+@if (stats.totalKilos === 0) {
+  <div class="text-center py-20 bg-white rounded-xl shadow-sm border border-dashed border-gray-300">
+    <p class="text-gray-500">Aún no has recibido donaciones. ¡Mantente atento a la red!</p>
+  </div>
+} @else {
+  <div class="space-y-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <h3 class="text-gray-500 text-sm">Kilos Totales Recibidos</h3>
+        <p class="text-3xl font-bold text-[#161c28]">{{ stats.totalKilos | number:'1.1-2' }} kg</p>
+      </div>
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <h3 class="text-gray-500 text-sm">Total Donantes</h3>
+        <p class="text-3xl font-bold text-[#161c28]">{{ stats.uniqueDonors }}</p>
+      </div>
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100"
+           title="Porcentaje de donaciones recibidas respecto a las solicitadas originalmente.">
+        <h3 class="text-gray-500 text-sm cursor-help">Eficiencia de Logística</h3>
+        <p class="text-3xl font-bold text-emerald-600">{{ stats.efficiencyRatio | percent }}</p>
+      </div>
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <h3 class="text-gray-500 text-sm">Dinero Recibido</h3>
+        <p class="text-3xl font-bold text-[#161c28]">{{ stats.totalMoney | currency:'ARS':'symbol':'1.0-0' }}</p>
+        <p class="text-xs text-emerald-600 mt-2 font-medium">{{ stats.currentMoney | currency:'ARS':'symbol':'1.0-0' }} este mes</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <apx-chart [series]="chartOptions.series"
+                   [chart]="chartOptions.chart"
+                   [xaxis]="chartOptions.xaxis"
+                   [colors]="chartOptions.colors"
+                   [title]="chartOptions.title">
+        </apx-chart>
+      </div>
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <apx-chart [series]="donutOptions.series"
+                   [labels]="donutOptions.labels"
+                   [chart]="donutOptions.chart"
+                   [title]="donutOptions.title">
+        </apx-chart>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div class="p-6 border-b border-gray-100">
+        <h3 class="font-bold text-gray-900 text-lg">Últimas Donaciones</h3>
+      </div>
+
+      <div class="hidden lg:grid grid-cols-3 gap-4 p-4 bg-gray-50 border-b border-gray-100 text-xs font-bold text-gray-500 uppercase tracking-wider">
+        <div class="col-span-1">Donante</div>
+        <div class="col-span-1">Fecha</div>
+        <div class="col-span-1 text-right">Cantidad</div>
+      </div>
+
+      <div class="divide-y divide-gray-100">
+        @for (donation of stats.recentDonations; track donation.date) {
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 p-4 items-center hover:bg-gray-50 transition-colors duration-200">
+
+            <div class="col-span-1">
+              <span class="lg:hidden font-bold text-gray-500 mr-2 text-xs uppercase">Donante:</span>
+              <span class="font-bold text-gray-900">{{ donation.donorName }}</span>
+            </div>
+
+            <div class="col-span-1 text-sm text-gray-600">
+              <span class="lg:hidden font-bold text-gray-500 mr-2 text-xs uppercase">Fecha:</span>
+              {{ donation.date | date:'dd/MM/yyyy' }}
+            </div>
+
+            <div class="col-span-1 text-right">
+              <span class="lg:hidden font-bold text-gray-500 mr-2 text-xs uppercase">Cantidad:</span>
+              <span class="font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg">{{ donation.quantity }} kg</span>
+            </div>
+
+          </div>
+        } @empty {
+          <div class="p-8 text-center text-gray-500">
+            <p class="text-sm">No hay donaciones recientes.</p>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}
+
+

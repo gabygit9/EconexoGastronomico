@@ -4,15 +4,22 @@
 
   <main class="flex-1 p-6 md:p-10">
     <div class="max-w-7xl mx-auto space-y-8">
-
-      <div class="space-y-2">
-        <h1 class="text-3xl md:text-4xl font-extrabold text-[#161c28] tracking-tight">
-          Panel de Administración
-        </h1>
-        <p class="text-lg text-gray-500">
-          Gestioná las solicitudes de registro y validá el acceso a la plataforma.
-        </p>
+      <div class="flex items-start justify-between">
+        <div class="space-y-2">
+          <h1 class="text-3xl md:text-4xl font-extrabold text-[#161c28] tracking-tight">
+            Panel de Administración
+          </h1>
+          <p class="text-lg text-gray-500">
+            Gestioná las solicitudes de registro y validá el acceso a la plataforma.
+          </p>
+        </div>
+        <button
+          (click)="goToStats()"
+          class="flex items-center px-4 py-2 bg-[#059669] text-white rounded-lg hover:bg-[#047857] transition-all shadow-sm">
+          <span class="mr-2">📊</span> Ver Métricas
+        </button>
       </div>
+
 
       @if (isLoading){
         <div class="flex justify-center items-center py-20">

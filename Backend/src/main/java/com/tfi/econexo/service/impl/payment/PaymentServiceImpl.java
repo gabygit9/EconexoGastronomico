@@ -42,12 +42,16 @@ public class PaymentServiceImpl implements PaymentService {
             PreferenceRequest request = PreferenceRequest.builder()
                     .items(Collections.singletonList(itemRequest))
                     .externalReference(String.valueOf(dto.donationId()))
+                    //TODO descomentar autoreturn y fijar las urls cuando esté deployado
                     .backUrls(PreferenceBackUrlsRequest.builder()
-                            .success("https://effects-vagrantly-implosive.ngrok-free.dev/donations/success")
-                            .pending("https://effects-vagrantly-implosive.ngrok-free.dev/donations/pending")
-                            .failure("https://effects-vagrantly-implosive.ngrok-free.dev/donations/failure")
+                            .success("http://localhost:4200/donations/success")
+                            .pending("http://localhost:4200/donations/pending")
+                            .failure("http://localhost:4200/donations/failure")
+//                            .success("https://effects-vagrantly-implosive.ngrok-free.dev/donations/success")
+//                            .pending("https://effects-vagrantly-implosive.ngrok-free.dev/donations/pending")
+//                            .failure("https://effects-vagrantly-implosive.ngrok-free.dev/donations/failure")
                             .build())
-                    .autoReturn("approved")
+                    //.autoReturn("approved")
                     .metadata(Map.of("ngo_id", String.valueOf(dto.ngoId())))
                     .build();
 
@@ -57,6 +61,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         } catch (MPApiException e) {
             System.err.println("Error detalle de MP: " + e.getApiResponse().getContent());
+            logger.error("Error de API de Mercado Pago: {}", e.getMessage());
             throw new RuntimeException("Error en Mercado Pago: " + e.getMessage());
         } catch (MPException e) {
             throw new RuntimeException(e);

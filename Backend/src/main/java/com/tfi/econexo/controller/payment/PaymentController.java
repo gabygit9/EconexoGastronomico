@@ -48,11 +48,11 @@ public class PaymentController {
 
     @GetMapping("/my-donations")
     @Operation(summary = "Get my donations", description = "Get my donations")
-    @PreAuthorize("hasRole('ROLE_NGO')")
+    @PreAuthorize("hasRole('NGO')")
     public ResponseEntity<Page<MoneyDonationDTO>> getMyDonations(
             Authentication authentication,
             @RequestParam(required = false) DonationStatus status,
-            @PageableDefault(size = 10, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable) {
+            @PageableDefault(size = 5, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable) {
         String ngoEmail = authentication.getName();
         return ResponseEntity.ok(moneyDonationService.getDonations(ngoEmail, status, pageable ));
     }

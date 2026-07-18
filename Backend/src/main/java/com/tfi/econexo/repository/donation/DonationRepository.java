@@ -3,6 +3,7 @@ package com.tfi.econexo.repository.donation;
 import com.tfi.econexo.model.donation.Donation;
 import com.tfi.econexo.model.enums.DonationStatus;
 import org.locationtech.jts.geom.Point;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -44,6 +45,107 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
             "WHERE uDon.email = :email OR uNgo.email = :email OR uDr.email = :email " +
             "ORDER BY d.createdDate DESC")
     List<Donation> findMyDonationsOrderByCreatedDateDesc(@Param("email") String email);
+
+    // Métricas ONG
+    @Query("SELECT SUM(di.quantity) FROM Donation d JOIN d.donationItems di " +
+            "WHERE d.ngo.user.email = :email AND d.status = 'DELIVERED'")
+    Double sumQuantityByNgo(@Param("email") String email);
+
+    @Query("SELECT COUNT(DISTINCT d.donor.id) FROM Donation d WHERE d.ngo.user.email = :email AND d.status = 'DELIVERED'")
+    Long countUniqueDonorsByNgo(@Param("email") String email);
+
+    @Query("SELECT COUNT(d) FROM Donation d WHERE d.ngo.user.email = :email")
+    Long countTotalRequestedByNgo(@Param("email") String email);
+
+    @Query("SELECT di.product.category.description, SUM(di.quantity) FROM Donation d JOIN d.donationItems di " +
+            "WHERE d.ngo.user.email = :email AND d.status = 'DELIVERED' " +
+            "GROUP BY di.product.category.description ORDER BY SUM(di.quantity) DESC")
+    List<Object[]> getTopCategoriesByNgo(@Param("email") String email);
+
+    @Query("SELECT d FROM Donation d WHERE d.ngo.user.email = :email AND d.status = 'DELIVERED' ORDER BY d.createdDate DESC")
+    List<Donation> findRecentDonationsByNgo(@Param("email") String email, Pageable page);
+
+    @Query("SELECT SUM(di.quantity) FROM Donation d JOIN d.donationItems di " +
+            "WHERE d.ngo.user.email = :email AND d.status = 'DELIVERED' AND d.createdDate BETWEEN :start AND :end")
+    Double sumQuantityByNgoAndDateRange(@Param("email") String email, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    //Métricas Donante
+    @Query("SELECT di.product.category.description, SUM(di.quantity) FROM Donation d JOIN d.donationItems di " +
+            "WHERE d.donor.user.email = :email GROUP BY di.product.category.description ORDER BY SUM(di.quantity) DESC")
+    List<Object[]> getMostDonatedCategories(@Param("email") String email);
+
+    @Query("SELECT SUM(di.quantity) FROM Donation d JOIN d.donationItems di " +
+            "WHERE d.donor.user.email = :email AND d.status = 'DELIVERED'")
+    Double sumQuantityByDonor(@Param("email") String email);
+
+    @Query("SELECT d FROM Donation d WHERE d.donor.user.email = :email AND d.status = 'DELIVERED' ORDER BY d.createdDate DESC")
+    List<Donation> findRecentDonationsByDonor(@Param("email") String email, Pageable page);
+
+    @Query("SELECT SUM(di.quantity) FROM Donation d JOIN d.donationItems di " +
+            "WHERE d.donor.user.email = :email AND d.status = 'DELIVERED' AND d.createdDate BETWEEN :start AND :end")
+    Double sumQuantityByDonorAndDateRange(@Param("email") String email, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT COUNT(d) FROM Donation d WHERE d.donor.user.email = :email")
+    Long countTotalDonationsByDonor(@Param("email") String email);
+
+    //Métricas Driver
+    @Query("SELECT d FROM Donation d WHERE d.driver.user.email = :email AND d.status = 'DELIVERED'")
+    List<Donation> findCompletedDeliveriesByDriver(@Param("email") String email);
+
+    @Query("SELECT COUNT(d) FROM Donation d WHERE d.driver.user.email = :email AND d.status = 'DELIVERED'")
+    Long countDeliveriesByDriver(@Param("email") String email);
+
+    @Query("SELECT SUM(di.quantity) FROM Donation d JOIN d.donationItems di " +
+            "WHERE d.driver.user.email = :email AND d.status = 'DELIVERED'")
+    Double sumQuantitiesTransportedByDriver(@Param("email") String email);
+
+    @Query(value = "SELECT EXTRACT(MONTH FROM de.accepted_at) as mes, " +
+            "AVG(CASE WHEN de.accepted_at <= d.pickup_end_time THEN 100.0 ELSE 0.0 END) " +
+            "FROM donations d " +
+            "JOIN delivery_evidences de ON d.id = de.id " +
+            "JOIN drivers dr ON d.driver_id = dr.id " +
+            "JOIN users u ON dr.user_id = u.id " +
+            "WHERE u.email = :email " +
+            "AND d.status = 'DELIVERED' " +
+            "GROUP BY mes ORDER BY mes ASC",
+            nativeQuery = true)
+    List<Object[]> getMonthlyPunctuality(@Param("email") String email);
+
+    @Query("SELECT COUNT(d) FROM Donation d WHERE d.driver.user.email = :email AND d.status = 'DELIVERED'" +
+            "AND d.deliveryEvidence.acceptedAt <= d.pickupEndTime")
+    Long countPunctualDeliveriesByDriver(@Param("email") String email);
+
+    //Métricas Admin
+    @Query(value = "SELECT EXTRACT(DOW FROM created_date) as day, EXTRACT(HOUR FROM created_date) as hour, COUNT(*) " +
+            "FROM donations GROUP BY day, hour", nativeQuery = true)
+    List<Object[]> getDonationHeatmap();
+
+    @Query("SELECT d.status, COUNT(d) FROM Donation d GROUP BY d.status")
+    List<Object[]> getDonationFunnel();
+
+    @Query("SELECT c.description, COUNT(di) " +
+            "FROM Donation d " +
+            "JOIN d.donationItems di " +
+            "JOIN di.product p " +
+            "JOIN p.category c "+
+            "GROUP BY c.description")
+    List<Object[]> getCategoryVolume();
+
+    @Query("SELECT dr.id, COUNT(d) " +
+            "FROM Donation d " +
+            "JOIN d.driver dr " +
+            "WHERE d.status = 'DELIVERED' " +
+            "GROUP BY dr.id ORDER BY COUNT(d) DESC")
+    List<Object[]> getTopDrivers();
+
+    @Query("SELECT COUNT(d) FROM Donor d")
+    long countAllDonors();
+
+    @Query("SELECT COUNT(n) FROM Ngo n")
+    long countAllNgos();
+
+    @Query("SELECT COUNT(dr) FROM Driver dr")
+    long countAllDrivers();
 
 }
 

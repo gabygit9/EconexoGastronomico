@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -121,6 +122,16 @@ public class LogisticsServiceImpl implements LogisticsService {
 
         if(donation.getStatus() == DonationStatus.IN_TRANSIT && requestedStatus != DonationStatus.DELIVERED_PENDING_NGO){
             throw new IllegalArgumentException("An IN_TRANSIT trip can only be DELIVERED_PENDING_NGO.");
+        }
+
+        if(requestedStatus == DonationStatus.DELIVERED_PENDING_NGO){
+            DeliveryEvidence evidence = donation.getDeliveryEvidence();
+            if(evidence == null){
+                evidence = new DeliveryEvidence();
+                evidence.setDonation(donation);
+            }
+            evidence.setAcceptedAt(LocalDateTime.now());
+            deliverEvidenceRepository.save(evidence);
         }
 
         if(donation.getStatus() == DonationStatus.DELIVERED){
