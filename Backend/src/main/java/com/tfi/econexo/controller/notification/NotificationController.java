@@ -8,10 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
@@ -48,5 +45,19 @@ public class NotificationController {
     public ResponseEntity<Void> markAllAsRead(Principal principal) {
         notificationService.markAllAsRead(principal.getName());
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete notification", description = "Delete a specific notification by ID")
+    public ResponseEntity<Void> deleteNotification(@PathVariable Long id, Authentication authentication) {
+        notificationService.deleteNotification(id, authentication.getName());
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/all")
+    @Operation(summary = "Delete all notifications", description = "Delete all notifications for the user")
+    public ResponseEntity<Void> deleteAllNotifications(Authentication authentication) {
+        notificationService.deleteAllNotifications(authentication.getName());
+        return ResponseEntity.noContent().build();
     }
 }
