@@ -44,6 +44,7 @@ export const routes: Routes = [
   { path: 'donations/failure', component: DonationFailureComponent },
   { path: 'reports', component: DashboardStatsComponent },
   { path: 'faq', component: FaqComponent },
+  { path: 'terms', component: TermsComponent },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: 'login' }
 ];

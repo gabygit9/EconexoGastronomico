@@ -1,6 +1,6 @@
 import {Component, DestroyRef, inject, OnInit} from '@angular/core';
 import {BaseFormComponent} from '../../../shared/utils/base-form.component';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {NgoTypeLookup} from '../../../shared/models/ngo.model';
 import {NeighborhoodLookup} from '../../../shared/models/donor.model';
 import {AuthService} from '../../../core/services/auth.service';
@@ -18,7 +18,8 @@ import {LocationService} from '../../../core/services/location.service';
     ReactiveFormsModule,
     NgoTypeTranslatePipe,
     RouterLink,
-    NgClass
+    NgClass,
+    FormsModule
   ],
   templateUrl: './ngo-form.component.html',
   styleUrl: './ngo-form.component.css'
@@ -41,6 +42,7 @@ export class NgoFormComponent extends BaseFormComponent implements OnInit {
 
   ngoTypes: NgoTypeLookup[] = [];
   neighborhoods: NeighborhoodLookup[] = [];
+  acceptedTerms = false;
 
   ngOnInit() {
     this.initForm();

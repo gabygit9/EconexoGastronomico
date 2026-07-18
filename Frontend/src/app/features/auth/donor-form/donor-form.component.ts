@@ -1,5 +1,5 @@
 import {Component, DestroyRef, inject, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {AuthService} from '../../../core/services/auth.service';
 import {DonorTypeLookup, NeighborhoodLookup} from '../../../shared/models/donor.model';
 import {DonorTypeTranslatePipe} from '../../../shared/pipes/donor-type-translate.pipe';
@@ -17,7 +17,8 @@ import {LocationService} from "../../../core/services/location.service";
     ReactiveFormsModule,
     DonorTypeTranslatePipe,
     NgClass,
-    RouterLink
+    RouterLink,
+    FormsModule
   ],
   templateUrl: './donor-form.component.html',
   styleUrl: './donor-form.component.css'
@@ -33,6 +34,7 @@ export class DonorFormComponent extends BaseFormComponent implements OnInit {
 
   donorForm!: FormGroup;
   isSubmitting = false;
+  acceptedTerms = false;
 
   get form() {
     return this.donorForm;
