@@ -13,6 +13,7 @@ import {map} from 'rxjs';
 import {AsyncPipe} from '@angular/common';
 import {DeliveryEvidenceModalComponent} from '../delivery-evidence-modal/delivery-evidence-modal.component';
 import { QRCodeComponent } from 'angularx-qrcode';
+import {RejectionModalComponent} from '../rejection-modal/rejection-modal.component';
 
 @Component({
   selector: 'app-active-trip',
@@ -23,7 +24,8 @@ import { QRCodeComponent } from 'angularx-qrcode';
     FooterComponent,
     AsyncPipe,
     DeliveryEvidenceModalComponent,
-    QRCodeComponent
+    QRCodeComponent,
+    RejectionModalComponent
   ],
   templateUrl: './active-trip.component.html',
   styleUrl: './active-trip.component.css'
@@ -190,25 +192,6 @@ export class ActiveTripComponent implements OnInit {
     })
   }
 
-  confirmRejectTrip(){
-    const currentTrip = this.trip();
-    if(!currentTrip) return;
-
-    this.isCanceling.set(true);
-    this.logisticsService.rejectTrip(currentTrip.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        this.isCanceling.set(false);
-        this.closeRejectModal();
-        this.toastr.info('Donación marcada como rechazada y fuera de circulación.', 'Mercadería no apta');
-        this.goBack();
-      },
-      error: () => {
-        this.isCanceling.set(false);
-        this.toastr.error('Error al rechazar la donación.')
-      }
-    });
-  }
-
   onEvidenceModalClose(success: boolean){
     this.showEvidenceModal.set(false);
     if(success){
@@ -236,6 +219,13 @@ export class ActiveTripComponent implements OnInit {
         this.toastr.error('Error al notificar tu llegada.')
       }
     })
+  }
+
+  onRejectionModalClose(success: boolean) {
+    this.showRejectModal.set(false); // Cierra el modal
+    if (success) {
+      this.goBack();
+    }
   }
 
 }

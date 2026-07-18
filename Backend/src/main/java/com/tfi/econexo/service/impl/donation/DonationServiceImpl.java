@@ -2,6 +2,7 @@ package com.tfi.econexo.service.impl.donation;
 
 import com.tfi.econexo.dto.donation.DonationRequestDTO;
 import com.tfi.econexo.dto.donation.DonationResponseDTO;
+import com.tfi.econexo.dto.donation.RejectionRequestDTO;
 import com.tfi.econexo.dto.reception.DonationItemReceptionDTO;
 import com.tfi.econexo.dto.reception.ReceivedDonationDTO;
 import com.tfi.econexo.dto.donation.summary.DonationSummaryResponseDTO;
@@ -350,6 +351,34 @@ public class DonationServiceImpl implements DonationService {
                 .orElseThrow(() -> new EntityNotFoundException("Reception record not found"));
 
         return pdfCertificateService.generateCertificate(record);
+    }
+
+    @Transactional
+    @Override
+    public void rejectDonationWithDetails(Long donationId, RejectionRequestDTO dto, String email) {
+        Donation donation = donationRepository.findById(donationId)
+                .orElseThrow(() -> new EntityNotFoundException("Donation not found"));
+
+        String photoUrl = null;
+        if(dto.photoBase64() != null && !dto.photoBase64().isEmpty()){
+            try {
+                MultipartFile photoFile = Base64ToMultipartConverter.convert(dto.photoBase64(), "reject_" + donationId);
+                photoUrl = cloudinaryService.uploadFile(photoFile, "rejections");
+            } catch (Exception e) {
+                throw new RuntimeException("Error uploading photo to Cloudinary", e);
+            }
+        }
+
+        donation.setRejectionReason(dto.reason());
+        donation.setRejectionPhotoUrl(photoUrl);
+        donation.setRejectionDate(dto.date() != null ? dto.date() : LocalDateTime.now());
+        donation.setStatus(DonationStatus.REJECTED);
+
+
+        donationRepository.save(donation);
+
+        notificationService.notifyUser(donation.getDonor().getUser().getEmail(),
+                "La donación fue rechazada. Motivo: " + dto.reason(), "Donación rechazada");
     }
 
 }
