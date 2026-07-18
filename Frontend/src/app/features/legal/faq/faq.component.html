@@ -1,0 +1,168 @@
+<app-navbar [userName]="(userName$ | async) || ' ' " ]></app-navbar>
+
+<main class="min-h-screen bg-gray-50 py-12">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="text-4xl font-bold text-center mb-12 text-gray-900">Preguntas Frecuentes</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+    </div>
+    <!-- Sección: Usuarios no Registrados -->
+    <h3 class="text-2xl font-semibold text-gray-900 mb-6 border-l-4 border-orange-500 pl-4">Usuarios No Registrados</h3>
+    <div class="space-y-4 mb-10">
+      <details class="group bg-white p-5 rounded-lg border border-gray-200 shadow-sm transition-all hover:border-orange-500 hover:shadow-md cursor-pointer">
+        <summary class="flex justify-between items-center font-medium cursor-pointer list-none text-gray-700">
+          ¿Puedo donar sin registrarme?
+          <span class="transition-transform duration-300 group-open:rotate-180 text-orange-500">
+          <svg fill="none" height="20" width="20" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+        </span>
+        </summary>
+        <p class="text-gray-600 mt-4 leading-relaxed">Sí, puedes realizar donaciones de dinero de forma rápida desde nuestra página de inicio sin necesidad de crear una cuenta.</p>
+      </details>
+
+      <details class="group bg-white p-5 rounded-lg border border-gray-200 shadow-sm transition-all hover:border-orange-500 hover:shadow-md cursor-pointer">
+        <summary class="flex justify-between items-center font-medium cursor-pointer list-none text-gray-700">
+          ¿Es seguro donar a través de la plataforma?
+          <span class="transition-transform duration-300 group-open:rotate-180 text-orange-500">
+          <svg fill="none" height="20" width="20" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+        </span>
+        </summary>
+        <p class="text-gray-600 mt-4 leading-relaxed">Contamos con protocolos de encriptación estándar para asegurar que tu transacción sea totalmente protegida.</p>
+      </details>
+
+      <details class="group bg-white p-5 rounded-lg border border-gray-200 shadow-sm transition-all hover:border-orange-500 hover:shadow-md cursor-pointer">
+        <summary class="flex justify-between items-center font-medium cursor-pointer list-none text-gray-700">
+          ¿Cómo sé a dónde va mi donación?
+          <span class="transition-transform duration-300 group-open:rotate-180 text-orange-500">
+          <svg fill="none" height="20" width="20" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+        </span>
+        </summary>
+        <p class="text-gray-600 mt-4 leading-relaxed">Todas las organizaciones presentes en EcoNexo están validadas legalmente y auditadas por nuestro equipo.</p>
+      </details>
+
+      <details class="group bg-white p-5 rounded-lg border border-gray-200 shadow-sm transition-all hover:border-orange-500 hover:shadow-md cursor-pointer">
+        <summary class="flex justify-between items-center font-medium cursor-pointer list-none text-gray-700">
+          ¿Por qué debería registrarme?
+          <span class="transition-transform duration-300 group-open:rotate-180 text-orange-500">
+          <svg fill="none" height="20" width="20" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+        </span>
+        </summary>
+        <p class="text-gray-600 mt-4 leading-relaxed">Al registrarte, puedes hacer seguimiento de tus donaciones, ver tu historial y recibir comprobantes de cada aporte realizado.</p>
+      </details>
+    </div>
+
+    <!-- Sección: Donantes -->
+    <h3 class="text-2xl font-semibold text-gray-900 mb-6 border-l-4 border-orange-500 pl-4">Donantes</h3>
+    <div class="space-y-4 mb-10">
+      <details class="group bg-white p-5 rounded-lg border border-gray-200 shadow-sm transition-all hover:border-orange-500 hover:shadow-md cursor-pointer">
+        <summary class="flex justify-between items-center font-medium cursor-pointer list-none text-gray-700">
+          ¿Cómo realizo una donación de alimentos?
+          <span class="transition-transform duration-300 group-open:rotate-180 text-orange-500">
+          <svg fill="none" height="20" width="20" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+        </span>
+        </summary>
+        <p class="text-gray-600 mt-4 leading-relaxed">Publica la donación desde tu panel de control, detalla el tipo de alimento y cantidad, y un transportista la recogerá.</p>
+      </details>
+
+      <details class="group bg-white p-5 rounded-lg border border-gray-200 shadow-sm transition-all hover:border-orange-500 hover:shadow-md cursor-pointer">
+        <summary class="flex justify-between items-center font-medium cursor-pointer list-none text-gray-700">
+          ¿Qué alimentos no puedo donar?
+          <span class="transition-transform duration-300 group-open:rotate-180 text-orange-500">
+          <svg fill="none" height="20" width="20" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+        </span>
+        </summary>
+        <p class="text-gray-600 mt-4 leading-relaxed">No aceptamos productos vencidos, en mal estado o que requieran cadena de frío si no cuentas con el embalaje térmico adecuado.</p>
+      </details>
+
+      <details class="group bg-white p-5 rounded-lg border border-gray-200 shadow-sm transition-all hover:border-orange-500 hover:shadow-md cursor-pointer">
+        <summary class="flex justify-between items-center font-medium cursor-pointer list-none text-gray-700">
+          ¿Cómo descargo mi certificado de donación?
+          <span class="transition-transform duration-300 group-open:rotate-180 text-orange-500">
+          <svg fill="none" height="20" width="20" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+        </span>
+        </summary>
+        <p class="text-gray-600 mt-4 leading-relaxed">Desde la sección "Mi Historial", podrás descargar el comprobante oficial de cada donación completada.</p>
+      </details>
+
+      <details class="group bg-white p-5 rounded-lg border border-gray-200 shadow-sm transition-all hover:border-orange-500 hover:shadow-md cursor-pointer">
+        <summary class="flex justify-between items-center font-medium cursor-pointer list-none text-gray-700">
+          ¿Puedo cancelar una donación en curso?
+          <span class="transition-transform duration-300 group-open:rotate-180 text-orange-500">
+          <svg fill="none" height="20" width="20" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+        </span>
+        </summary>
+        <p class="text-gray-600 mt-4 leading-relaxed">Sí, puedes cancelarla siempre que el transportista aún no haya retirado el pedido.</p>
+      </details>
+    </div>
+
+    <!-- Sección: Transportistas -->
+    <h3 class="text-2xl font-semibold text-gray-900 mb-6 border-l-4 border-orange-500 pl-4">Transportistas</h3>
+    <div class="space-y-4 mb-10">
+      <details class="group bg-white p-5 rounded-lg border border-gray-200 shadow-sm transition-all hover:border-orange-500 hover:shadow-md cursor-pointer">
+        <summary class="flex justify-between items-center font-medium cursor-pointer list-none text-gray-700">
+          ¿Cómo acepto un pedido de retiro?
+          <span class="transition-transform duration-300 group-open:rotate-180 text-orange-500">
+          <svg fill="none" height="20" width="20" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+        </span>
+        </summary>
+        <p class="text-gray-600 mt-4 leading-relaxed">En tu panel verás los pedidos disponibles en tu zona; solo debes presionar "Aceptar" y dirigirte al punto de donación.</p>
+      </details>
+
+      <details class="group bg-white p-5 rounded-lg border border-gray-200 shadow-sm transition-all hover:border-orange-500 hover:shadow-md cursor-pointer">
+        <summary class="flex justify-between items-center font-medium cursor-pointer list-none text-gray-700">
+          ¿Qué hago si no encuentro al donante?
+          <span class="transition-transform duration-300 group-open:rotate-180 text-orange-500">
+          <svg fill="none" height="20" width="20" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+        </span>
+        </summary>
+        <p class="text-gray-600 mt-4 leading-relaxed">En el detalle del pedido encontrarás los datos de contacto del donante para comunicarte directamente y coordinar el encuentro.</p>
+      </details>
+
+      <details class="group bg-white p-5 rounded-lg border border-gray-200 shadow-sm transition-all hover:border-orange-500 hover:shadow-md cursor-pointer">
+        <summary class="flex justify-between items-center font-medium cursor-pointer list-none text-gray-700">
+          ¿Cómo se documenta la entrega?
+          <span class="transition-transform duration-300 group-open:rotate-180 text-orange-500">
+          <svg fill="none" height="20" width="20" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+        </span>
+        </summary>
+        <p class="text-gray-600 mt-4 leading-relaxed">Debes solicitar la firma o confirmación digital por parte de la Organización al momento de entregar la mercadería.</p>
+      </details>
+    </div>
+
+    <!-- Sección: NGOs -->
+    <h3 class="text-2xl font-semibold text-gray-900 mb-6 border-l-4 border-orange-500 pl-4">Organizaciones</h3>
+    <div class="space-y-4 mb-10">
+      <details class="group bg-white p-5 rounded-lg border border-gray-200 shadow-sm transition-all hover:border-orange-500 hover:shadow-md cursor-pointer">
+        <summary class="flex justify-between items-center font-medium cursor-pointer list-none text-gray-700">
+          ¿Qué requisitos necesito para registrar mi organización?
+          <span class="transition-transform duration-300 group-open:rotate-180 text-orange-500">
+          <svg fill="none" height="20" width="20" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+        </span>
+        </summary>
+        <p class="text-gray-600 mt-4 leading-relaxed">Debes contar con tu número de registro legal vigente y completar la validación de cuenta desde el panel de gestión.</p>
+      </details>
+
+      <details class="group bg-white p-5 rounded-lg border border-gray-200 shadow-sm transition-all hover:border-orange-500 hover:shadow-md cursor-pointer">
+        <summary class="flex justify-between items-center font-medium cursor-pointer list-none text-gray-700">
+          ¿Cómo confirmo la recepción de una donación?
+          <span class="transition-transform duration-300 group-open:rotate-180 text-orange-500">
+          <svg fill="none" height="20" width="20" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+        </span>
+        </summary>
+        <p class="text-gray-600 mt-4 leading-relaxed">Al recibir los alimentos, verifica el estado de los mismos y confirma la recepción a través de tu panel de gestión para cerrar el ciclo de la donación.</p>
+      </details>
+
+      <details class="group bg-white p-5 rounded-lg border border-gray-200 shadow-sm transition-all hover:border-orange-500 hover:shadow-md cursor-pointer">
+        <summary class="flex justify-between items-center font-medium cursor-pointer list-none text-gray-700">
+          ¿Puedo rechazar una donación?
+          <span class="transition-transform duration-300 group-open:rotate-180 text-orange-500">
+          <svg fill="none" height="20" width="20" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+        </span>
+        </summary>
+        <p class="text-gray-600 mt-4 leading-relaxed">Sí, si el estado de los alimentos no es apto para el consumo, puedes reportarlo al momento de la recepción.</p>
+      </details>
+    </div>
+  </div>
+</main>
+
+<app-footer></app-footer>

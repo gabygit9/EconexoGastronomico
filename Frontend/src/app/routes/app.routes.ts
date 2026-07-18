@@ -43,6 +43,7 @@ export const routes: Routes = [
   { path: 'donations/pending', component: DonationPendingComponent },
   { path: 'donations/failure', component: DonationFailureComponent },
   { path: 'reports', component: DashboardStatsComponent },
+  { path: 'faq', component: FaqComponent },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: 'login' }
 ];

@@ -4,9 +4,13 @@ import {Router, RouterLink} from '@angular/router';
 import {AsyncPipe} from '@angular/common';
 import {NotificationService} from '../../../core/services/notification.service';
 import {ToastrService} from 'ngx-toastr';
-import {interval, switchMap} from 'rxjs';
+import {interval, map, startWith, switchMap} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {NotificationDto} from '../../models/donation.model';
+import {DonorResponse} from '../../models/donor.model';
+import {NgoResponseDTO} from '../../models/ngo.model';
+import {DriverResponse} from '../../models/driver.model';
+import {UserAdminResponse} from '../../models/admin.model';
 
 @Component({
   selector: 'app-navbar',
@@ -63,4 +67,34 @@ export class NavbarComponent implements OnInit{
       }
     });
   }
+
+  handleLogoClick() {
+    const isAuthenticated = this.authService.isAuthenticated();
+
+    if (!isAuthenticated) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    const role = this.authService.getUserRole();
+
+    switch(role) {
+      case 'ROLE_ADMIN':
+        this.router.navigate(['/dashboard/admin']);
+        break;
+      case 'ROLE_NGO':
+        this.router.navigate(['/dashboard/ngo']);
+        break;
+      case 'ROLE_DONOR':
+        this.router.navigate(['/dashboard/donor']);
+        break;
+      case 'ROLE_DRIVER':
+        this.router.navigate(['//dashboard/driver']);
+        break;
+      default:
+        this.router.navigate(['/']);
+    }
+  }
+
+
 }
