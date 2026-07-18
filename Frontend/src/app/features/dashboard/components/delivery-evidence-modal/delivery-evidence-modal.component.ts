@@ -1,16 +1,18 @@
-import {Component, DestroyRef, EventEmitter, inject, Input, Output, ViewChild} from '@angular/core';
+import {Component, DestroyRef, EventEmitter, inject, Input, Output, signal, ViewChild} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {DeliveryEvidence} from '../../../../shared/models/donation.model';
 import {LogisticsService} from '../../../../core/services/logistics.service';
 import {ToastrService} from 'ngx-toastr';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {SignaturePadComponent} from '../../../../shared/components/signature-pad/signature-pad.component';
+import {GenericModalComponent} from '../../../../shared/components/generic-modal/generic-modal.component';
 
 @Component({
   selector: 'app-delivery-evidence-modal',
   imports: [
     FormsModule,
-    SignaturePadComponent
+    SignaturePadComponent,
+    GenericModalComponent
   ],
   templateUrl: './delivery-evidence-modal.component.html',
   styleUrl: './delivery-evidence-modal.component.css'
@@ -19,6 +21,9 @@ export class DeliveryEvidenceModalComponent {
   private readonly  logisticsService = inject(LogisticsService);
   private readonly toastr = inject(ToastrService);
   private readonly destroyRef = inject(DestroyRef);
+
+  acceptedDisclaimer = signal(false);
+  isTermsOpen = false;
 
   @Input() tripId!: number;
   @Output() close = new EventEmitter<boolean>();
@@ -30,6 +35,10 @@ export class DeliveryEvidenceModalComponent {
     evidencePhotoUrl: '',
     driverSignatureUrl: ''
   };
+
+  openTerms() {
+    this.isTermsOpen = true;
+  }
 
   signaturePadOptions = {
     'minWidth': 2,

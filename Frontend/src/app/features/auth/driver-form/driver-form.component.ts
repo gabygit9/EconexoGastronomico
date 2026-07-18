@@ -1,6 +1,6 @@
 import {Component, DestroyRef, inject, OnInit} from '@angular/core';
 import {BaseFormComponent} from '../../../shared/utils/base-form.component';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {AuthService} from '../../../core/services/auth.service';
 import {LocationService} from '../../../core/services/location.service';
 import {ToastrService} from 'ngx-toastr';
@@ -15,7 +15,8 @@ import {forkJoin, Observable, of, switchMap} from 'rxjs';
   selector: 'app-driver-form',
   imports: [
     ReactiveFormsModule,
-    NgClass
+    NgClass,
+    FormsModule
   ],
   templateUrl: './driver-form.component.html',
   styleUrl: './driver-form.component.css'
@@ -38,6 +39,8 @@ export class DriverFormComponent extends BaseFormComponent implements OnInit{
   isSubmitting = false;
   todayStr = '';
   maxBirthDateStr = '';
+
+  acceptedTerms = false;
 
   get form(){
     return this.driverForm;

@@ -31,13 +31,34 @@
       </div>
     </div>
 
+    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+      <div class="flex items-start gap-3">
+        <input type="checkbox" id="disclaimer" [(ngModel)]="acceptedDisclaimer"
+               class="mt-1 w-5 h-5 accent-[#eb5c0c] cursor-pointer">
+        <label for="disclaimer" class="text-xs text-gray-600 leading-tight">
+          Al confirmar, declaro que la temperatura es correcta y los productos se entregan en buen estado.
+          Acepto los <button (click)="openTerms()" class="text-[#eb5c0c] font-bold underline">términos y condiciones</button> de EcoNexo.
+        </label>
+      </div>
+    </div>
+
     <div class="p-6 border-t border-gray-100 flex gap-4 shrink-0 bg-white">
 
       <button (click)="close.emit(false)" class="flex-1 py-3.5 px-4 text-gray-600 font-bold hover:bg-gray-50 rounded-xl transition-colors border border-transparent">Cancelar</button>
       <button (click)="submitEvidence()" [disabled]="isLoading" class="flex-1 py-3.5 px-4 bg-[#eb5c0c] hover:bg-[#d65108] text-white font-bold rounded-xl transition-all shadow-sm focus:ring-4 focus:ring-[#eb5c0c]/30">
-        {{ isLoading ? 'Enviando...' : 'Confirmar Entrega' }}
+        {{ isLoading || !acceptedDisclaimer() ? 'Enviando...' : 'Confirmar Entrega' }}
       </button>
     </div>
 
   </div>
 </div>
+
+<app-generic-modal
+  [isOpen]="isTermsOpen"
+  title="Términos y Condiciones"
+  message="Al confirmar esta entrega, usted declara que los productos están en condiciones óptimas para el consumo, respetando las normas de seguridad alimentaria. EcoNexo actúa como facilitador logístico y no es responsable por el estado final de los alimentos una vez entregados."
+  confirmText="Entendido"
+  [cancelText]="''"
+  (confirm)="isTermsOpen = false"
+  (cancel)="isTermsOpen = false">
+</app-generic-modal>
