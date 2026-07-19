@@ -11,6 +11,7 @@ import com.tfi.econexo.model.enums.DonationStatus;
 import org.locationtech.jts.geom.Point;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,5 +37,6 @@ public interface DonationService {
     void receiveDonation(Long donationId, ReceivedDonationDTO dto, String email);
     List<DonationItemReceptionDTO> getDonationItems(Long id);
     byte[] getCertificateBytes(Long id);
+    byte[] getSummaryReport(Long donorId, LocalDate start, LocalDate end);
     void rejectDonationWithDetails(Long donationId, RejectionRequestDTO dto, String email);
 }

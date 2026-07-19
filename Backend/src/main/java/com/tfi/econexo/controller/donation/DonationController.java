@@ -25,6 +25,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -180,6 +181,17 @@ public class DonationController {
         byte[] pdfContent = donationService.getCertificateBytes(id);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Certificado_EcoNexo_" + id + ".pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdfContent);
+    }
+
+    @PreAuthorize("hasAnyRole('NGO', 'ADMIN', 'DONOR')")
+    @GetMapping("/reports/summary")
+    @Operation(summary = "Download summary report", description = "Download a summary report for a donation")
+    public ResponseEntity<byte[]> downloadReport(@RequestParam Long donorId, @RequestParam LocalDate start, @RequestParam LocalDate end){
+        byte[] pdfContent = donationService.getSummaryReport(donorId, start, end);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Reporte_EcoNexo.pdf")
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(pdfContent);
     }

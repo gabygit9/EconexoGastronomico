@@ -32,6 +32,7 @@ import com.tfi.econexo.utils.cloudinary.Base64ToMultipartConverter;
 import com.tfi.econexo.utils.notification.EmailService;
 import com.tfi.econexo.utils.notification.NotificationService;
 import com.tfi.econexo.utils.pdf.PdfCertificateService;
+import com.tfi.econexo.utils.pdf.PdfReportSummaryService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -62,6 +64,7 @@ public class DonationServiceImpl implements DonationService {
     private final CloudinaryService cloudinaryService;
     private final PdfCertificateService pdfCertificateService;
     private final EmailService emailService;
+    private final PdfReportSummaryService pdfReportSummaryService;
 
     private final DonationMapper donationMapper;
 
@@ -327,8 +330,8 @@ public class DonationServiceImpl implements DonationService {
         donationRepository.save(donation);
 
         byte[] pdfBytes = pdfCertificateService.generateCertificate(record);
-        emailService.sendCertificateEmail(record.getDonation().getDonor().getUser().getEmail(), "Certificado de Donación", "Adjunto encontrará el certificado de su reciente donación.", pdfBytes, "Certificado_" + record.getId() + ".pdf");
         emailService.sendCertificateEmail(record.getReceivedByEmail(), "Certificado de Donación", "Adjunto encontrará su certificado.", pdfBytes, "Certificado_" + record.getId() + ".pdf");
+        emailService.sendCertificateEmail(record.getDonation().getDonor().getUser().getEmail(), "Certificado de Donación", "Adjunto encontrará el certificado de su reciente donación.", pdfBytes, "Certificado_" + record.getId() + ".pdf");
     }
 
     @Override
@@ -351,6 +354,12 @@ public class DonationServiceImpl implements DonationService {
                 .orElseThrow(() -> new EntityNotFoundException("Reception record not found"));
 
         return pdfCertificateService.generateCertificate(record);
+    }
+
+    @Override
+    public byte[] getSummaryReport(Long donorId, LocalDate start, LocalDate end) {
+
+        return pdfReportSummaryService.generateSummaryReport(donorId, start, end);
     }
 
     @Transactional
