@@ -1,7 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {AuthService} from './auth.service';
-import {environment} from '../../../environments/environment.development';
+import {environment} from '../../../environments/environment';
 import {Observable, tap} from 'rxjs';
 import {DriverResponse} from '../../shared/models/driver.model';
 
