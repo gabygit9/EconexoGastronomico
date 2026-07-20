@@ -4,7 +4,7 @@ import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} fr
 import {AuthService} from '../../../core/services/auth.service';
 import {LocationService} from '../../../core/services/location.service';
 import {ToastrService} from 'ngx-toastr';
-import {Router} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {NgClass} from '@angular/common';
 import {NeighborhoodLookup} from '../../../shared/models/donor.model';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
@@ -16,7 +16,8 @@ import {forkJoin, Observable, of, switchMap} from 'rxjs';
   imports: [
     ReactiveFormsModule,
     NgClass,
-    FormsModule
+    FormsModule,
+    RouterLink
   ],
   templateUrl: './driver-form.component.html',
   styleUrl: './driver-form.component.css'
@@ -93,6 +94,7 @@ export class DriverFormComponent extends BaseFormComponent implements OnInit{
       latitude: [null, Validators.required],
       longitude: [null, Validators.required],
       neighborhoodId: ['', [Validators.required]],
+      terms: [false, Validators.requiredTrue],
       vehicle: this.fb.group({
         vehicleType: ['', [Validators.required]],
         hasRefrigeration: [false],
@@ -191,30 +193,44 @@ export class DriverFormComponent extends BaseFormComponent implements OnInit{
   }
 
   /**
-   * Handle neighborhood change temporary until Google Geocoding API is implemented
+   * Handle address blur
    */
-  //Todo reemplazar en el sprint 3 con conexión real a Google API
-  onNeighborhoodChange(): void {
-    const neighborhoodId = Number(this.driverForm.get('neighborhoodId')?.value);
-    const coords = this.locationService.getMockCoordinates(neighborhoodId);
-
-    if(coords){
-      this.form.patchValue(coords);
-      console.log('Coords assigned provisionally:', coords);
-    }
-  }
-
-  /**
-   * Handle address blur temporary until Google Geocoding API is implemented
-   */
-  //Todo reemplazar en el sprint 3 con conexión real a Google API
   async onAddressBlur(): Promise<void> {
     const street = this.driverForm.get('street')?.value;
     const number = this.driverForm.get('streetNumber')?.value;
 
-    const coords = await this.locationService.geocodeAddress(street, number);
-    if (coords) {
-      this.form.patchValue(coords);
+    if (street && number) {
+      const coords = await this.locationService.geocodeAddress(street, number);
+      if (coords) {
+        this.form.patchValue(coords);
+        this.toastr.success('Ubicación detectada correctamente');
+      } else {
+        this.toastr.warning('No pudimos encontrar la dirección exacta');
+      }
+    }
+  }
+
+  initAutocomplete() {
+    const input = document.querySelector('input[formControlName="street"]') as HTMLInputElement;
+    const google = (window as any).google;
+
+    if (google && google.maps && google.maps.places) {
+      const autocomplete = new google.maps.places.Autocomplete(input, {
+        componentRestrictions: { country: 'AR' },
+        fields: ['geometry', 'formatted_address']
+      });
+
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        if (place.geometry) {
+          this.driverForm.patchValue({
+            latitude: place.geometry.location?.lat(),
+            longitude: place.geometry.location?.lng()
+          });
+          this.driverForm.get('latitude')?.updateValueAndValidity();
+          this.driverForm.get('longitude')?.updateValueAndValidity();
+        }
+      });
     }
   }
 

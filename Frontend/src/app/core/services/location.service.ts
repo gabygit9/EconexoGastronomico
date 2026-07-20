@@ -1,33 +1,37 @@
-import { Injectable } from '@angular/core';
+import {inject, Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {firstValueFrom} from 'rxjs';
+import {environment} from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LocationService {
+  private readonly http = inject(HttpClient);
+  private readonly apiKey = environment.googleMapsApiKey;
 
   /**
-   * Returns mock coordinates for a given neighborhood ID
-   * @param neighborhoodId
+   * Returns coordinates for a given address
+   * @param street
+   * @param number
    */
-  getMockCoordinates(neighborhoodId: number): { latitude: number, longitude: number} | null {
-    if(neighborhoodId === 1) return { latitude: -31.4233, longitude: -64.1865 };
-    if(neighborhoodId === 2) return { latitude: -31.4125, longitude: -64.1678 };
+  async geocodeAddress(street: string, number: string): Promise<{ latitude: number, longitude: number } | null> {
+    if(!street || !number) return null;
+    console.log(`Ready to geocodify address : ${street} ${number}, Córdoba, Argentina`);
+
+    const address = `${street} ${number}, Córdoba, Argentina`;
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${this.apiKey}`;
+
+    try {
+      const response: any = await firstValueFrom(this.http.get(url));
+      if (response.status === 'OK' && response.results.length > 0) {
+        const { lat, lng } = response.results[0].geometry.location;
+        return { latitude: lat, longitude: lng };
+      }
+    } catch (error) {
+      console.error('Error geocoding:', error);
+    }
     return null;
   }
 
-  /**
-   * Returns mock coordinates for a given address
-   * @param street
-   * @param streetNumber
-   */
-  async geocodeAddress(street: string, streetNumber: string): Promise<{ latitude: number, longitude: number } | null> {
-    if(!street || !streetNumber) return null;
-    console.log(`Ready to geocodify address : ${street} ${streetNumber}, Córdoba, Argentina`);
-
-    // TODO: Implementar llamada real a Google Geocoding API
-    // const coords = await this.googleService.getCoordinates(`${street} ${streetNumber}, Córdoba, Argentina`);
-    // return { latitude: coords.lat, longitude: coords.lng };
-
-    return null; // Retorno nulo temporal hasta el Sprint 3)
-  }
 }
