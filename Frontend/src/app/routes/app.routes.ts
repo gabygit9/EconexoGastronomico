@@ -43,9 +43,9 @@ export const routes: Routes = [
     path: 'donations',
     children: [
       { path: 'form', canActivate: [roleGuard(['ADMIN', 'DONOR'])], loadComponent: () => import('../features/donations/donation-form/donation-form.component').then(m => m.DonationFormComponent) },
-      { path: 'success', canActivate: [authGuard], loadComponent: () => import('../shared/components/donation-success/donation-success.component').then(m => m.DonationSuccessComponent) },
-      { path: 'pending', canActivate: [authGuard], loadComponent: () => import('../shared/components/donation-pending/donation-pending.component').then(m => m.DonationPendingComponent) },
-      { path: 'failure', canActivate: [authGuard], loadComponent: () => import('../shared/components/donation-failure/donation-failure.component').then(m => m.DonationFailureComponent) },
+      { path: 'success', loadComponent: () => import('../shared/components/donation-success/donation-success.component').then(m => m.DonationSuccessComponent) },
+      { path: 'pending', loadComponent: () => import('../shared/components/donation-pending/donation-pending.component').then(m => m.DonationPendingComponent) },
+      { path: 'failure', loadComponent: () => import('../shared/components/donation-failure/donation-failure.component').then(m => m.DonationFailureComponent) },
     ]
   },
 
