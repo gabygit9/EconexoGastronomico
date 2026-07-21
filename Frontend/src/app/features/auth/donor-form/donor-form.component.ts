@@ -1,5 +1,5 @@
 import {Component, DestroyRef, inject, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {AuthService} from '../../../core/services/auth.service';
 import {DonorTypeLookup, NeighborhoodLookup} from '../../../shared/models/donor.model';
 import {DonorTypeTranslatePipe} from '../../../shared/pipes/donor-type-translate.pipe';
@@ -17,7 +17,8 @@ import {LocationService} from "../../../core/services/location.service";
     ReactiveFormsModule,
     DonorTypeTranslatePipe,
     NgClass,
-    RouterLink
+    RouterLink,
+    FormsModule
   ],
   templateUrl: './donor-form.component.html',
   styleUrl: './donor-form.component.css'
@@ -33,6 +34,7 @@ export class DonorFormComponent extends BaseFormComponent implements OnInit {
 
   donorForm!: FormGroup;
   isSubmitting = false;
+  acceptedTerms = false;
 
   get form() {
     return this.donorForm;
@@ -67,7 +69,8 @@ export class DonorFormComponent extends BaseFormComponent implements OnInit {
       floor: [null],
       apartment: [null],
       latitude: [null, Validators.required],
-      longitude: [null, Validators.required]
+      longitude: [null, Validators.required],
+      terms: [false, Validators.requiredTrue]
     })
   }
 
@@ -111,7 +114,7 @@ export class DonorFormComponent extends BaseFormComponent implements OnInit {
 
     this.authService.registerDonor(formData).pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (response) => {
+        next: () => {
           this.toastr.success('Tu cuenta ha sido creada exitosamente.', '¡Bienvenido a EcoNexo!')
 
           setTimeout(() => {
@@ -133,30 +136,44 @@ export class DonorFormComponent extends BaseFormComponent implements OnInit {
   }
 
   /**
-   * Handle neighborhood change temporary until Google Geocoding API is implemented
+   * Handle address blur
    */
-  //Todo reemplazar en el sprint 3 con conexión real a Google API
-  onNeighborhoodChange(): void {
-    const neighborhoodId = Number(this.donorForm.get('neighborhoodId')?.value);
-    const coords = this.locationService.getMockCoordinates(neighborhoodId);
-
-    if(coords){
-      this.form.patchValue(coords);
-      console.log('Coords assigned provisionally:', coords);
-    }
-  }
-
-  /**
-   * Handle address blur temporary until Google Geocoding API is implemented
-   */
-  //Todo reemplazar en el sprint 3 con conexión real a Google API
   async onAddressBlur(): Promise<void> {
     const street = this.donorForm.get('street')?.value;
     const number = this.donorForm.get('streetNumber')?.value;
 
-    const coords = await this.locationService.geocodeAddress(street, number);
-    if (coords) {
-      this.form.patchValue(coords);
+    if (street && number) {
+      const coords = await this.locationService.geocodeAddress(street, number);
+      if (coords) {
+        this.form.patchValue(coords);
+        this.toastr.success('Ubicación detectada correctamente');
+      } else {
+        this.toastr.warning('No pudimos encontrar la dirección exacta');
+      }
+    }
+  }
+
+  initAutocomplete() {
+    const input = document.querySelector('input[formControlName="street"]') as HTMLInputElement;
+    const google = (window as any).google;
+
+    if (google && google.maps && google.maps.places) {
+      const autocomplete = new google.maps.places.Autocomplete(input, {
+        componentRestrictions: { country: 'AR' },
+        fields: ['geometry', 'formatted_address']
+      });
+
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        if (place.geometry) {
+          this.donorForm.patchValue({
+            latitude: place.geometry.location?.lat(),
+            longitude: place.geometry.location?.lng()
+          });
+          this.donorForm.get('latitude')?.updateValueAndValidity();
+          this.donorForm.get('longitude')?.updateValueAndValidity();
+        }
+      });
     }
   }
 

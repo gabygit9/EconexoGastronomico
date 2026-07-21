@@ -1,12 +1,12 @@
 import {inject, Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {environment} from '../../../environments/environment.development';
+import {HttpClient, HttpParams} from '@angular/common/http';
+import {environment} from '../../../environments/environment';
 import {
   Category, DonationItemReception,
   DonationRequest,
   DonationResponse,
   DonationSummaryResponse,
-  Product, ReceivedDonation,
+  Product, ReceivedDonation, RejectionRequest,
   UnitOfMeasure
 } from '../../shared/models/donation.model';
 import {Observable} from 'rxjs';
@@ -133,5 +133,31 @@ export class DonationService {
    */
   downloadCertificate(donationId: number){
     return this.http.get<Blob>(`${this.apiUrl}/${donationId}/certificate`, { responseType: 'blob' as 'json' });
+  }
+
+  /**
+   * Download a summary report for donations
+   * @param donorId
+   * @param start
+   * @param end
+   */
+  downloadSummaryReport(donorId: number, start: string, end: string){
+    const params = new HttpParams()
+      .set('donorId', donorId.toString())
+      .set('start', start)
+      .set('end', end);
+
+    return this.http.get<Blob>(`${this.apiUrl}/reports/summary`, {
+      params: params,
+      responseType: 'blob' as 'json' });
+  }
+
+  /**
+   * Reject a donation with details (as a Ngo or Driver)
+   * @param donationId
+   * @param rejection
+   */
+  rejectDonationWithDetails(donationId: number, rejection: RejectionRequest){
+    return this.http.post<void>(`${this.apiUrl}/${donationId}/reject-full`, rejection);
   }
 }

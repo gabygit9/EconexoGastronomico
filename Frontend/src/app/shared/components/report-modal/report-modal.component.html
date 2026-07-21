@@ -1,0 +1,45 @@
+@if (isOpen()) {
+  <div class="fixed inset-0 z-[9999] flex items-center justify-center bg-gray-900/40 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden transform transition-all scale-100 flex flex-col">
+
+
+      <div class="bg-[#161c28] text-white px-6 py-5 flex flex-col gap-1 shrink-0">
+        <h3 class="text-lg font-bold flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-[#eb5c0c]"></span>
+          Generar Reporte
+        </h3>
+        <p class="text-gray-400 text-xs ml-4">
+          Seleccione el rango de fechas para el resumen.
+        </p>
+      </div>
+
+      <div class="p-6">
+
+
+        <div class="flex flex-col gap-3 mb-6">
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-bold text-gray-400 uppercase">Desde</label>
+            <input type="date" [(ngModel)]="startDate" [max]="endDate || today"
+                   class="border border-gray-200 p-3 rounded-xl w-full focus:ring-2 focus:ring-[#eb5c0c]/30 outline-none transition-all">
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-bold text-gray-400 uppercase">Hasta</label>
+            <input type="date" [(ngModel)]="endDate" [min]="startDate" [max]="today"
+                   class="border border-gray-200 p-3 rounded-xl w-full focus:ring-2 focus:ring-[#eb5c0c]/30 outline-none transition-all">
+          </div>
+        </div>
+
+        <div class="flex gap-3">
+          <button (click)="close()" class="flex-1 px-4 py-3 rounded-xl font-bold text-gray-600 bg-gray-100 hover:bg-gray-200">Cancelar</button>
+          <button (click)="isFormValid() ? confirm() : null" [disabled]="!isFormValid()"
+                  [class]="'flex-1 px-4 py-3 rounded-xl font-bold text-white transition-all ' +
+                           (isFormValid() ? 'bg-[#eb5c0c] hover:bg-[#d4530b]' : 'bg-gray-300 cursor-not-allowed')">
+            Generar
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+}

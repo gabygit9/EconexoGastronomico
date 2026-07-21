@@ -1,6 +1,6 @@
 import {Component, DestroyRef, inject, OnInit} from '@angular/core';
 import {BaseFormComponent} from '../../../shared/utils/base-form.component';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {NgoTypeLookup} from '../../../shared/models/ngo.model';
 import {NeighborhoodLookup} from '../../../shared/models/donor.model';
 import {AuthService} from '../../../core/services/auth.service';
@@ -18,7 +18,8 @@ import {LocationService} from '../../../core/services/location.service';
     ReactiveFormsModule,
     NgoTypeTranslatePipe,
     RouterLink,
-    NgClass
+    NgClass,
+    FormsModule
   ],
   templateUrl: './ngo-form.component.html',
   styleUrl: './ngo-form.component.css'
@@ -41,6 +42,7 @@ export class NgoFormComponent extends BaseFormComponent implements OnInit {
 
   ngoTypes: NgoTypeLookup[] = [];
   neighborhoods: NeighborhoodLookup[] = [];
+  acceptedTerms = false;
 
   ngOnInit() {
     this.initForm();
@@ -63,7 +65,8 @@ export class NgoFormComponent extends BaseFormComponent implements OnInit {
       longitude: [null, Validators.required],
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required, Validators.minLength(8)],
-      ngoType: ['', Validators.required]
+      ngoType: ['', Validators.required],
+      terms: [false, Validators.requiredTrue]
     })
   }
 
@@ -126,30 +129,44 @@ export class NgoFormComponent extends BaseFormComponent implements OnInit {
   }
 
   /**
-   * Handle neighborhood change temporary until Google Geocoding API is implemented
+   * Handle address blur
    */
-  //Todo reemplazar en el sprint 3 con conexión real a Google API
-  onNeighborhoodChange(): void {
-    const neighborhoodId = Number(this.ngoForm.get('neighborhoodId')?.value);
-    const coords = this.locationService.getMockCoordinates(neighborhoodId);
-
-    if(coords){
-      this.form.patchValue(coords);
-      console.log('Coords assigned provisionally:', coords);
-    }
-  }
-
-  /**
-   * Handle address blur temporary until Google Geocoding API is implemented
-   */
-  //Todo reemplazar en el sprint 3 con conexión real a Google API
   async onAddressBlur(): Promise<void> {
     const street = this.ngoForm.get('street')?.value;
     const number = this.ngoForm.get('streetNumber')?.value;
 
-    const coords = await this.locationService.geocodeAddress(street, number);
-    if (coords) {
-      this.form.patchValue(coords);
+    if (street && number) {
+      const coords = await this.locationService.geocodeAddress(street, number);
+      if (coords) {
+        this.form.patchValue(coords);
+        this.toastr.success('Ubicación detectada correctamente');
+      } else {
+        this.toastr.warning('No pudimos encontrar la dirección exacta');
+      }
+    }
+  }
+
+  initAutocomplete() {
+    const input = document.querySelector('input[formControlName="street"]') as HTMLInputElement;
+    const google = (window as any).google;
+
+    if (google && google.maps && google.maps.places) {
+      const autocomplete = new google.maps.places.Autocomplete(input, {
+        componentRestrictions: { country: 'AR' },
+        fields: ['geometry', 'formatted_address']
+      });
+
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        if (place.geometry) {
+          this.ngoForm.patchValue({
+            latitude: place.geometry.location?.lat(),
+            longitude: place.geometry.location?.lng()
+          });
+          this.ngoForm.get('latitude')?.updateValueAndValidity();
+          this.ngoForm.get('longitude')?.updateValueAndValidity();
+        }
+      });
     }
   }
 

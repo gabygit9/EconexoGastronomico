@@ -43,9 +43,9 @@ public class PaymentServiceImpl implements PaymentService {
                     .items(Collections.singletonList(itemRequest))
                     .externalReference(String.valueOf(dto.donationId()))
                     .backUrls(PreferenceBackUrlsRequest.builder()
-                            .success("https://effects-vagrantly-implosive.ngrok-free.dev/donations/success")
-                            .pending("https://effects-vagrantly-implosive.ngrok-free.dev/donations/pending")
-                            .failure("https://effects-vagrantly-implosive.ngrok-free.dev/donations/failure")
+                            .success("https://econexo-mauve.vercel.app/donations/success")
+                            .pending("https://econexo-mauve.vercel.app/donations/pending")
+                            .failure("https://econexo-mauve.vercel.app/donations/failure")
                             .build())
                     .autoReturn("approved")
                     .metadata(Map.of("ngo_id", String.valueOf(dto.ngoId())))
@@ -57,6 +57,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         } catch (MPApiException e) {
             System.err.println("Error detalle de MP: " + e.getApiResponse().getContent());
+            logger.error("Error de API de Mercado Pago: {}", e.getMessage());
             throw new RuntimeException("Error en Mercado Pago: " + e.getMessage());
         } catch (MPException e) {
             throw new RuntimeException(e);

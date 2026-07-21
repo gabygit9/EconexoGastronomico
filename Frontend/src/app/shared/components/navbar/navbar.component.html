@@ -1,5 +1,5 @@
 <nav class="bg-[#161c28] text-white px-6 py-4 flex justify-between items-center shadow-lg">
-  <div class="flex items-center gap-2">
+  <div class="flex items-center gap-2 cursor-pointer" (click)="handleLogoClick()">
     <div class="w-8 h-8 bg-[#eb5c0c] rounded-lg flex items-center justify-center">
       <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
@@ -10,6 +10,12 @@
 
   <div class="flex items-center gap-4 md:gap-6">
     @if (authService.isAuthenticated$ | async){
+      <a routerLink="/legal/faq"
+         class="p-1 rounded-full hover:bg-gray-700 transition-colors duration-200 -ml-2">
+        <svg class="w-6 h-6 text-gray-400 hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+      </a>
 
       <!-- Contenedor único para campana y dropdown -->
       <div class="relative">
@@ -28,11 +34,21 @@
         <!-- Dropdown de Notificaciones -->
         @if (showNotifications) {
           <div class="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-2xl border border-gray-100 p-2 z-50 text-gray-800">
-            <h4 class="font-bold p-2 text-sm border-b">Notificaciones recientes</h4>
+            <div class="flex justify-between items-center p-2 border-b">
+              <h4 class="font-bold text-sm">Notificaciones</h4>
+              @if (notifications().length > 3) {
+                <button (click)="deleteAll()" class="text-[10px] text-red-500 font-bold hover:underline">Borrar todo</button>
+              }
+            </div>
+
             <div class="max-h-64 overflow-y-auto">
               @for (note of notifications(); track note.id) {
-                <div class="p-3 text-xs hover:bg-gray-50 border-b border-gray-50 cursor-pointer">
-                  {{ note.message }}
+                <div class="p-3 text-xs hover:bg-gray-50 border-b border-gray-50 flex justify-between items-start group">
+                  <span class="mr-2">{{ note.message }}</span>
+                  <!-- Botón Borrar individual -->
+                  <button (click)="deleteNotification(note.id, $event)" class="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                  </button>
                 </div>
               } @empty {
                 <p class="p-4 text-xs text-gray-400 text-center">No tenés notificaciones nuevas.</p>

@@ -1,6 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {environment} from '../../../environments/environment.development';
+import {environment} from '../../../environments/environment';
 import {NotificationDto} from '../../shared/models/donation.model';
 
 @Injectable({
@@ -34,5 +34,22 @@ export class NotificationService {
    */
   markAllAsRead(){
     return this.http.put<void>(`${this.apiUrl}/read`, {});
+  }
+
+  /**
+   * Delete a specific notification
+   * @param id - The ID of the notification to delete
+   * @returns Observable<void>
+   */
+  deleteNotification(id: number) {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  /**
+   * Delete all notifications for the current user
+   * @returns Observable<void>
+   */
+  deleteAllNotifications() {
+    return this.http.delete<void>(`${this.apiUrl}/all`);
   }
 }

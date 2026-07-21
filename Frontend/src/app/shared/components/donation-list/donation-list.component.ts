@@ -1,16 +1,30 @@
-import {Component, computed, DestroyRef, EventEmitter, inject, input, Output, output, signal} from '@angular/core';
-import {DatePipe, NgClass} from '@angular/common';
+import {
+  Component,
+  computed,
+  DestroyRef,
+  EventEmitter,
+  inject,
+  input,
+  Output,
+  output,
+  signal,
+  ViewChild
+} from '@angular/core';
+import {DatePipe} from '@angular/common';
 import {DonationResponse} from '../../models/donation.model';
 import {StatusTranslatePipe} from '../../pipes/status-translate.pipe';
 import {Router, RouterLink} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
 import {DonationService} from '../../../core/services/donation.service';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {AuthService} from '../../../core/services/auth.service';
+import {ReportModalComponent} from '../report-modal/report-modal.component';
+import {firstValueFrom} from 'rxjs';
 
 @Component({
   selector: 'app-donation-list',
   imports: [
-    DatePipe, StatusTranslatePipe, RouterLink
+    DatePipe, StatusTranslatePipe, RouterLink, ReportModalComponent
   ],
   templateUrl: './donation-list.component.html',
   styleUrl: './donation-list.component.css'
@@ -18,15 +32,19 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 export class DonationListComponent {
   private readonly router = inject(Router);
   private readonly toastr = inject(ToastrService);
+  private readonly authService = inject(AuthService);
   private readonly donationService = inject(DonationService);
   private readonly destroyRef = inject(DestroyRef);
 
   @Output() onReceive = new EventEmitter<number>();
+  @ViewChild(ReportModalComponent) reportModal!: ReportModalComponent;
 
   donations = input.required<DonationResponse[]>();
   viewRole = input<'DONOR' | 'NGO'>();
   actionRequested = output<{donationId: number, type: 'CANCEL' | 'REJECT'}>();
   rowClick= output<number>();
+  donorId: number | null = null;
+  isModalOpen = signal(false);
 
   //Filtros
   currentFilter = signal<'ALL' | 'ACTIVE' | 'HISTORY'>('ACTIVE');
@@ -105,5 +123,42 @@ export class DonationListComponent {
       'EXPIRED': 'bg-gray-50 text-gray-600 border-gray-300'
     };
     return statusMap[status] || 'bg-gray-50 text-gray-700 border-gray-200';
+  }
+
+  goToStats(){
+    this.router.navigate(['/reports']);
+  }
+
+  openReportModal() {
+    this.reportModal.open();
+  }
+
+  async onConfirmReport(dates: { start: string, end: string }) {
+    const user = await firstValueFrom(this.authService.currentUser$);
+    const donorId = (user as any)?.id;
+
+    if (!donorId) {
+      this.toastr.error('No se pudo identificar la sesión del donante.', 'Error');
+      return;
+    }
+
+    this.donationService.downloadSummaryReport(donorId, dates.start, dates.end)
+      .subscribe({
+        next: (blob: Blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `Reporte_EcoNexo_${dates.start}_a_${dates.end}.pdf`;
+          a.click();
+
+          window.URL.revokeObjectURL(url);
+          this.reportModal.close();
+          this.toastr.success('Reporte descargado con éxito.', '¡Excelente!');
+        },
+        error: (err) => {
+          console.error('Error al descargar reporte:', err);
+          this.toastr.error('Hubo un problema al generar el PDF.', 'Error');
+        }
+      });
   }
 }

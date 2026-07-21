@@ -18,6 +18,8 @@ import com.tfi.econexo.repository.location.CityRepository;
 import com.tfi.econexo.repository.location.NeighborhoodRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -28,6 +30,7 @@ import java.util.Set;
 @Component
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -61,9 +64,9 @@ public class DataInitializer implements CommandLineRunner {
             adminUser.setRolesList(Set.of(adminRole));
             userRepository.save(adminUser);
 
-            System.out.println("[DataInitializer] Usuario ADMIN creado con éxito: admin@econexo.com / admin1234");
+            logger.info("Admin account has been created");
         } else {
-            System.out.println("[DataInitializer] El usuario ADMIN ya existe en la base de datos. Saltando inicialización.");
+            logger.info("User with email {} already exists", adminEmail);
         }
 
         if(cityRepository.count() == 0){
@@ -88,7 +91,7 @@ public class DataInitializer implements CommandLineRunner {
             altaCordoba.setCity(cordoba);
 
             neighborhoodRepository.saveAll(List.of(nvaCba, gralPaz, centro, altaCordoba));
-            System.out.println("[DataInitializer] Ciudades y Barrios base creados con éxito.");
+            logger.info("All neighborhoods have been created");
         }
 
         if (productRepository.count() == 0) {
@@ -148,7 +151,7 @@ public class DataInitializer implements CommandLineRunner {
 
             productRepository.saveAll(List.of(fineDoughs, bread, milk, mainCourse, wildcard));
 
-            System.out.println("[DataInitializer] Catálogo de alimentos paramétrico creado con éxito.");
+            logger.info("All products have been created");
         }
     }
 

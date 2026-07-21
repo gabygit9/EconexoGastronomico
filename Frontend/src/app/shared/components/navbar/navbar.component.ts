@@ -4,9 +4,13 @@ import {Router, RouterLink} from '@angular/router';
 import {AsyncPipe} from '@angular/common';
 import {NotificationService} from '../../../core/services/notification.service';
 import {ToastrService} from 'ngx-toastr';
-import {interval, switchMap} from 'rxjs';
+import {interval, map, startWith, switchMap} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {NotificationDto} from '../../models/donation.model';
+import {DonorResponse} from '../../models/donor.model';
+import {NgoResponseDTO} from '../../models/ngo.model';
+import {DriverResponse} from '../../models/driver.model';
+import {UserAdminResponse} from '../../models/admin.model';
 
 @Component({
   selector: 'app-navbar',
@@ -63,4 +67,51 @@ export class NavbarComponent implements OnInit{
       }
     });
   }
+
+  handleLogoClick() {
+    const isAuthenticated = this.authService.isAuthenticated();
+
+    if (!isAuthenticated) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    const role = this.authService.getUserRole();
+
+    switch(role) {
+      case 'ROLE_ADMIN':
+        this.router.navigate(['/dashboard/admin']);
+        break;
+      case 'ROLE_NGO':
+        this.router.navigate(['/dashboard/ngo']);
+        break;
+      case 'ROLE_DONOR':
+        this.router.navigate(['/dashboard/donor']);
+        break;
+      case 'ROLE_DRIVER':
+        this.router.navigate(['//dashboard/driver']);
+        break;
+      default:
+        this.router.navigate(['/']);
+    }
+  }
+
+  deleteNotification(id: number, event: Event) {
+    event.stopPropagation(); // Evita que se cierre el dropdown al hacer clic
+    this.notificationService.deleteNotification(id).subscribe(() => {
+      this.notifications.update(list => list.filter(n => n.id !== id));
+      this.unreadCount = Math.max(0, this.unreadCount - 1);
+      //this.toastr.success("Notificación eliminada");
+    });
+  }
+
+  deleteAll() {
+    this.notificationService.deleteAllNotifications().subscribe(() => {
+      this.notifications.set([]);
+      this.unreadCount = 0;
+      //this.toastr.success("Todas las notificaciones eliminadas");
+    });
+  }
+
+
 }

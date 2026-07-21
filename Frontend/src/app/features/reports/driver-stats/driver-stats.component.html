@@ -1,0 +1,66 @@
+@if (stats.totalDeliveries === 0) {
+  <div class="text-center py-20 bg-white rounded-xl shadow-sm border border-dashed border-gray-300">
+    <p class="text-gray-500">Aún no has realizado viajes. ¡Mantente atento a la red!</p>
+  </div>
+} @else {
+  <div class="space-y-6">
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
+      <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+        <h3 class="text-xs uppercase text-gray-500 font-bold">Retiros Totales</h3>
+        <p class="text-3xl font-bold text-[#161c28]">{{ stats.totalDeliveries }}</p>
+      </div>
+      <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+        <h3 class="text-xs uppercase text-gray-500 font-bold">Kilos Transportados</h3>
+        <p class="text-3xl font-bold text-[#161c28]">{{ stats.totalKilosTransported | number:'1.1-2' }} kg</p>
+      </div>
+      <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+        <h3 class="text-xs uppercase text-gray-500 font-bold">Distancia Promedio</h3>
+        <p class="text-3xl font-bold text-[#161c28]">{{ stats.averageDistanceKm | number:'1.1-1' }} km</p>
+      </div>
+      <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+        <h3 class="text-xs uppercase text-gray-500 font-bold">Puntualidad</h3>
+        <p class="text-3xl font-bold text-emerald-600">{{ stats.punctualityPercentage / 100 | percent:'1.0-0' }}</p>
+      </div>
+      <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+        <h3 class="text-xs uppercase text-gray-500 font-bold">Carga Promedio</h3>
+        <p class="text-xl font-bold text-[#161c28]">{{ stats.avgKilosPerDelivery | number:'1.1-1' }} kg</p>
+      </div>
+      <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+        <h3 class="text-xs uppercase text-gray-500 font-bold">Días Activos</h3>
+        <p class="text-xl font-bold text-[#161c28]">{{ stats.activeDays }}</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+        <apx-chart [series]="activityOptions.series"
+                   [chart]="activityOptions.chart"
+                   [xaxis]="activityOptions.xaxis"
+                   [title]="activityOptions.title"
+                   [colors]="activityOptions.colors">
+        </apx-chart>
+      </div>
+      <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+        <apx-chart [series]="trendOptions.series"
+                   [chart]="trendOptions.chart"
+                   [plotOptions]="trendOptions.plotOptions"
+                   [labels]="trendOptions.labels"
+                   [title]="trendOptions.title"
+                   [subtitle]="trendOptions.subtitle">
+        </apx-chart>
+      </div>
+    </div>
+    <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm lg:col-span-1">
+      <apx-chart [series]="lineOptions.series"
+                 [chart]="lineOptions.chart"
+                 [xaxis]="lineOptions.xaxis"
+                 [yaxis]="lineOptions.yaxis"
+                 [title]="lineOptions.title"
+                 [stroke]="lineOptions.stroke"
+                 [colors]="lineOptions.colors"
+                 [markers]="lineOptions.markers">
+      </apx-chart>
+    </div>
+  </div>
+}
+

@@ -2,6 +2,7 @@ package com.tfi.econexo.controller.donation;
 
 import com.tfi.econexo.dto.donation.DonationRequestDTO;
 import com.tfi.econexo.dto.donation.DonationResponseDTO;
+import com.tfi.econexo.dto.donation.RejectionRequestDTO;
 import com.tfi.econexo.dto.donation.summary.DonationSummaryResponseDTO;
 import com.tfi.econexo.dto.donation.catalog.CategoryDTO;
 import com.tfi.econexo.dto.donation.catalog.ProductDTO;
@@ -24,6 +25,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -181,6 +183,29 @@ public class DonationController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Certificado_EcoNexo_" + id + ".pdf")
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(pdfContent);
+    }
+
+    @PreAuthorize("hasAnyRole('NGO', 'ADMIN', 'DONOR')")
+    @GetMapping("/reports/summary")
+    @Operation(summary = "Download summary report", description = "Download a summary report for a donation")
+    public ResponseEntity<byte[]> downloadReport(@RequestParam Long donorId, @RequestParam LocalDate start, @RequestParam LocalDate end){
+        byte[] pdfContent = donationService.getSummaryReport(donorId, start, end);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Reporte_EcoNexo.pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdfContent);
+    }
+
+    @PreAuthorize("hasAnyRole('DRIVER', 'ADMIN')")
+    @PostMapping("/{id}/reject-full")
+    @Operation(summary = "Reject donation with details", description = "Register rejection reason, date and evidence photo")
+    public ResponseEntity<Void> rejectDonationWithDetails(
+            @PathVariable Long id,
+            @RequestBody RejectionRequestDTO dto,
+            Authentication authentication) {
+
+        donationService.rejectDonationWithDetails(id, dto, authentication.getName());
+        return ResponseEntity.noContent().build();
     }
 
 }
