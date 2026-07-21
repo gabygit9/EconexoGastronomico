@@ -42,16 +42,12 @@ public class PaymentServiceImpl implements PaymentService {
             PreferenceRequest request = PreferenceRequest.builder()
                     .items(Collections.singletonList(itemRequest))
                     .externalReference(String.valueOf(dto.donationId()))
-                    //TODO descomentar autoreturn y fijar las urls cuando esté deployado
                     .backUrls(PreferenceBackUrlsRequest.builder()
-                            .success("http://localhost:4200/donations/success")
-                            .pending("http://localhost:4200/donations/pending")
-                            .failure("http://localhost:4200/donations/failure")
-//                            .success("https://effects-vagrantly-implosive.ngrok-free.dev/donations/success")
-//                            .pending("https://effects-vagrantly-implosive.ngrok-free.dev/donations/pending")
-//                            .failure("https://effects-vagrantly-implosive.ngrok-free.dev/donations/failure")
+                            .success("https://econexo-mauve.vercel.app/donations/success")
+                            .pending("https://econexo-mauve.vercel.app/donations/pending")
+                            .failure("https://econexo-mauve.vercel.app/donations/failure")
                             .build())
-                    //.autoReturn("approved")
+                    .autoReturn("approved")
                     .metadata(Map.of("ngo_id", String.valueOf(dto.ngoId())))
                     .build();
 
