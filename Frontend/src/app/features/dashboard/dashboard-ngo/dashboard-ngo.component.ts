@@ -88,7 +88,6 @@ export class DashboardNgoComponent implements OnInit{
         this.isLoading = false;
       },
       error: (err) => {
-        console.error('Error loading NGO profile:', err);
         this.isLoading = false;
         this.toastr.error('No se pudo cargar la información de tu perfil.', 'Error de conexión')
       }
