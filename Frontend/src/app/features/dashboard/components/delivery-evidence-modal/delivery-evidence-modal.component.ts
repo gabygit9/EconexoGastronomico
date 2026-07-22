@@ -24,6 +24,7 @@ export class DeliveryEvidenceModalComponent {
 
   acceptedDisclaimer = signal(false);
   isTermsOpen = false;
+  selectedFileName: string | null = null;
 
   @Input() tripId!: number;
   @Output() close = new EventEmitter<boolean>();
@@ -40,16 +41,11 @@ export class DeliveryEvidenceModalComponent {
     this.isTermsOpen = true;
   }
 
-  signaturePadOptions = {
-    'minWidth': 2,
-    'canvasWidth': 400,
-    'canvasHeight': 200
-  }
-
   //Convertir a Base64
   onFileSelected(event:any){
     const file = event.target.files[0];
     if(file){
+      this.selectedFileName = file.name;
       const reader = new FileReader();
       reader.onload = () => {
         this.evidence.evidencePhotoUrl = reader.result as string;
@@ -88,5 +84,6 @@ export class DeliveryEvidenceModalComponent {
   clearSignature(){
     this.signaturePad.clear();
   }
+
 
 }

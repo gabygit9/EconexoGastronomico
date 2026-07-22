@@ -11,6 +11,10 @@ export class DonationConfirmModalComponent {
 
   @Input() title: string = 'Confirmar Acción';
   @Input() message: string = '¿Estás seguro de realizar esta acción?';
+  @Input() confirmButtonText: string = 'Confirmar';
+  @Input() infoMessage: string | null =
+    'Al confirmar, el sistema de EcoNexo asignará automáticamente un Conductor Voluntario para retirar este lote completo y llevarlo a tu organización.';
+
 
   @Input({ required: true }) donation!: DonationResponse | DonationSummaryResponse;
   @Output() confirm = new EventEmitter<number>();
