@@ -73,9 +73,8 @@ export class DeliveryEvidenceModalComponent {
         this.toastr.success('Evidencia registrada exitosamente');
         this.close.emit(true);
       },
-      error: (err) => {
+      error: () => {
         this.isLoading = false;
-        console.error("Error al registrar:", err);
         this.toastr.error('Error al registrar evidencia');
       }
     });

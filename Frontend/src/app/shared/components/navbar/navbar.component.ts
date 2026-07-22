@@ -62,7 +62,6 @@ export class NavbarComponent implements OnInit{
     this.authService.logout().subscribe({
       next: () => this.router.navigate(['/login']),
       error: (err) => {
-        console.error('Error al cerrar sesión', err);
         this.router.navigate(['/login']);
       }
     });
@@ -109,7 +108,6 @@ export class NavbarComponent implements OnInit{
     this.notificationService.deleteAllNotifications().subscribe(() => {
       this.notifications.set([]);
       this.unreadCount = 0;
-      //this.toastr.success("Todas las notificaciones eliminadas");
     });
   }
 

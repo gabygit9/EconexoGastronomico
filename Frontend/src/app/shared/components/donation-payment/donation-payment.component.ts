@@ -67,7 +67,6 @@ export class DonationPaymentComponent implements OnInit{
       window.location.href = response.initPoint;
 
     } catch (error) {
-      console.error("Error al iniciar donación", error);
       this.toastr.error('Hubo un error al iniciar el pago');
     }
   }

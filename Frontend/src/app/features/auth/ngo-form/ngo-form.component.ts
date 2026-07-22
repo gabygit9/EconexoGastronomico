@@ -74,13 +74,11 @@ export class NgoFormComponent extends BaseFormComponent implements OnInit {
     forkJoin({
       types: this.authService.getNgoTypes().pipe(
         catchError(err => {
-          console.error("Error loading ngo types", err);
           return of([] as NgoTypeLookup[]);
         })
       ),
       neighborhoods: this.authService.getNeighborhoods().pipe(
         catchError(err => {
-          console.error("Error loading neighborhoods", err);
           return of([] as NeighborhoodLookup[]);
         })
       )
@@ -88,9 +86,6 @@ export class NgoFormComponent extends BaseFormComponent implements OnInit {
       next: ({types, neighborhoods}) => {
         this.ngoTypes = types;
         this.neighborhoods = neighborhoods;
-      },
-      error: (err) => {
-        console.error("Error loading initial data", err);
       }
     })
   }

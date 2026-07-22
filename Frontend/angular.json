@@ -20,6 +20,10 @@
               "zone.js"
             ],
             "tsConfig": "tsconfig.app.json",
+            "allowedCommonJsDependencies": [
+              "leaflet",
+              "leaflet-routing-machine"
+            ],
             "assets": [
               {
                 "glob": "**/*",

@@ -81,13 +81,11 @@ export class DonorFormComponent extends BaseFormComponent implements OnInit {
     forkJoin({
       types: this.authService.getDonorTypes().pipe(
         catchError(error => {
-          console.error("Error loading donor types", error);
           return of([] as DonorTypeLookup[]);
         })
       ),
       neighborhoods: this.authService.getNeighborhoods().pipe(
         catchError(error => {
-          console.error("Error loading neighborhoods", error);
           return of([] as NeighborhoodLookup[]);
         })
       )
@@ -95,8 +93,7 @@ export class DonorFormComponent extends BaseFormComponent implements OnInit {
       next: ({types, neighborhoods}) => {
         this.donorTypes = types;
         this.neighborhoods = neighborhoods;
-      },
-      error: (error) => console.error("Error loading initial data", error)
+      }
     })
   }
 

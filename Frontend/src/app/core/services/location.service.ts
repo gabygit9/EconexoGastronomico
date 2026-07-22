@@ -17,7 +17,6 @@ export class LocationService {
    */
   async geocodeAddress(street: string, number: string): Promise<{ latitude: number, longitude: number } | null> {
     if(!street || !number) return null;
-    console.log(`Ready to geocodify address : ${street} ${number}, Córdoba, Argentina`);
 
     const address = `${street} ${number}, Córdoba, Argentina`;
     const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${this.apiKey}`;
