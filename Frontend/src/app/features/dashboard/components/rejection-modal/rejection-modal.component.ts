@@ -26,11 +26,13 @@ export class RejectionModalComponent {
     photoBase64: '',
     date: new Date()
   };
+  selectedFileName: string | null = null;
 
   //Convertir a Base64
   onFileSelected(event:any){
     const file = event.target.files[0];
     if(file){
+      this.selectedFileName = file.name;
       const reader = new FileReader();
       reader.onload = () => {
         this.rejectionData.photoBase64 = reader.result as string;

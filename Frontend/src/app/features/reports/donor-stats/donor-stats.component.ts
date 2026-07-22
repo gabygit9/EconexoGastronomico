@@ -40,7 +40,7 @@ export class DonorStatsComponent {
         { name: 'Dinero ($)', data: [this.stats.prevMoney, this.stats.currentMoney] },
         { name: 'Raciones Est. (Impacto)', data: [prevRations, currRations] }
       ],
-      chart: { type: 'area', height: 350 },
+      chart: { type: 'area', height: 350, toolbar: { show: false }  },
       stroke: { curve: 'smooth' },
       title: { text: 'Evolución: Impacto, Aporte Monetario y Raciones Estimadas' },
       tooltip: { shared: true, intersect: false },
@@ -51,8 +51,30 @@ export class DonorStatsComponent {
       series: this.stats.topCategories.map(c => c.quantity),
       labels: this.stats.topCategories.map(c => c.categoryName),
       chart: { type: 'donut', height: 350 },
-      dataLabels: { enabled: true },
-      title: { text: 'Distribución de Donaciones' }
+      title: { text: 'Distribución de Donaciones' },
+      dataLabels: {
+        enabled: true,
+        style: { fontSize: '12px' },
+        dropShadow: { enabled: false }
+      },
+      legend: {
+        position: 'right',
+        fontSize: '13px'
+      },
+      responsive: [{
+        breakpoint: 640,
+        options: {
+          chart: { height: 300 },
+          dataLabels: {
+            enabled: true,
+            style: { fontSize: '9px' }
+          },
+          legend: {
+            position: 'bottom',
+            fontSize: '11px'
+          }
+        }
+      }]
     };
   }
 }

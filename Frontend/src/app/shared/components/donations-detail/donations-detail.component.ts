@@ -1,5 +1,5 @@
 import {Component, DestroyRef, inject, OnInit, signal} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {DonationService} from '../../../core/services/donation.service';
 import {DonationResponse} from '../../models/donation.model';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
@@ -29,7 +29,6 @@ import {DonationConfirmModalComponent} from '../donation-confirm-modal/donation-
 })
 export class DonationsDetailComponent implements OnInit{
   private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
   private readonly donationService = inject(DonationService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly toastr = inject(ToastrService);

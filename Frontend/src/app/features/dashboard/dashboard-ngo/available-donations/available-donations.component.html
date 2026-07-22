@@ -1,12 +1,7 @@
 <section>
   <div class="flex items-center justify-between mb-6">
-    <h3 class="text-gray-900 text-lg font-bold flex items-center gap-2">
-      <span class="w-2 h-2 rounded-full bg-[#eb5c0c]"></span>
-      Alimentos Disponibles en la Red
-    </h3>
-
     <span class="bg-[#fff6f0] text-[#eb5c0c] border border-[#fbdabb] text-xs font-bold px-3 py-1.5 rounded-full">
-      {{ availableDonations().length }} Lotes
+      {{ availableDonations().length }} {{ availableDonations().length === 1 ? 'Lote' : 'Lotes' }}
     </span>
   </div>
 
@@ -34,21 +29,18 @@
           }
           <div class="p-6 flex-1 flex flex-col">
             <p class="text-[10px] font-extrabold text-[#eb5c0c] uppercase tracking-wider mb-1">{{ donation.businessName }}</p>
-            <h3 class="text-xl font-extrabold text-gray-900 leading-tight mb-4 group-hover:text-[#eb5c0c] transition-colors">
+            <h3 class="text-xl font-extrabold text-gray-900 leading-tight mb-4 group-hover:text-[#eb5c0c] transition-colors truncate">
               @if (donation.items.length === 1) {
-                {{ donation.items[0].productName }}
-                @if (donation.items[0].description) {
-                  <span class="font-medium text-gray-500 text-base block mt-0.5">({{ donation.items[0].description }})</span>
-                }
+                {{ donation.items[0].description || donation.items[0].productName }}
               } @else {
-                {{ donation.items[0].productName }} <span class="text-gray-400 font-bold text-lg">y {{ donation.items.length - 1 }} más</span>
+                {{ donation.items[0].description || donation.items[0].productName }} <span class="text-gray-400 font-bold text-lg">y {{ donation.items.length - 1 }} más</span>
               }
             </h3>
             <div class="bg-gray-50 rounded-lg p-3 border border-gray-100 mb-5 space-y-1">
               <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-1">Contenido del lote:</p>
               @for (item of donation.items; track $index) {
                 <div class="flex justify-between text-xs text-gray-700 font-medium">
-                  <span>• {{ item.productName }}</span>
+                  <span>• {{ item.description || item.productName }}</span>
                   <span class="font-bold text-gray-900">{{ item.quantity }} {{ item.unitOfMeasure }}</span>
                 </div>
               }

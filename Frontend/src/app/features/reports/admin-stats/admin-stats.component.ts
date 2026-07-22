@@ -50,8 +50,9 @@ export class AdminStatsComponent {
 
     return {
       series: seriesData,
-      chart: { type: 'heatmap', height: 350 },
+      chart: { type: 'heatmap', height: 350, width: '100%', toolbar: { show: false } },
       title: { text: 'Intensidad de Donaciones (Día/Hora)' },
+      dataLabels: { enabled: true, style: { fontSize: '11px' } },
       plotOptions: {
         heatmap: {
           shadeIntensity: 0.5,
@@ -61,7 +62,24 @@ export class AdminStatsComponent {
               { from: 6, to: 20, name: 'Alta', color: '#059669' }]
           }
         }
-      }
+      },
+      responsive: [{
+        breakpoint: 640,
+        options: {
+          dataLabels: { enabled: false },
+          title: { style: { fontSize: '14px' } },
+          xaxis: {
+            labels: {
+              rotate: 0,
+              style: { fontSize: '9px' },
+              formatter: (value: string) => {
+                const hour = parseInt(value, 10);
+                return hour % 3 === 0 ? value : '';
+              }
+            }
+          }
+        }
+      }]
     };
   }
 

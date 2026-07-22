@@ -52,7 +52,7 @@ export class MapComponent implements AfterViewInit {
 
   private initMap(){
     //Inicializar el mapa en el contenedor HTML
-    this.map = L.map(this.mapContainer.nativeElement);
+    this.map = L.map(this.mapContainer.nativeElement).setView([this.pickupLat, this.pickupLng], 13);
 
     this.map.createPane('driverPane');
     this.map.getPane('driverPane')!.style.zIndex = '1000';

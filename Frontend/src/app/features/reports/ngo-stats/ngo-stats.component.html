@@ -38,6 +38,9 @@
         <apx-chart [series]="donutOptions.series"
                    [labels]="donutOptions.labels"
                    [chart]="donutOptions.chart"
+                   [dataLabels]="donutOptions.dataLabels"
+                   [legend]="donutOptions.legend"
+                   [responsive]="donutOptions.responsive"
                    [title]="donutOptions.title">
         </apx-chart>
       </div>
@@ -68,8 +71,8 @@
               {{ donation.date | date:'dd/MM/yyyy' }}
             </div>
 
-            <div class="col-span-1 text-right">
-              <span class="lg:hidden font-bold text-gray-500 mr-2 text-xs uppercase">Cantidad:</span>
+            <div class="col-span-1 flex justify-between items-center lg:block lg:text-right">
+              <span class="lg:hidden font-bold text-gray-500 text-xs uppercase">Cantidad:</span>
               <span class="font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg">{{ donation.quantity }} kg</span>
             </div>
 

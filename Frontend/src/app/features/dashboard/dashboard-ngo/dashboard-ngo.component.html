@@ -117,24 +117,47 @@
                   </div>
 
                   <!-- Paginación -->
-                  <div class="flex items-center justify-between px-4 py-3 bg-gray-50 border-t border-gray-100">
-                    <p class="text-sm text-gray-600">
-                      Mostrando <span class="font-bold text-gray-900">{{ (page.number * page.size) + 1 }}</span> -
-                      <span class="font-bold text-gray-900">{{ Math.min((page.number + 1) * page.size, page.totalElements) }}</span> de
-                      <span class="font-bold text-gray-900">{{ page.totalElements }}</span> registros
-                    </p>
-                    <div class="flex gap-2">
-                      <button [disabled]="page.number === 0" (click)="loadMyDonationsPayments(page.number - 1)"
-                              class="relative inline-flex items-center px-3 py-1.5 rounded-lg border border-gray-200 bg-white text-sm font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm">
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                        Ant.
-                      </button>
-                      <button [disabled]="page.number + 1 >= page.totalPages" (click)="loadMyDonationsPayments(page.number + 1)"
-                              class="relative inline-flex items-center px-3 py-1.5 rounded-lg border border-gray-200 bg-white text-sm font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm">
-                        Sig.
-                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                      </button>
+                  <!-- Paginación -->
+                  <div class="px-4 py-3 bg-gray-50 border-t border-gray-100">
+
+                    <div class="hidden sm:flex items-center justify-between">
+                      <p class="text-sm text-gray-600">
+                        Mostrando <span class="font-bold text-gray-900">{{ (page.number * page.size) + 1 }}</span> -
+                        <span class="font-bold text-gray-900">{{ Math.min((page.number + 1) * page.size, page.totalElements) }}</span> de
+                        <span class="font-bold text-gray-900">{{ page.totalElements }}</span> registros
+                      </p>
+                      <div class="flex gap-2">
+                        <button [disabled]="page.number === 0" (click)="loadMyDonationsPayments(page.number - 1)"
+                                class="relative inline-flex items-center px-3 py-1.5 rounded-lg border border-gray-200 bg-white text-sm font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm">
+                          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                          Anterior
+                        </button>
+                        <button [disabled]="page.number + 1 >= page.totalPages" (click)="loadMyDonationsPayments(page.number + 1)"
+                                class="relative inline-flex items-center px-3 py-1.5 rounded-lg border border-gray-200 bg-white text-sm font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm">
+                          Siguiente
+                          <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </button>
+                      </div>
                     </div>
+
+                    <div class="flex sm:hidden flex-col gap-2">
+                      <div class="flex gap-2">
+                        <button [disabled]="page.number === 0" (click)="loadMyDonationsPayments(page.number - 1)"
+                                class="flex-1 inline-flex items-center justify-center px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm">
+                          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                          Anterior
+                        </button>
+                        <button [disabled]="page.number + 1 >= page.totalPages" (click)="loadMyDonationsPayments(page.number + 1)"
+                                class="flex-1 inline-flex items-center justify-center px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm">
+                          Siguiente
+                          <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </button>
+                      </div>
+                      <p class="text-center text-xs font-bold text-gray-500">
+                        Página {{ page.number + 1 }} de {{ page.totalPages }}
+                      </p>
+                    </div>
+
                   </div>
                 </div>
               }
@@ -149,6 +172,8 @@
         [donation]="selectedDonationForCancel!"
         title="Cancelar solicitud"
         message="¿Estás seguro de que deseas cancelar esta solicitud? La donación volverá a estar disponible."
+        confirmButtonText="Sí, Cancelar"
+        [infoMessage]="null"
         (confirm)="confirmCancel()"
         (close)="showCancelModal.set(false)">
       </app-donation-confirm-modal>

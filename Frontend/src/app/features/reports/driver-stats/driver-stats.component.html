@@ -36,6 +36,8 @@
         <apx-chart [series]="activityOptions.series"
                    [chart]="activityOptions.chart"
                    [xaxis]="activityOptions.xaxis"
+                   [dataLabels]="activityOptions.dataLabels"
+                   [responsive]="activityOptions.responsive"
                    [title]="activityOptions.title"
                    [colors]="activityOptions.colors">
         </apx-chart>
@@ -55,6 +57,7 @@
                  [chart]="lineOptions.chart"
                  [xaxis]="lineOptions.xaxis"
                  [yaxis]="lineOptions.yaxis"
+                 [responsive]="lineOptions.responsive"
                  [title]="lineOptions.title"
                  [stroke]="lineOptions.stroke"
                  [colors]="lineOptions.colors"
