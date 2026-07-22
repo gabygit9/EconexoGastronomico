@@ -41,7 +41,6 @@ export class LoginComponent extends BaseFormComponent implements OnInit{
   }
 
   onSubmit() {
-    console.log('1. Entró al onSubmit, formulario válido:', this.loginForm.valid);
     if(this.loginForm.invalid){
       this.loginForm.markAllAsTouched();
       return;
@@ -50,15 +49,12 @@ export class LoginComponent extends BaseFormComponent implements OnInit{
     this.isSubmitting = true;
     const credentials = this.loginForm.value;
 
-    console.log('2. A punto de llamar a authService.login con:', this.loginForm.value);
-
     this.authService.login(credentials).pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: data => {
         if(data.status){
           localStorage.setItem('econexo_token', data.jwt);
-          console.log('3. ¡Respuesta exitosa de la API!', data);
           try{
             const tokenPayload = JSON.parse(atob(data.jwt.split('.')[1]));
 
@@ -76,7 +72,6 @@ export class LoginComponent extends BaseFormComponent implements OnInit{
               this.router.navigate(['/']);
             }
           }catch (e){
-            console.error('Error decodifying token', e);
             this.router.navigate(['/']);
           }
         }else{
@@ -86,7 +81,6 @@ export class LoginComponent extends BaseFormComponent implements OnInit{
       },
       error: err => {
         this.isSubmitting = false;
-        console.error('4. Error en la petición HTTP:', err);
         if(err.status === 401 || err.status === 403){
           this.toastr.error('Email o contraseña incorrectos', 'Acceso denegado');
         }else{

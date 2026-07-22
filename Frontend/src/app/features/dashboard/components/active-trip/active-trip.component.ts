@@ -138,7 +138,6 @@ export class ActiveTripComponent implements OnInit {
 
       },
       error: (err) => {
-        console.error('Error al actualizar el estado', err);
         this.isUpdatingStatus.set(false);
         this.toastr.error('Hubo un problema al actualizar el estado. Intentá nuevamente.', 'Error');
       }

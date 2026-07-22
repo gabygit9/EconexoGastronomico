@@ -156,7 +156,6 @@ export class DonationListComponent {
           this.toastr.success('Reporte descargado con éxito.', '¡Excelente!');
         },
         error: (err) => {
-          console.error('Error al descargar reporte:', err);
           this.toastr.error('Hubo un problema al generar el PDF.', 'Error');
         }
       });

@@ -41,7 +41,6 @@ export class AvailableDonationsComponent implements OnInit {
           this.isLoadingDonations.set(false);
         },
         error: err => {
-          console.error('Error loading available donations:', err);
           this.isLoadingDonations.set(false);
           this.toastr.error('No se pudo cargar la información de los alimentos disponibles en la red.', 'Error al cargar lotes');
         }
@@ -69,7 +68,6 @@ export class AvailableDonationsComponent implements OnInit {
           this.onDonationRequested.emit();
         },
         error: (err) => {
-          console.error('Error al solicitar la donación:', err);
           this.closeModal();
           this.toastr.error('No se pudo procesar la solicitud. Es posible que el lote ya no esté disponible.', 'Error al solicitar.');
           this.loadAvailableDonations();

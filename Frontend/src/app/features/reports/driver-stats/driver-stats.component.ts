@@ -15,7 +15,6 @@ export class DriverStatsComponent {
   @Input() set stats(value: DriverStats){
     if(value){
       this._stats = value;
-      console.log(this.stats);
       this.initChart();
     }
   }

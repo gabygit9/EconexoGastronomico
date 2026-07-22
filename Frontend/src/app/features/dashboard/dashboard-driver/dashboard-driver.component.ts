@@ -60,7 +60,7 @@ export class DashboardDriverComponent implements OnInit{
           this.checkActiveTrip();
         }
       },
-      error: (error) => {
+      error: () => {
         this.toastr.error('Error al cargar el perfil del conductor', 'Error');
         this.isLoading = false;
       }
@@ -70,17 +70,13 @@ export class DashboardDriverComponent implements OnInit{
   checkActiveTrip(){
     this.donationService.getMyDonations().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (trips) => {
-        console.log("Viajes devueltos por el backend: ", trips);
         const current = trips.find((t: DonationResponse) => t.status === 'ASSIGNED' || t.status === 'IN_TRANSIT');
         if(current){
-          console.log("¡Se encontró un viaje activo!", current);
           this.activeTrip.set(current);
         }else {
-          console.log("No hay viajes activos en la lista");
           this.activeTrip.set(null);
         }
-      },
-      error: () => console.error("Error loading driver's active trip")
+      }
     });
   }
 

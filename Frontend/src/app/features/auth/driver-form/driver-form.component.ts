@@ -117,7 +117,6 @@ export class DriverFormComponent extends BaseFormComponent implements OnInit{
         this.neighborhoods = n;
       },
       error: (error) => {
-        console.error("Error loading neighborhoods.", error);
         this.neighborhoods = [];
       }
     })

@@ -84,11 +84,8 @@ export class DonationFormComponent extends BaseFormComponent implements OnInit{
         this.categories = response.categories;
         this.allProducts = response.products;
         this.unitsOfMeasure = response.units;
-
-        console.log("Catalog successfully loaded.")
       },
       error: (error) => {
-        console.error("Failed to load catalog data:", error);
         this.toastr.error('No se pudieron cargar los productos. Por favor, recargá la página.', 'Error de conexión');
       }
     })
@@ -199,7 +196,6 @@ export class DonationFormComponent extends BaseFormComponent implements OnInit{
       this.items.controls.forEach(item => item.markAllAsTouched());
       this.toastr.warning("Por favor, complete todos los campos obligatorios.", "Formulario Incompleto");
 
-      console.log('JSON a enviar: ', this.donationForm.value);
       return;
     }
 

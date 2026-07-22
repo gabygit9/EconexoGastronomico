@@ -69,7 +69,6 @@ export class DashboardAdminComponent implements OnInit {
       error: (error) => {
         this.toastr.error('Error al cargar usuarios', 'Error del Servidor');
         this.isLoading = false;
-        console.error(error);
       }
     });
   }
@@ -95,7 +94,6 @@ export class DashboardAdminComponent implements OnInit {
       error: (error) => {
         this.toastr.error('Error al actualizar el estado del usuario', 'Error');
         this.updatingUserId = null;
-        console.error(error);
       }
     })
   }
