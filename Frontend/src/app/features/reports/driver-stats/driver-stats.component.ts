@@ -38,10 +38,28 @@ export class DriverStatsComponent {
   private buildActivityChart(){
     return {
       series: [{ name: 'Entregas', data: this.stats.activityByHour }],
-      chart: { type: 'bar', height: 350 },
+      chart: { type: 'bar', height: 350, width: '100%', toolbar: { show: false } },
       title: { text: 'Distribución de Actividad (00-23hs)' },
+      dataLabels: { enabled: true, style: { fontSize: '11px' } },
       xaxis: { categories: Array.from({ length: 24 }, (_, i) => i + ':00') },
-      colors: ['#3b82f6']
+      colors: ['#3b82f6'],
+      responsive: [{
+        breakpoint: 640,
+        options: {
+          dataLabels: { enabled: false },
+          title: { style: { fontSize: '13px' } },
+          xaxis: {
+            labels: {
+              rotate: 0,
+              style: { fontSize: '9px' },
+              formatter: (value: string) => {
+                const hour = parseInt(value, 10);
+                return hour % 3 === 0 ? value : '';
+              }
+            }
+          }
+        }
+      }]
     };
   }
 
@@ -81,14 +99,17 @@ export class DriverStatsComponent {
       chart: {
         type: 'line',
         height: 350,
+        width: '100%',
+        toolbar: { show: false },
         zoom: { enabled: false }
       },
       stroke: { curve: 'smooth', width: 3 },
       xaxis: {
         categories: this.MONTH_NAMES,
-        title: { text: 'Meses' }
+        title: { text: 'Meses' },
+        labels: { rotate: 0, style: { fontSize: '11px' } }
       },
-      yaxis: { min: 0, max: 100 },
+      yaxis: { min: 0, max: 100, labels: { formatter: (val: number) => Math.round(val).toString() } },
       title: {
         text: 'Tendencia de Puntualidad Mensual',
         align: 'center'
@@ -98,7 +119,15 @@ export class DriverStatsComponent {
         size: 6,
         strokeWidth: 2,
         hover: { size: 8}
-      }
+      },
+      responsive: [{
+        breakpoint: 640,
+        options: {
+          title: { style: { fontSize: '13px' } },
+          xaxis: { labels: { style: { fontSize: '9px' } } },
+          markers: { size: 4 }
+        }
+      }]
     };
   }
 }

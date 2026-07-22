@@ -32,7 +32,7 @@ export class NgoStatsComponent {
         name: 'Kilos',
         data: [this.stats.prevMonthImpact, this.stats.monthlyImpact]
       }],
-      chart: { type: 'bar', height: 350 },
+      chart: { type: 'bar', height: 350, toolbar: { show: false } },
       title: { text: 'Impacto Mensual (kg)' },
       xaxis: { categories: ['Mes Anterior', 'Mes Actual'] },
       colors: ['#059669']
@@ -42,7 +42,30 @@ export class NgoStatsComponent {
       series: this.stats.topCategories.map(category => category.quantity),
       chart: { type: 'donut', height: 350 },
       labels: this.stats.topCategories.map(category => category.categoryName),
-      title: { text: 'Distribución por Categoría' }
+      title: { text: 'Distribución por Categoría' },
+      dataLabels: {
+        enabled: true,
+        style: { fontSize: '12px' },
+        dropShadow: { enabled: false }
+      },
+      legend: {
+        position: 'right',
+        fontSize: '13px'
+      },
+      responsive: [{
+        breakpoint: 640,
+        options: {
+          chart: { height: 300 },
+          dataLabels: {
+            enabled: true,
+            style: { fontSize: '9px' }
+          },
+          legend: {
+            position: 'bottom',
+            fontSize: '11px'
+          }
+        }
+      }]
     }
   }
 }

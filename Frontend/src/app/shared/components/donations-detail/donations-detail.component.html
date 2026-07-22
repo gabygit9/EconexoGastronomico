@@ -41,7 +41,7 @@
               <div class="p-4 flex justify-between items-start">
                 <div>
                   <h3 class="font-bold text-gray-900 text-lg">
-                    {{ item.quantity }} {{ item.unitOfMeasure }} de {{ item.productName }}
+                    {{ item.quantity }} {{ item.unitOfMeasure }} de {{ item.description || item.productName }}
                   </h3>
                   <div class="text-sm text-gray-500 mt-1 flex gap-2">
                     <span class="bg-gray-100 px-2 py-0.5 rounded-md">{{ item.category }}</span>
@@ -120,6 +120,8 @@
           [donation]="donation()!"
           [title]="modalTitle()"
           [message]="modalMessage()"
+          [confirmButtonText]="actionType() === 'CANCEL' ? 'Sí, Cancelar' : 'Sí, Rechazar'"
+          [infoMessage]="null"
           (confirm)="handleConfirm()"
           (close)="showModal.set(false)">
         </app-donation-confirm-modal>

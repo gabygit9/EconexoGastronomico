@@ -23,10 +23,7 @@
             <div class="p-4 bg-white">
               <div class="flex justify-between items-start gap-4">
                 <div>
-                  <p class="font-extrabold text-gray-800 text-base">{{ item.productName }}</p>
-                  @if (item.description) {
-                    <p class="text-xs text-gray-500 font-medium mt-0.5">Detalle: {{ item.description }}</p>
-                  }
+                  <p class="font-extrabold text-gray-800 text-base">{{ item.description || item.productName }}</p>
                 </div>
                 <span class="bg-gray-100 text-gray-800 font-bold text-xs px-2.5 py-1 rounded-md shrink-0 whitespace-nowrap">
                   {{ item.quantity }} {{ item.unitOfMeasure }}
@@ -56,11 +53,11 @@
         }
       </div>
 
-      <div class="bg-gray-50 rounded-xl p-4 border border-gray-200 text-center">
-        <p class="text-sm text-gray-600 leading-relaxed">
-          Al confirmar, el sistema de EcoNexo asignará automáticamente un <span class="font-bold text-gray-800">Conductor Voluntario</span> para retirar este lote completo y llevarlo a tu organización.
-        </p>
-      </div>
+      @if (infoMessage) {
+        <div class="bg-gray-50 rounded-xl p-4 border border-gray-200 text-center">
+          <p class="text-sm text-gray-600 leading-relaxed">{{ infoMessage }}</p>
+        </div>
+      }
 
     </div>
 
@@ -69,7 +66,7 @@
         Cancelar
       </button>
       <button (click)="onConfirm()" class="flex-1 py-3.5 px-4 bg-[#eb5c0c] hover:bg-[#d65108] text-white font-bold rounded-xl transition-all shadow-sm focus:ring-4 focus:ring-[#eb5c0c]/30">
-        Confirmar Solicitud
+        {{  confirmButtonText }}
       </button>
     </div>
 
