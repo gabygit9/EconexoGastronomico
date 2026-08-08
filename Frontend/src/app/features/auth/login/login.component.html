@@ -77,17 +77,6 @@
         <a routerLink="/register/role" class="font-bold text-[#eb5c0c] hover:underline">Registrate aquí</a>
       </p>
 
-      <app-donation-banner (donate)="showPaymentModal.set(true)"></app-donation-banner>
-
     </div>
   </div>
 </div>
-
-@if (showPaymentModal()) {
-  <div class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg relative">
-      <button (click)="showPaymentModal.set(false)" class="absolute top-4 right-4 text-gray-400">X</button>
-      <app-donation-payment></app-donation-payment>
-    </div>
-  </div>
-}

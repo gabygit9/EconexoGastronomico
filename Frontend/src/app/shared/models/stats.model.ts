@@ -47,3 +47,12 @@ export interface DriverStats {
 export interface AdminStats {
   [key: string]: any;
 }
+
+export interface LandingStats {
+  totalKilosDelivered: number;
+  totalDeliveries: number;
+  totalMoneyDonated: number;
+  totalNgos: number;
+  totalDonors: number;
+  totalDrivers: number;
+}

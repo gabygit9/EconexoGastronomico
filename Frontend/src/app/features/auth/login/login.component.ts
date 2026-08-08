@@ -6,12 +6,10 @@ import {ToastrService} from 'ngx-toastr';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {NgClass} from '@angular/common';
 import {BaseFormComponent} from "../../../shared/utils/base-form.component";
-import {DonationBannerComponent} from '../../../shared/components/donation-banner/donation-banner.component';
-import {DonationPaymentComponent} from '../../../shared/components/donation-payment/donation-payment.component';
 
 @Component({
   selector: 'app-login',
-  imports: [RouterLink, ReactiveFormsModule, NgClass, DonationBannerComponent, DonationPaymentComponent],
+  imports: [RouterLink, ReactiveFormsModule, NgClass ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
@@ -26,8 +24,6 @@ export class LoginComponent extends BaseFormComponent implements OnInit{
   loginForm!: FormGroup;
   isSubmitting = false;
   showPassword = false;
-
-  showPaymentModal = signal(false);
 
   get form() {
     return this.loginForm;

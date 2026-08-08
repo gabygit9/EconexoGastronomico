@@ -147,5 +147,10 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
     @Query("SELECT COUNT(dr) FROM Driver dr")
     long countAllDrivers();
 
+    @Query("SELECT SUM(di.quantity) FROM Donation d JOIN d.donationItems di WHERE d.status = 'DELIVERED'")
+    Double sumAllDeliveredKilos();
+
+    @Query("SELECT COUNT(d) FROM Donation d WHERE d.status = 'DELIVERED'")
+    Long countAllDeliveredDonations();
 }
 

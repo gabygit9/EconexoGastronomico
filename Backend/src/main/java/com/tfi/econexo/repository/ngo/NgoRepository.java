@@ -20,4 +20,7 @@ public interface NgoRepository extends JpaRepository<Ngo, Long> {
 
     @Query("SELECT n FROM Ngo n WHERE n.user.isActive = true")
     List<Ngo> findAllActive();
+
+    @Query("SELECT COUNT(n) FROM Ngo n WHERE n.user.isActive = true")
+    long countActiveNgos();
 }

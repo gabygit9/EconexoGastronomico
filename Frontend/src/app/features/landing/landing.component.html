@@ -1,0 +1,227 @@
+<div class="min-h-screen flex flex-col bg-white">
+
+  <!-- Header -->
+  <header class="bg-[#161c28] text-white px-4 sm:px-6 py-4 flex justify-between items-center sticky top-0 z-40 shadow-lg">
+    <div class="flex items-center gap-2 shrink-0">
+      <div class="w-9 h-9 bg-[#eb5c0c] rounded-lg flex items-center justify-center">
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+        </svg>
+      </div>
+      <span class="text-lg sm:text-xl font-bold tracking-tight">EcoNexo</span>
+    </div>
+
+    <nav class="hidden md:flex items-center gap-6 text-sm font-bold text-gray-300">
+      <a href="#quienes-somos" class="hover:text-white transition-colors">Quiénes somos</a>
+      <a href="#como-funciona" class="hover:text-white transition-colors">Cómo funciona</a>
+      <a routerLink="/legal/faq" class="hover:text-white transition-colors">Preguntas frecuentes</a>
+    </nav>
+
+    <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+      <a routerLink="/login" class="text-xs sm:text-sm font-bold text-gray-300 hover:text-white transition-colors whitespace-nowrap">
+        <span class="sm:hidden">Login</span>
+        <span class="hidden sm:inline">Iniciar sesión</span>
+      </a>
+      <a routerLink="/register/role" class="bg-[#eb5c0c] hover:bg-[#d4530b] text-white text-xs sm:text-sm font-bold px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl transition-all shadow-md whitespace-nowrap">
+        Registrarme
+      </a>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="bg-[#161c28] text-white px-6 pt-16 pb-24 relative overflow-hidden">
+    <div class="absolute top-[-20%] right-[-10%] w-96 h-96 bg-[#252c39] rounded-full blur-3xl opacity-50"></div>
+    <div class="max-w-4xl mx-auto text-center relative z-10 space-y-6">
+      <span class="inline-block bg-[#eb5c0c]/15 text-[#ff8a4c] text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full border border-[#eb5c0c]/30">
+        Amparado por la Ley Donal (N° 25.989 y N° 27.454)
+      </span>
+      <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight">
+        La comida que sobra,<br class="hidden md:block"> no tiene por qué desperdiciarse.
+      </h1>
+      <p class="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto">
+        EcoNexo conecta comercios gastronómicos con excedentes de alimentos, organizaciones sociales que los necesitan, y conductores voluntarios que hacen posible cada entrega — con total respaldo legal.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+        <a routerLink="/register/role" class="bg-[#eb5c0c] hover:bg-[#d4530b] text-white font-bold px-8 py-4 rounded-xl transition-all shadow-lg shadow-orange-900/30 active:scale-[0.98]">
+          Sumate a la red
+        </a>
+        <a href="#como-funciona" class="bg-white/5 hover:bg-white/10 border border-white/20 text-white font-bold px-8 py-4 rounded-xl transition-all">
+          Ver cómo funciona
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- El problema -->
+  <section class="px-6 py-20 bg-gray-50">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-extrabold text-[#161c28] tracking-tight">El problema no es la comida. Es la logística.</h2>
+        <p class="text-gray-500 mt-3 max-w-2xl mx-auto">Todos los días se desperdician alimentos en buen estado, mientras organizaciones sociales luchan por conseguir donaciones.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm">
+          <p class="text-4xl font-extrabold text-[#eb5c0c] mb-2">16 millones</p>
+          <p class="text-gray-600">de toneladas de alimentos se pierden o desperdician cada año en Argentina — el 12,5% de toda la producción agroalimentaria del país.</p>
+        </div>
+        <div class="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm">
+          <p class="text-4xl font-extrabold text-[#eb5c0c] mb-2">Solo el 3%</p>
+          <p class="text-gray-600">de los comercios gastronómicos de Córdoba dona sus excedentes; el resto los tira directamente a la basura, según un estudio de la Universidad Siglo 21.</p>
+        </div>
+      </div>
+
+      <p class="text-center text-gray-500 mt-8 max-w-2xl mx-auto text-sm">
+        Antes, muchos comercios que querían donar no podían: no existía respaldo legal claro. Hoy, la Ley Donal exime de responsabilidad al donante de buena fe y habilita beneficios impositivos — EcoNexo es la herramienta que hace ese marco legal accesible en la práctica.
+      </p>
+    </div>
+  </section>
+
+  <!-- Quiénes somos -->
+  <section id="quienes-somos" class="px-6 py-20">
+    <div class="max-w-3xl mx-auto text-center space-y-6">
+    <span class="inline-block bg-orange-50 text-[#eb5c0c] text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full">
+      Quiénes somos
+    </span>
+      <h2 class="text-3xl md:text-4xl font-extrabold text-[#161c28] tracking-tight">
+        Tecnología al servicio de la seguridad alimentaria
+      </h2>
+      <p class="text-gray-600 text-lg leading-relaxed">
+        EcoNexo es una plataforma tecnológica desarrollada en el marco de la Tecnicatura en Programación (UTN FRC), con un objetivo concreto: reducir el desperdicio de alimentos en el sector gastronómico de Córdoba mediante logística de proximidad.
+      </p>
+      <p class="text-gray-600 text-lg leading-relaxed">
+        La Ley Donal (N° 25.989 y N° 27.454) eximió de responsabilidad al donante de buena fe y habilitó beneficios impositivos para quien dona alimentos — pero un marco legal solo funciona si existe la infraestructura para aplicarlo. EcoNexo es esa infraestructura: conecta comercios, organizaciones sociales y conductores voluntarios, priorizando siempre la seguridad bromatológica en cada entrega.
+      </p>
+    </div>
+  </section>
+
+  <!-- Cómo funciona -->
+  <section id="como-funciona" class="px-6 py-20">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-center mb-14">
+        <h2 class="text-3xl md:text-4xl font-extrabold text-[#161c28] tracking-tight">Tres roles, una misma red</h2>
+        <p class="text-gray-500 mt-3">Cada donación conecta a tres actores, coordinados en tiempo real.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm text-center">
+          <div class="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
+            <svg class="w-7 h-7 text-[#eb5c0c]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+            </svg>
+          </div>
+          <h3 class="font-bold text-lg text-[#161c28] mb-2">Comercio Donante</h3>
+          <p class="text-sm text-gray-500">Publica sus excedentes en minutos, indicando horarios y condiciones de conservación. Con respaldo legal y beneficios impositivos.</p>
+        </div>
+
+        <div class="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm text-center">
+          <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
+            <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </div>
+          <h3 class="font-bold text-lg text-[#161c28] mb-2">ONG Receptora</h3>
+          <p class="text-sm text-gray-500">Explora los alimentos disponibles cerca suyo, solicita lo que necesita, y confirma cada recepción con firma digital.</p>
+        </div>
+
+        <div class="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm text-center">
+          <div class="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
+            <svg class="w-7 h-7 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+            </svg>
+          </div>
+          <h3 class="font-bold text-lg text-[#161c28] mb-2">Conductor Voluntario</h3>
+          <p class="text-sm text-gray-500">Retira y entrega donaciones con ruta calculada en tiempo real, dejando evidencia de temperatura y estado de la carga.</p>
+        </div>
+      </div>
+
+      <p class="text-center mt-10">
+        <a routerLink="/legal/faq" class="text-[#eb5c0c] font-bold hover:underline">Ver todas las preguntas frecuentes por rol →</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- Así se ve la app -->
+  <section class="px-6 py-20 bg-gray-50">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-extrabold text-[#161c28] tracking-tight">Así se ve la app</h2>
+        <p class="text-gray-500 mt-3">Pensada para usarse desde el celular, en movimiento.</p>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <img src="assets/landing/admin.png" alt="Panel de administración de EcoNexo" class="rounded-2xl border border-gray-200 shadow-sm w-full">
+        <img src="assets/landing/ong.png" alt="Vista de alimentos disponibles para ONGs" class="rounded-2xl border border-gray-200 shadow-sm w-full">
+        <img src="assets/landing/mapa.png" alt="Ruta de entrega del conductor con mapa" class="rounded-2xl border border-gray-200 shadow-sm w-full">
+        <img src="assets/landing/panel.png" alt="Panel de donaciones del comercio" class="rounded-2xl border border-gray-200 shadow-sm w-full">
+      </div>
+    </div>
+  </section>
+
+  <!-- Impacto -->
+  <section class="px-6 py-20">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-extrabold text-[#161c28] tracking-tight">Nuestro impacto, en tiempo real</h2>
+        <p class="text-gray-500 mt-3">Cada número acá abajo sale directo de la actividad real en la plataforma.</p>
+      </div>
+
+      @if (isLoadingStats()) {
+        <div class="flex justify-center py-10">
+          <div class="w-8 h-8 border-4 border-[#eb5c0c] border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      } @else if (stats()) {
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+          <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm text-center">
+            <p class="text-3xl font-extrabold text-emerald-600">{{ stats()!.totalKilosDelivered | number:'1.0-1' }}</p>
+            <p class="text-xs text-gray-500 uppercase font-bold mt-1">Kilos entregados</p>
+          </div>
+          <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm text-center">
+            <p class="text-3xl font-extrabold text-[#161c28]">{{ stats()!.totalDeliveries }}</p>
+            <p class="text-xs text-gray-500 uppercase font-bold mt-1">Entregas completadas</p>
+          </div>
+          <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm text-center">
+            <p class="text-3xl font-extrabold text-[#161c28]">{{ stats()!.totalNgos }}</p>
+            <p class="text-xs text-gray-500 uppercase font-bold mt-1">ONGs en la red</p>
+          </div>
+          <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm text-center">
+            <p class="text-3xl font-extrabold text-[#161c28]">{{ stats()!.totalDonors }}</p>
+            <p class="text-xs text-gray-500 uppercase font-bold mt-1">Comercios donantes</p>
+          </div>
+        </div>
+
+        <app-donation-banner
+          title="Las ONGs también reciben apoyo económico"
+          [message]="'Además de comida, las organizaciones de la red ya recibieron ' + (stats()!.totalMoneyDonated | currency:'ARS':'symbol':'1.0-0') + ' en donaciones monetarias para sostener su logística diaria y alimentar a más personas.'"
+          buttonText="Donar dinero"
+          (donate)="showPaymentModal.set(true)">
+        </app-donation-banner>
+      }
+    </div>
+  </section>
+
+  <!-- CTA final -->
+  <section class="px-6 py-20 bg-[#161c28] text-white text-center">
+    <div class="max-w-2xl mx-auto space-y-6">
+      <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight">¿Listo para ser parte?</h2>
+      <p class="text-gray-400">Sumate como comercio, ONG o conductor voluntario. Registrarte lleva menos de 5 minutos.</p>
+      <a routerLink="/register/role" class="inline-block bg-[#eb5c0c] hover:bg-[#d4530b] text-white font-bold px-8 py-4 rounded-xl transition-all shadow-lg shadow-orange-900/30 active:scale-[0.98]">
+        Sumate a la red
+      </a>
+    </div>
+  </section>
+
+  <app-footer></app-footer>
+
+</div>
+
+@if (showPaymentModal()) {
+  <div class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg relative">
+      <button (click)="showPaymentModal.set(false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+      <app-donation-payment></app-donation-payment>
+    </div>
+  </div>
+}

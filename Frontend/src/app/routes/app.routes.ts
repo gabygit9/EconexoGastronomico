@@ -53,7 +53,7 @@ export const routes: Routes = [
   { path: 'donate', canActivate: [roleGuard(['ADMIN', 'DONOR'])], loadComponent: () => import('../shared/components/donation-payment/donation-payment.component').then(m => m.DonationPaymentComponent) },
   { path: 'reports', canActivate: [authGuard], loadComponent: () => import('../features/reports/dashboard-stats/dashboard-stats.component').then(m => m.DashboardStatsComponent) },
 
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: '**', redirectTo: 'login' }
+  { path: '', loadComponent: () => import('../features/landing/landing.component').then(m => m.LandingComponent) },
+  { path: '**', redirectTo: '' }
 ];
 
