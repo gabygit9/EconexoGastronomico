@@ -3,7 +3,6 @@ package com.tfi.econexo.service.impl.stats;
 import com.tfi.econexo.dto.stats.*;
 import com.tfi.econexo.model.donation.Donation;
 import com.tfi.econexo.model.donation.DonationItem;
-import com.tfi.econexo.repository.auth.UserRepository;
 import com.tfi.econexo.repository.donation.DonationRepository;
 import com.tfi.econexo.repository.donation.MoneyDonationRepository;
 import com.tfi.econexo.service.stats.ReportsService;
@@ -12,7 +11,9 @@ import org.locationtech.jts.geom.Point;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,10 +25,11 @@ public class ReportsServiceImpl implements ReportsService {
 
     private final DonationRepository donationRepository;
     private final MoneyDonationRepository moneyDonationRepository;
-    private final UserRepository userRepository;
+
+    private static final LocalDateTime DEFAULT_RANGE_START = LocalDateTime.of(2000, 1, 1, 0, 0);
 
     @Override
-    public Object getStatsByRole(String role, String username) {
+    public Object getStatsByRole(String role, String username, LocalDate startDate, LocalDate endDate) {
         switch (role) {
             case "ROLE_NGO":
                 return getNgoStats(username);
@@ -36,7 +38,7 @@ public class ReportsServiceImpl implements ReportsService {
             case "ROLE_DRIVER":
                 return getDriverStats(username);
             case "ROLE_ADMIN":
-                return getAdminStats(username);
+                return getAdminStats(username, startDate, endDate);
             default:
                 throw new RuntimeException("Invalid role");
         }
@@ -178,18 +180,83 @@ public class ReportsServiceImpl implements ReportsService {
     }
 
     @Override
-    public Map<String, Object> getAdminStats(String email) {
+    public Map<String, Object> getAdminStats(String email, LocalDate startDate, LocalDate endDate) {
+        boolean hasDateFilter = startDate != null && endDate != null;
+
+        LocalDateTime start = startDate != null ? startDate.atStartOfDay() : DEFAULT_RANGE_START;
+        LocalDateTime end = endDate != null ? endDate.atTime(23, 59, 59) : LocalDateTime.now();
+
         Map<String, Object> stats = new HashMap<>();
-        stats.put("heatmap", donationRepository.getDonationHeatmap());
-        stats.put("funnel", donationRepository.getDonationFunnel());
-        stats.put("treemap", donationRepository.getCategoryVolume());
-        stats.put("topDrivers", donationRepository.getTopDrivers());
+
+        stats.put("heatmap", donationRepository.getDonationHeatmap(start, end));
+        stats.put("funnel", donationRepository.getDonationFunnel(start, end));
+        stats.put("treemap", donationRepository.getCategoryVolume(start, end));
+        stats.put("topDrivers", donationRepository.getTopDrivers(start, end, PageRequest.of(0, 5)));
+        stats.put("topNgos", donationRepository.getTopNgos(start, end, PageRequest.of(0, 5)));
+        stats.put("monthlyTrend", donationRepository.getMonthlyTrend(start, end));
+
+        Long totalDonations = donationRepository.countAllDonationsInRange(start, end);
+        Double totalKilos = donationRepository.sumDeliveredKilosBetween(start, end);
+        Long completedDeliveries = donationRepository.countDeliveredDonationsBetween(start, end);
+        Double totalMoney = moneyDonationRepository.sumAllDonatedAmountBetween(start, end);
+        Double networkPunctuality = donationRepository.getNetworkPunctuality(start, end);
+
+        stats.put("totalDonations", totalDonations != null ? totalDonations : 0L);
+        stats.put("totalKilosDelivered", totalKilos != null ? totalKilos : 0.0);
+        stats.put("completedDeliveries", completedDeliveries != null ? completedDeliveries : 0L);
+        stats.put("totalMoneyDonated", totalMoney != null ? totalMoney : 0.0);
+        stats.put("networkPunctuality", networkPunctuality != null ? networkPunctuality : 0.0);
 
         stats.put("totalDonors", donationRepository.countAllDonors());
         stats.put("totalNgos", donationRepository.countAllNgos());
         stats.put("totalDrivers", donationRepository.countAllDrivers());
-        stats.put("totalDonations", donationRepository.count());
+
+        //Comparison of previous period
+        if(hasDateFilter){
+            comparisonPreviousPeriod(startDate, endDate, start, totalDonations, totalKilos, completedDeliveries, totalMoney, networkPunctuality, stats);
+        }
+
         return stats;
+    }
+
+    private void comparisonPreviousPeriod(LocalDate startDate, LocalDate endDate, LocalDateTime start, Long totalDonations, Double totalKilos, Long completedDeliveries, Double totalMoney, Double networkPunctuality, Map<String, Object> stats){
+        long durationDays = ChronoUnit.DAYS.between(startDate, endDate) + 1;
+        LocalDateTime prevEnd = start.minusSeconds(1);
+        LocalDateTime prevStart = start.minusDays(durationDays);
+
+        Long prevDonations = donationRepository.countAllDonationsInRange(prevStart, prevEnd);
+        Double prevKilos = moneyDonationRepository.sumAllDonatedAmountBetween(prevStart, prevEnd);
+        Long prevDeliveries = donationRepository.countDeliveredDonationsBetween(prevStart, prevEnd);
+        Double prevMoney = moneyDonationRepository.sumAllDonatedAmountBetween(prevStart, prevEnd);
+        Double prevPunctuality = donationRepository.getNetworkPunctuality(prevStart, prevEnd);
+
+        Map<String, Object> comparison = new HashMap<>();
+        comparison.put("totalDonations", percentChange(totalDonations, prevDonations));
+        comparison.put("totalDonationsPrev", prevDonations != null ? prevDonations : 0L);
+
+        comparison.put("totalKilosDelivered", percentChange(totalKilos, prevKilos));
+        comparison.put("totalKilosDeliveredPrev", prevKilos != null ? prevKilos : 0.0);
+
+        comparison.put("completedDeliveries", percentChange(completedDeliveries, prevDeliveries));
+        comparison.put("completedDeliveriesPrev", prevDeliveries != null ? prevDeliveries : 0L);
+
+        comparison.put("totalMoneyDonated", percentChange(totalMoney, prevMoney));
+        comparison.put("totalMoneyDonatedPrev", prevMoney != null ? prevMoney : 0.0);
+
+        comparison.put("networkPunctualityDelta",
+                (networkPunctuality != null ? networkPunctuality : 0.0) - (prevPunctuality != null ? prevPunctuality : 0.0));
+        comparison.put("networkPunctualityPrev", prevPunctuality != null ? prevPunctuality : 0.0);
+
+        stats.put("comparison", comparison);
+    }
+
+    private Double percentChange(Number current, Number previous){
+        double curr = current != null ? current.doubleValue() : 0.0;
+        double prev = previous != null ? previous.doubleValue() : 0.0;
+        if(prev == 0.0){
+            return curr > 0 ? 100.0 : 0.0;
+        }
+        return ((curr - prev) * 100.0);
     }
 
     private double calculateDistance(Point p1, Point p2) {

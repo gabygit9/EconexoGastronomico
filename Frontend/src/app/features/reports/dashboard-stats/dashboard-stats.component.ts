@@ -15,6 +15,7 @@ import {DonorResponse} from '../../../shared/models/donor.model';
 import {NgoResponseDTO} from '../../../shared/models/ngo.model';
 import {DriverResponse} from '../../../shared/models/driver.model';
 import {UserAdminResponse} from '../../../shared/models/admin.model';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'app-dashboard-stats',
@@ -24,6 +25,7 @@ import {UserAdminResponse} from '../../../shared/models/admin.model';
     DriverStatsComponent,
     AdminStatsComponent,
     AsyncPipe,
+    FormsModule,
     NavbarComponent,
     FooterComponent
   ],
@@ -39,6 +41,11 @@ export class DashboardStatsComponent implements OnInit {
   stats: any;
   userRole: string | null = null;
   loading = true;
+
+  startDateInput: string | null = null;
+  endDateInput: string | null = null;
+  private appliedStartDate: string | null = null;
+  private appliedEndDate: string | null = null;
 
   userName$ = this.authService.currentUser$.pipe(
     map(profile => {
@@ -61,8 +68,13 @@ export class DashboardStatsComponent implements OnInit {
 
   ngOnInit() {
     this.userRole = this.authService.getUserRole();
+    this.loadStats();
+  }
 
-    this.statsService.getStats().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+  loadStats(){
+    this.loading = true;
+    this.statsService.getStats(this.appliedStartDate ?? undefined, this.appliedEndDate ?? undefined)
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
         this.stats = data;
         this.loading = false;
@@ -72,6 +84,20 @@ export class DashboardStatsComponent implements OnInit {
         this.loading = false;
       }
     })
+  }
+
+  applyDateFilter(){
+    this.appliedStartDate = this.startDateInput;
+    this.appliedEndDate = this.endDateInput;
+    this.loadStats();
+  }
+
+  clearDateFilter(){
+    this.startDateInput = null;
+    this.endDateInput = null;
+    this.appliedStartDate = null;
+    this.appliedEndDate = null;
+    this.loadStats();
   }
 
   private isDonor(profile:any): profile is DonorResponse{

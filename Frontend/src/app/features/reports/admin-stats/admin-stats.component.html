@@ -3,27 +3,128 @@
     <p class="text-gray-500">Cargando estadísticas del sistema...</p>
   </div>
 } @else {
-  <div class="space-y-6">
-    <!-- Fila de KPIs Globales -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-      <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-        <h3 class="text-xs uppercase text-gray-500 font-bold">Total Donaciones</h3>
-        <p class="text-3xl font-bold text-emerald-600">{{ stats['totalDonations'] }}</p>
-      </div>
-      <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-        <h3 class="text-xs uppercase text-gray-500 font-bold">Total Donantes</h3>
-        <p class="text-3xl font-bold text-[#161c28]">{{ stats['totalDonors'] }}</p>
-      </div>
-      <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-        <h3 class="text-xs uppercase text-gray-500 font-bold">Total Organizaciones</h3>
-        <p class="text-3xl font-bold text-emerald-600">{{ stats['totalNgos'] }}</p>
-      </div>
-      <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-        <h3 class="text-xs uppercase text-gray-500 font-bold">Total Conductores</h3>
-        <p class="text-3xl font-bold text-[#161c28]">{{ stats['totalDrivers'] }}</p>
+  <div class="space-y-8">
+
+    <!-- Red Actual (fija, no depende del filtro de fechas) -->
+    <div>
+      <h2 class="text-xs uppercase font-bold text-gray-400 tracking-widest mb-3">Red Actual</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+          <h3 class="text-xs uppercase text-gray-500 font-bold">Total Organizaciones</h3>
+          <p class="text-3xl font-bold text-[#161c28]">{{ stats['totalNgos'] }}</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+          <h3 class="text-xs uppercase text-gray-500 font-bold">Total Donantes</h3>
+          <p class="text-3xl font-bold text-[#161c28]">{{ stats['totalDonors'] }}</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+          <h3 class="text-xs uppercase text-gray-500 font-bold">Total Conductores</h3>
+          <p class="text-3xl font-bold text-[#161c28]">{{ stats['totalDrivers'] }}</p>
+        </div>
       </div>
     </div>
 
+    <!-- Actividad del Período -->
+    <div>
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-xs uppercase font-bold text-gray-400 tracking-widest">Actividad del Período</h2>
+        @if (!hasComparison()) {
+          <span class="text-xs text-gray-400">Elegí un rango de fechas para ver variación vs. período anterior</span>
+        }
+      </div>
+      <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+
+        <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+          <h3 class="text-xs uppercase text-gray-500 font-bold">Solicitudes</h3>
+          <p class="text-3xl font-bold text-[#161c28]">{{ stats['totalDonations'] }}</p>
+          @if (trend('totalDonations') !== null) {
+            <p class="text-xs font-bold mt-1 cursor-help"
+               [class]="trend('totalDonations')! >= 0 ? 'text-emerald-600' : 'text-red-600'"
+               [title]="'Período anterior: ' + trendPrev('totalDonations') + ' → Actual: ' + stats['totalDonations']">
+              {{ trend('totalDonations')! >= 0 ? '↑' : '↓' }} {{ displayTrend(trend('totalDonations')!) }}
+            </p>
+          }
+        </div>
+
+        <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+          <h3 class="text-xs uppercase text-gray-500 font-bold">Entregas Completadas</h3>
+          <p class="text-3xl font-bold text-emerald-600">{{ stats['completedDeliveries'] }}</p>
+          @if (trend('completedDeliveries') !== null) {
+            <p class="text-xs font-bold mt-1 cursor-help"
+               [class]="trend('completedDeliveries')! >= 0 ? 'text-emerald-600' : 'text-red-600'"
+               [title]="'Período anterior: ' + trendPrev('completedDeliveries') + ' → Actual: ' + stats['completedDeliveries']">
+              {{ trend('completedDeliveries')! >= 0 ? '↑' : '↓' }} {{ displayTrend(trend('completedDeliveries')!) }}
+            </p>
+          }
+        </div>
+
+        <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+          <h3 class="text-xs uppercase text-gray-500 font-bold">Kilos Entregados</h3>
+          <p class="text-3xl font-bold text-emerald-600">{{ stats['totalKilosDelivered'] | number:'1.0-1' }}</p>
+          @if (trend('totalKilosDelivered') !== null) {
+            <p class="text-xs font-bold mt-1 cursor-help"
+               [class]="trend('totalKilosDelivered')! >= 0 ? 'text-emerald-600' : 'text-red-600'"
+               [title]="'Período anterior: ' + (trendPrev('totalKilosDelivered') | number:'1.0-1') + ' kg → Actual: ' + (stats['totalKilosDelivered'] | number:'1.0-1') + ' kg'">
+              {{ trend('totalKilosDelivered')! >= 0 ? '↑' : '↓' }} {{ displayTrend(trend('totalKilosDelivered')!) }}
+            </p>
+          }
+        </div>
+
+        <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+          <h3 class="text-xs uppercase text-gray-500 font-bold">Dinero Donado</h3>
+          <p class="text-3xl font-bold text-[#161c28]">{{ stats['totalMoneyDonated'] | currency:'ARS':'symbol':'1.0-0' }}</p>
+          @if (trend('totalMoneyDonated') !== null) {
+            <p class="text-xs font-bold mt-1 cursor-help"
+               [class]="trend('totalMoneyDonated')! >= 0 ? 'text-emerald-600' : 'text-red-600'"
+               [title]="'Período anterior: ' + (trendPrev('totalMoneyDonated') | currency:'ARS':'symbol':'1.0-0') + ' → Actual: ' + (stats['totalMoneyDonated'] | currency:'ARS':'symbol':'1.0-0')">
+              {{ trend('totalMoneyDonated')! >= 0 ? '↑' : '↓' }} {{ displayTrend(trend('totalMoneyDonated')!) }}
+            </p>
+          }
+        </div>
+
+        <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+          <h3 class="text-xs uppercase text-gray-500 font-bold">Puntualidad de Red</h3>
+          <p class="text-3xl font-bold text-[#161c28]">{{ stats['networkPunctuality'] | number:'1.0-0' }}%</p>
+          @if (trend('networkPunctualityDelta') !== null) {
+            <p class="text-xs font-bold mt-1 cursor-help"
+               [class]="trend('networkPunctualityDelta')! >= 0 ? 'text-emerald-600' : 'text-red-600'"
+               [title]="'Período anterior: ' + (trendPrev('networkPunctuality') | number:'1.0-0') + '% → Actual: ' + (stats['networkPunctuality'] | number:'1.0-0') + '%'">
+              {{ trend('networkPunctualityDelta')! >= 0 ? '↑' : '↓' }} {{ absValue(trend('networkPunctualityDelta')!) | number:'1.0-1' }} pts
+            </p>
+          }
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Tendencia + Gauge de Puntualidad -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2 bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+        <apx-chart [series]="trendOptions.series"
+                   [chart]="trendOptions.chart"
+                   [xaxis]="trendOptions.xaxis"
+                   [yaxis]="trendOptions.yaxis"
+                   [stroke]="trendOptions.stroke"
+                   [fill]="trendOptions.fill"
+                   [colors]="trendOptions.colors"
+                   [markers]="trendOptions.markers"
+                   [responsive]="trendOptions.responsive"
+                   [title]="trendOptions.title">
+        </apx-chart>
+      </div>
+      <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+        <apx-chart [series]="gaugeOptions.series"
+                   [chart]="gaugeOptions.chart"
+                   [labels]="gaugeOptions.labels"
+                   [plotOptions]="gaugeOptions.plotOptions"
+                   [fill]="gaugeOptions.fill"
+                   [title]="gaugeOptions.title"
+                   [subtitle]="gaugeOptions.subtitle">
+        </apx-chart>
+      </div>
+    </div>
+
+    <!-- Heatmap + Composición de la Red -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
         <apx-chart [series]="heatmapOptions.series"
@@ -36,25 +137,44 @@
         </apx-chart>
       </div>
       <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-        <apx-chart [series]="funnelOptions.series"
-                   [chart]="funnelOptions.chart"
-                   [plotOptions]="funnelOptions.plotOptions"
-                   [legend]="funnelOptions.legend"
-                   [title]="funnelOptions.title">
+        <apx-chart [series]="donutOptions.series"
+                   [labels]="donutOptions.labels"
+                   [chart]="donutOptions.chart"
+                   [colors]="donutOptions.colors"
+                   [dataLabels]="donutOptions.dataLabels"
+                   [legend]="donutOptions.legend"
+                   [responsive]="donutOptions.responsive"
+                   [title]="donutOptions.title">
         </apx-chart>
       </div>
     </div>
 
+    <!-- Funnel + Treemap -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+        <apx-chart [series]="funnelOptions.series"
+                   [chart]="funnelOptions.chart"
+                   [plotOptions]="funnelOptions.plotOptions"
+                   [dataLabels]="funnelOptions.dataLabels"
+                   [legend]="funnelOptions.legend"
+                   [responsive]="funnelOptions.responsive"
+                   [title]="funnelOptions.title">
+        </apx-chart>
+      </div>
       <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
         <apx-chart [series]="treeMapOptions.series"
                    [chart]="treeMapOptions.chart"
                    [dataLabels]="treeMapOptions.dataLabels"
                    [plotOptions]="treeMapOptions.plotOptions"
                    [colors]="treeMapOptions.colors"
+                   [responsive]="treeMapOptions.responsive"
                    [title]="treeMapOptions.title">
         </apx-chart>
       </div>
+    </div>
+
+    <!-- Top Conductores + Top ONGs -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
         <apx-chart [series]="barOptions.series"
                    [chart]="barOptions.chart"
@@ -65,9 +185,22 @@
                    [tooltip]="barOptions.tooltip"
                    [yaxis]="barOptions.yaxis"
                    [xaxis]="barOptions.xaxis"
+                   [responsive]="barOptions.responsive"
                    [title]="barOptions.title">
         </apx-chart>
       </div>
+      <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+        <apx-chart [series]="topNgosOptions.series"
+                   [chart]="topNgosOptions.chart"
+                   [colors]="topNgosOptions.colors"
+                   [plotOptions]="topNgosOptions.plotOptions"
+                   [dataLabels]="topNgosOptions.dataLabels"
+                   [xaxis]="topNgosOptions.xaxis"
+                   [responsive]="topNgosOptions.responsive"
+                   [title]="topNgosOptions.title">
+        </apx-chart>
+      </div>
     </div>
+
   </div>
 }

@@ -117,26 +117,26 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
 
     //Métricas Admin
     @Query(value = "SELECT EXTRACT(DOW FROM created_date) as day, EXTRACT(HOUR FROM created_date) as hour, COUNT(*) " +
-            "FROM donations GROUP BY day, hour", nativeQuery = true)
-    List<Object[]> getDonationHeatmap();
+            "FROM donations WHERE created_date BETWEEN :start AND :end " +
+            "GROUP BY day, hour", nativeQuery = true)
+    List<Object[]> getDonationHeatmap(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
-    @Query("SELECT d.status, COUNT(d) FROM Donation d GROUP BY d.status")
-    List<Object[]> getDonationFunnel();
+    @Query("SELECT d.status, COUNT(d) FROM Donation d WHERE d.createdDate BETWEEN :start AND :end GROUP BY d.status")
+    List<Object[]> getDonationFunnel(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
-    @Query("SELECT c.description, COUNT(di) " +
-            "FROM Donation d " +
-            "JOIN d.donationItems di " +
-            "JOIN di.product p " +
-            "JOIN p.category c "+
-            "GROUP BY c.description")
-    List<Object[]> getCategoryVolume();
+    @Query("SELECT c.description, COUNT(di) FROM Donation d JOIN d.donationItems di JOIN di.product p JOIN p.category c " +
+            "WHERE d.createdDate BETWEEN :start AND :end GROUP BY c.description")
+    List<Object[]> getCategoryVolume(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
-    @Query("SELECT dr.id, COUNT(d) " +
-            "FROM Donation d " +
-            "JOIN d.driver dr " +
-            "WHERE d.status = 'DELIVERED' " +
+    @Query("SELECT dr.id, COUNT(d) FROM Donation d JOIN d.driver dr " +
+            "WHERE d.status = 'DELIVERED' AND d.createdDate BETWEEN :start AND :end " +
             "GROUP BY dr.id ORDER BY COUNT(d) DESC")
-    List<Object[]> getTopDrivers();
+    List<Object[]> getTopDrivers(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end, Pageable pageable);
+
+    @Query("SELECT n.id, n.ngoName, SUM(di.quantity) FROM Donation d JOIN d.ngo n JOIN d.donationItems di " +
+            "WHERE d.status = 'DELIVERED' AND d.createdDate BETWEEN :start AND :end " +
+            "GROUP BY n.id, n.ngoName ORDER BY SUM(di.quantity) DESC")
+    List<Object[]> getTopNgos(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end, Pageable pageable);
 
     @Query("SELECT COUNT(d) FROM Donor d")
     long countAllDonors();
@@ -152,5 +152,32 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
 
     @Query("SELECT COUNT(d) FROM Donation d WHERE d.status = 'DELIVERED'")
     Long countAllDeliveredDonations();
+
+    @Query("SELECT COUNT(d) FROM Donation d WHERE d.createdDate BETWEEN :start AND :end")
+    Long countAllDonationsInRange(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT SUM(di.quantity) FROM Donation d JOIN d.donationItems di " +
+            "WHERE d.status = 'DELIVERED' AND d.createdDate BETWEEN :start AND :end")
+    Double sumDeliveredKilosBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT COUNT(d) FROM Donation d WHERE d.status = 'DELIVERED' " +
+            "AND d.createdDate BETWEEN :start AND :end ")
+    Long countDeliveredDonationsBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query(value = "SELECT AVG(CASE WHEN de.accepted_at <= d.pickup_end_time THEN 100.0 ELSE 0.0 END) " +
+            "FROM donations d JOIN delivery_evidences de ON d.id = de.id " +
+            "WHERE d.status = 'DELIVERED' " +
+            "AND d.created_date BETWEEN :start AND :end ",
+            nativeQuery = true)
+    Double getNetworkPunctuality(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query(value = "SELECT EXTRACT(YEAR FROM d.created_date) AS yr, EXTRACT(MONTH FROM d.created_date) AS mo, " +
+            "COUNT(DISTINCT d.id) AS deliveries, COALESCE(SUM(di.quantity), 0) AS kilos " +
+            "FROM donations d LEFT JOIN donation_items di ON di.donation_id = d.id " +
+            "WHERE d.status = 'DELIVERED' " +
+            "AND d.created_date BETWEEN :start AND :end " +
+            "GROUP BY yr, mo ORDER BY yr, mo ",
+            nativeQuery = true)
+    List<Object[]> getMonthlyTrend(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 }
 

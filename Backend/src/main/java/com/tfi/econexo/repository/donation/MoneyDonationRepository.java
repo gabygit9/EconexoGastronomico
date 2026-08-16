@@ -32,4 +32,6 @@ public interface MoneyDonationRepository extends JpaRepository<MoneyDonation, Lo
     @Query("SELECT SUM(m.amount) FROM MoneyDonation m WHERE m.donor.user.email = :email AND m.createdDate BETWEEN :start AND :end")
     Double sumMoneyByDonorAndDateRange(@Param("email") String email, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
+    @Query("SELECT SUM(md.amount) FROM MoneyDonation md WHERE md.status = 'COMPLETED' AND md.createdDate BETWEEN :start AND :end")
+    Double sumAllDonatedAmountBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 }
