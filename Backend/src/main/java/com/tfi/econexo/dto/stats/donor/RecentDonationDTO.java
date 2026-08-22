@@ -1,4 +1,4 @@
-package com.tfi.econexo.dto.stats;
+package com.tfi.econexo.dto.stats.donor;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

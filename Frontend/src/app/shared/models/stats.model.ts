@@ -31,6 +31,23 @@ export interface DonorStats {
   currentMoney: number;
   prevMoney: number;
   recentDonations: RecentDonation[];
+  completedDonations: number;
+  successRate: number;
+  estimatedRations: number;
+  topNgos: { ngoName: string; kilos: number }[];
+  monthlyTrend: { year: number; month: number; kilos: number; money: number }[];
+  funnel: any[];
+  heatmap: any[];
+  comparison: {
+    totalKilosChangePercent: number;
+    totalKilosPrev: number;
+    totalMoneyChangePercent: number;
+    totalMoneyPrev: number;
+    totalDonationsChangePercent: number;
+    totalDonationsPrev: number;
+    completedDonationsChangePercent: number;
+    completedDonationsPrev: number;
+  } | null;
 }
 
 export interface DriverStats {

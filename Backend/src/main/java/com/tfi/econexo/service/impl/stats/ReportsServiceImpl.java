@@ -1,6 +1,7 @@
 package com.tfi.econexo.service.impl.stats;
 
 import com.tfi.econexo.dto.stats.*;
+import com.tfi.econexo.dto.stats.donor.*;
 import com.tfi.econexo.model.donation.Donation;
 import com.tfi.econexo.model.donation.DonationItem;
 import com.tfi.econexo.repository.donation.DonationRepository;
@@ -14,10 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -27,21 +25,17 @@ public class ReportsServiceImpl implements ReportsService {
     private final MoneyDonationRepository moneyDonationRepository;
 
     private static final LocalDateTime DEFAULT_RANGE_START = LocalDateTime.of(2000, 1, 1, 0, 0);
+    private static final double RATIONS_PER_KG = 2.0;
 
     @Override
     public Object getStatsByRole(String role, String username, LocalDate startDate, LocalDate endDate) {
-        switch (role) {
-            case "ROLE_NGO":
-                return getNgoStats(username);
-            case "ROLE_DONOR":
-                return getDonorStats(username);
-            case "ROLE_DRIVER":
-                return getDriverStats(username);
-            case "ROLE_ADMIN":
-                return getAdminStats(username, startDate, endDate);
-            default:
-                throw new RuntimeException("Invalid role");
-        }
+        return switch (role) {
+            case "ROLE_NGO" -> getNgoStats(username);
+            case "ROLE_DONOR" -> getDonorStats(username, startDate, endDate);
+            case "ROLE_DRIVER" -> getDriverStats(username);
+            case "ROLE_ADMIN" -> getAdminStats(username, role, startDate, endDate);
+            default -> throw new RuntimeException("Invalid role");
+        };
     }
 
     @Override
@@ -84,19 +78,26 @@ public class ReportsServiceImpl implements ReportsService {
     }
 
     @Override
-    public DonorStatsDTO getDonorStats(String email) {
+    public DonorStatsDTO getDonorStats(String email, LocalDate startDate, LocalDate endDate) {
+        boolean hasDateFilter = startDate != null && endDate != null;
         //Fechas
+        LocalDateTime start = startDate != null ? startDate.atStartOfDay() : DEFAULT_RANGE_START;
+        LocalDateTime end = endDate != null ? endDate.atTime(23, 59, 59) : LocalDateTime.now();
         LocalDateTime startOfMonth = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0);
         LocalDateTime startOfPrevMonth = startOfMonth.minusMonths(1);
 
         //comida
-        Double totalKilos = donationRepository.sumQuantityByDonor(email);
+        Double totalKilos = donationRepository.sumQuantityByDonorBetween(email, start, end);
+        Long totalDonations = donationRepository.countTotalDonationsByDonorBetween(email, start, end);
+        Long completedDonations = donationRepository.countCompletedDonationsByDonorBetween(email, start, end);
+
+        Double totalMoney = moneyDonationRepository.sumDonatedAmountByDonorBetween(email, start, end);
+
+        Double successRate = (totalDonations == null || totalDonations == 0) ? 0.0 :
+                (completedDonations != null ? completedDonations : 0L) * 100.0 / totalDonations;
+
         Double currentMonthImpact = donationRepository.sumQuantityByDonorAndDateRange(email, startOfMonth, LocalDateTime.now());
         Double prevMonthImpact = donationRepository.sumQuantityByDonorAndDateRange(email, startOfPrevMonth, startOfMonth);
-        Long totalDonations = donationRepository.countTotalDonationsByDonor(email);
-
-        //dinero
-        Double totalMoney = moneyDonationRepository.sumDonatedAmountByDonor(email);
         Double currentMoney = moneyDonationRepository.sumMoneyByDonorAndDateRange(email, startOfMonth, LocalDateTime.now());
         Double prevMoney = moneyDonationRepository.sumMoneyByDonorAndDateRange(email, startOfPrevMonth, startOfMonth);
 
@@ -114,6 +115,22 @@ public class ReportsServiceImpl implements ReportsService {
                         d.getDonationItems().stream().mapToDouble(DonationItem::getQuantity).sum()))
                 .toList();
 
+        List<TopNgoDTO> topNgos = donationRepository.getTopNgosByDonor(email, start, end, PageRequest.of(0,5)).stream()
+                .map(obj -> new TopNgoDTO((String) obj[0], (Double) obj[1]))
+                .toList();
+
+        List<MonthlyDonorTrendDTO> monthlyTrend = buildDonorMonthlyTrend(email, start, end);
+
+        List<Object[]> funnel = donationRepository.getDonationFunnelByDonor(email, start, end);
+        List<Object[]> heatmap = donationRepository.getDonationHeatmapByDonor(email, start, end);
+
+        Double estimatedRations = (totalKilos != null ? totalKilos : 0.0) * RATIONS_PER_KG;
+
+        DonorStatsComparisonDTO comparison = null;
+        if (hasDateFilter) {
+            comparison = comparisonDonorPreviousPeriod(email, startDate, endDate, start, totalDonations, totalKilos, totalMoney, completedDonations);
+        }
+
         return new DonorStatsDTO(
                 totalKilos != null ? totalKilos : 0.0,
                 totalMoney != null ? totalMoney : 0.0,
@@ -123,7 +140,67 @@ public class ReportsServiceImpl implements ReportsService {
                 prevMonthImpact != null ? prevMonthImpact : 0.0,
                 currentMoney != null ? currentMoney : 0.0,
                 prevMoney != null ? prevMoney : 0.0,
-                recentDonations);
+                recentDonations,
+                completedDonations != null ? completedDonations : 0L,
+                successRate,
+                estimatedRations,
+                topNgos,
+                monthlyTrend,
+                comparison,
+                funnel,
+                heatmap);
+    }
+
+    private DonorStatsComparisonDTO comparisonDonorPreviousPeriod(String email, LocalDate startDate, LocalDate endDate, LocalDateTime start, Long totalDonations, Double totalKilos, Double totalMoney, Long completedDonations){
+        long durationDays = ChronoUnit.DAYS.between(startDate, endDate) + 1;
+        LocalDateTime prevEnd = start.minusSeconds(1);
+        LocalDateTime prevStart = start.minusDays(durationDays);
+
+        Double prevKilos = donationRepository.sumQuantityByDonorBetween(email, prevStart, prevEnd);
+        Long prevDonationsCount = donationRepository.countTotalDonationsByDonorBetween(email, prevStart, prevEnd);
+        Double prevMoneyRange = moneyDonationRepository.sumDonatedAmountByDonorBetween(email, prevStart, prevEnd);
+        Long prevCompleted = donationRepository.countCompletedDonationsByDonorBetween(email, prevStart, prevEnd);
+
+        return new DonorStatsComparisonDTO(
+                percentChange(totalKilos, prevKilos),
+                prevKilos != null ? prevKilos : 0.0,
+                percentChange(totalMoney, prevMoneyRange),
+                prevMoneyRange != null ? prevMoneyRange : 0.0,
+                percentChange(totalDonations, prevDonationsCount),
+                prevDonationsCount != null ? prevDonationsCount : 0L,
+                percentChange(completedDonations, prevCompleted),
+                prevCompleted != null ? prevCompleted : 0L
+        );
+    }
+
+    private List<MonthlyDonorTrendDTO> buildDonorMonthlyTrend(String email, LocalDateTime start, LocalDateTime end) {
+        Map<String, Double> kilosByMonth = new LinkedHashMap<>();
+        Map<String, Double> moneyByMonth = new LinkedHashMap<>();
+
+        for (Object[] row : donationRepository.getMonthlyKilosTrendByDonor(email, start, end)) {
+            String key = ((Number) row[0]).intValue() + "-" + ((Number) row[1]).intValue();
+            kilosByMonth.put(key, row[2] != null ? ((Number) row[2]).doubleValue() : 0.0);
+        }
+        for (Object[] row : moneyDonationRepository.getMonthlyMoneyTrendByDonor(email, start, end)) {
+            String key = ((Number) row[0]).intValue() + "-" + ((Number) row[1]).intValue();
+            moneyByMonth.put(key, row[2] != null ? ((Number) row[2]).doubleValue() : 0.0);
+        }
+
+        Set<String> allMonths = new TreeSet<>();
+        allMonths.addAll(kilosByMonth.keySet());
+        allMonths.addAll(moneyByMonth.keySet());
+
+        List<MonthlyDonorTrendDTO> result = new ArrayList<>();
+        for (String key : allMonths) {
+            String[] parts = key.split("-");
+            result.add(new MonthlyDonorTrendDTO(
+                    Integer.parseInt(parts[0]),
+                    Integer.parseInt(parts[1]),
+                    kilosByMonth.getOrDefault(key, 0.0),
+                    moneyByMonth.getOrDefault(key, 0.0)
+            ));
+        }
+        return result;
     }
 
     @Override
@@ -180,7 +257,7 @@ public class ReportsServiceImpl implements ReportsService {
     }
 
     @Override
-    public Map<String, Object> getAdminStats(String email, LocalDate startDate, LocalDate endDate) {
+    public Map<String, Object> getAdminStats(String email, String role, LocalDate startDate, LocalDate endDate) {
         boolean hasDateFilter = startDate != null && endDate != null;
 
         LocalDateTime start = startDate != null ? startDate.atStartOfDay() : DEFAULT_RANGE_START;
@@ -213,13 +290,13 @@ public class ReportsServiceImpl implements ReportsService {
 
         //Comparison of previous period
         if(hasDateFilter){
-            comparisonPreviousPeriod(startDate, endDate, start, totalDonations, totalKilos, completedDeliveries, totalMoney, networkPunctuality, stats);
+            comparisonAdminPreviousPeriod(startDate, endDate, start, totalDonations, totalKilos, completedDeliveries, totalMoney, networkPunctuality, stats);
         }
 
         return stats;
     }
 
-    private void comparisonPreviousPeriod(LocalDate startDate, LocalDate endDate, LocalDateTime start, Long totalDonations, Double totalKilos, Long completedDeliveries, Double totalMoney, Double networkPunctuality, Map<String, Object> stats){
+    private void comparisonAdminPreviousPeriod(LocalDate startDate, LocalDate endDate, LocalDateTime start, Long totalDonations, Double totalKilos, Long completedDeliveries, Double totalMoney, Double networkPunctuality, Map<String, Object> stats){
         long durationDays = ChronoUnit.DAYS.between(startDate, endDate) + 1;
         LocalDateTime prevEnd = start.minusSeconds(1);
         LocalDateTime prevStart = start.minusDays(durationDays);

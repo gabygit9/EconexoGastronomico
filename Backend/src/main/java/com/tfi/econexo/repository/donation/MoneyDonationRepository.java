@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Repository
 public interface MoneyDonationRepository extends JpaRepository<MoneyDonation, Long>, JpaSpecificationExecutor<MoneyDonation> {
@@ -34,4 +35,17 @@ public interface MoneyDonationRepository extends JpaRepository<MoneyDonation, Lo
 
     @Query("SELECT SUM(md.amount) FROM MoneyDonation md WHERE md.status = 'COMPLETED' AND md.createdDate BETWEEN :start AND :end")
     Double sumAllDonatedAmountBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT SUM(md.amount) FROM MoneyDonation md WHERE md.donor.user.email = :email AND md.status = 'COMPLETED' AND md.createdDate BETWEEN :start AND :end")
+    Double sumDonatedAmountByDonorBetween(@Param("email") String email, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query(value = "SELECT EXTRACT(YEAR FROM md.created_date) AS yr, EXTRACT(MONTH FROM md.created_date) AS mo, " +
+            "COALESCE(SUM(md.amount), 0) AS money " +
+            "FROM money_donations md " +
+            "JOIN donors dn ON md.donor_id = dn.id " +
+            "JOIN users u ON dn.user_id = u.id " +
+            "WHERE u.email = :email AND md.status = 'COMPLETED' AND md.created_date BETWEEN :start AND :end " +
+            "GROUP BY yr, mo ORDER BY yr, mo",
+            nativeQuery = true)
+    List<Object[]> getMonthlyMoneyTrendByDonor(@Param("email") String email, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 }

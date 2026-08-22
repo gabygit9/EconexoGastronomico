@@ -10,7 +10,7 @@
         <p class="text-gray-500 mt-1 text-sm">Visualiza tus métricas</p>
       </div>
 
-      @if (userRole === 'ROLE_ADMIN') {
+      @if (userRole === 'ROLE_ADMIN' || userRole === 'ROLE_DONOR') {
         <div class="flex flex-col sm:flex-row sm:items-end gap-3 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
           <div>
             <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Desde</label>

@@ -88,6 +88,43 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
     @Query("SELECT COUNT(d) FROM Donation d WHERE d.donor.user.email = :email")
     Long countTotalDonationsByDonor(@Param("email") String email);
 
+    @Query("SELECT SUM(di.quantity) FROM Donation d JOIN d.donationItems di " +
+            "WHERE d.donor.user.email = :email AND d.status = 'DELIVERED' AND d.createdDate BETWEEN :start AND :end")
+    Double sumQuantityByDonorBetween(@Param("email") String email, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT COUNT(d) FROM Donation d WHERE d.donor.user.email = :email AND d.createdDate BETWEEN :start AND :end")
+    Long countTotalDonationsByDonorBetween(@Param("email") String email, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT COUNT(d) FROM Donation d WHERE d.donor.user.email = :email AND d.status = 'DELIVERED' AND d.createdDate BETWEEN :start AND :end")
+    Long countCompletedDonationsByDonorBetween(@Param("email") String email, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT n.ngoName, SUM(di.quantity) FROM Donation d JOIN d.ngo n JOIN d.donationItems di " +
+            "WHERE d.donor.user.email = :email AND d.status = 'DELIVERED' AND d.createdDate BETWEEN :start AND :end " +
+            "GROUP BY n.id, n.ngoName ORDER BY SUM(di.quantity) DESC")
+    List<Object[]> getTopNgosByDonor(@Param("email") String email, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end, Pageable pageable);
+
+    @Query(value = "SELECT EXTRACT(YEAR FROM d.created_date) AS yr, EXTRACT(MONTH FROM d.created_date) AS mo, " +
+            "COALESCE(SUM(di.quantity), 0) AS kilos " +
+            "FROM donations d " +
+            "JOIN donors dn ON d.donor_id = dn.id " +
+            "JOIN users u ON dn.user_id = u.id " +
+            "LEFT JOIN donation_items di ON di.donation_id = d.id " +
+            "WHERE u.email = :email AND d.status = 'DELIVERED' AND d.created_date BETWEEN :start AND :end " +
+            "GROUP BY yr, mo ORDER BY yr, mo",
+            nativeQuery = true)
+    List<Object[]> getMonthlyKilosTrendByDonor(@Param("email") String email, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT d.status, COUNT(d) FROM Donation d " +
+            "WHERE d.donor.user.email = :email AND d.createdDate BETWEEN :start AND :end " +
+            "GROUP BY d.status")
+    List<Object[]> getDonationFunnelByDonor(@Param("email") String email, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query(value = "SELECT EXTRACT(DOW FROM d.created_date) as day, EXTRACT(HOUR FROM d.created_date) as hour, COUNT(*) " +
+            "FROM donations d JOIN donors dn ON d.donor_id = dn.id JOIN users u ON dn.user_id = u.id " +
+            "WHERE u.email = :email AND d.created_date BETWEEN :start AND :end " +
+            "GROUP BY day, hour", nativeQuery = true)
+    List<Object[]> getDonationHeatmapByDonor(@Param("email") String email, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
     //Métricas Driver
     @Query("SELECT d FROM Donation d WHERE d.driver.user.email = :email AND d.status = 'DELIVERED'")
     List<Donation> findCompletedDeliveriesByDriver(@Param("email") String email);
