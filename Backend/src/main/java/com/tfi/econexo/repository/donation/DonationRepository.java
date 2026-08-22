@@ -85,9 +85,6 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
             "WHERE d.donor.user.email = :email AND d.status = 'DELIVERED' AND d.createdDate BETWEEN :start AND :end")
     Double sumQuantityByDonorAndDateRange(@Param("email") String email, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
-    @Query("SELECT COUNT(d) FROM Donation d WHERE d.donor.user.email = :email")
-    Long countTotalDonationsByDonor(@Param("email") String email);
-
     @Query("SELECT SUM(di.quantity) FROM Donation d JOIN d.donationItems di " +
             "WHERE d.donor.user.email = :email AND d.status = 'DELIVERED' AND d.createdDate BETWEEN :start AND :end")
     Double sumQuantityByDonorBetween(@Param("email") String email, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
@@ -129,12 +126,22 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
     @Query("SELECT d FROM Donation d WHERE d.driver.user.email = :email AND d.status = 'DELIVERED'")
     List<Donation> findCompletedDeliveriesByDriver(@Param("email") String email);
 
+    @Query("SELECT d FROM Donation d WHERE d.driver.user.email = :email AND d.status = 'DELIVERED' AND d.createdDate BETWEEN :start AND :end")
+    List<Donation> findCompletedDeliveriesByDriverBetween(@Param("email") String email, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
     @Query("SELECT COUNT(d) FROM Donation d WHERE d.driver.user.email = :email AND d.status = 'DELIVERED'")
     Long countDeliveriesByDriver(@Param("email") String email);
+
+    @Query("SELECT COUNT(d) FROM Donation d WHERE d.driver.user.email = :email AND d.status = 'DELIVERED' AND d.createdDate BETWEEN :start AND :end")
+    Long countDeliveriesByDriverBetween(@Param("email") String email, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
     @Query("SELECT SUM(di.quantity) FROM Donation d JOIN d.donationItems di " +
             "WHERE d.driver.user.email = :email AND d.status = 'DELIVERED'")
     Double sumQuantitiesTransportedByDriver(@Param("email") String email);
+
+    @Query("SELECT SUM(di.quantity) FROM Donation d JOIN d.donationItems di " +
+            "WHERE d.driver.user.email = :email AND d.status = 'DELIVERED' AND d.createdDate BETWEEN :start AND :end")
+    Double sumQuantitiesTransportedByDriverBetween(@Param("email") String email, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
     @Query(value = "SELECT EXTRACT(MONTH FROM de.accepted_at) as mes, " +
             "AVG(CASE WHEN de.accepted_at <= d.pickup_end_time THEN 100.0 ELSE 0.0 END) " +
@@ -144,14 +151,43 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
             "JOIN users u ON dr.user_id = u.id " +
             "WHERE u.email = :email " +
             "AND d.status = 'DELIVERED' " +
+            "AND d.created_date BETWEEN :start AND :end " +
             "GROUP BY mes ORDER BY mes ASC",
             nativeQuery = true)
-    List<Object[]> getMonthlyPunctuality(@Param("email") String email);
+    List<Object[]> getMonthlyPunctuality(@Param("email") String email, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
     @Query("SELECT COUNT(d) FROM Donation d WHERE d.driver.user.email = :email AND d.status = 'DELIVERED'" +
             "AND d.deliveryEvidence.acceptedAt <= d.pickupEndTime")
     Long countPunctualDeliveriesByDriver(@Param("email") String email);
 
+    @Query("SELECT COUNT(d) FROM Donation d WHERE d.driver.user.email = :email AND d.status = 'DELIVERED' " +
+            "AND d.deliveryEvidence.acceptedAt <= d.pickupEndTime AND d.createdDate BETWEEN :start AND :end")
+    Long countPunctualDeliveriesByDriverBetween(@Param("email") String email, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT d.status, COUNT(d) FROM Donation d " +
+            "WHERE d.driver.user.email = :email AND d.createdDate BETWEEN :start AND :end GROUP BY d.status")
+    List<Object[]> getDonationFunnelByDriver(@Param("email") String email, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT dn.tradeName, SUM(di.quantity) FROM Donation d JOIN d.donor dn JOIN d.donationItems di " +
+            "WHERE d.driver.user.email = :email AND d.status = 'DELIVERED' AND d.createdDate BETWEEN :start AND :end " +
+            "GROUP BY dn.id, dn.tradeName ORDER BY SUM(di.quantity) DESC")
+    List<Object[]> getTopBusinessesByDriver(@Param("email") String email, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end, Pageable pageable);
+
+    @Query("SELECT n.ngoName, SUM(di.quantity) FROM Donation d JOIN d.ngo n JOIN d.donationItems di " +
+            "WHERE d.driver.user.email = :email AND d.status = 'DELIVERED' AND d.createdDate BETWEEN :start AND :end " +
+            "GROUP BY n.id, n.ngoName ORDER BY SUM(di.quantity) DESC")
+    List<Object[]> getTopNgosByDriver(@Param("email") String email, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end, Pageable pageable);
+
+    @Query(value = "SELECT EXTRACT(YEAR FROM d.created_date) AS yr, EXTRACT(MONTH FROM d.created_date) AS mo, " +
+            "COUNT(DISTINCT d.id) AS deliveries, COALESCE(SUM(di.quantity), 0) AS kilos " +
+            "FROM donations d " +
+            "JOIN drivers dr ON d.driver_id = dr.id " +
+            "JOIN users u ON dr.user_id = u.id " +
+            "LEFT JOIN donation_items di ON di.donation_id = d.id " +
+            "WHERE u.email = :email AND d.status = 'DELIVERED' AND d.created_date BETWEEN :start AND :end " +
+            "GROUP BY yr, mo ORDER BY yr, mo",
+            nativeQuery = true)
+    List<Object[]> getMonthlyDeliveryTrendByDriver(@Param("email") String email, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
     //Métricas Admin
     @Query(value = "SELECT EXTRACT(DOW FROM created_date) as day, EXTRACT(HOUR FROM created_date) as hour, COUNT(*) " +
             "FROM donations WHERE created_date BETWEEN :start AND :end " +

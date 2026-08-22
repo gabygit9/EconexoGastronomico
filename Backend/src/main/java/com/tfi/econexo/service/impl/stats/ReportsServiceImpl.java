@@ -2,6 +2,10 @@ package com.tfi.econexo.service.impl.stats;
 
 import com.tfi.econexo.dto.stats.*;
 import com.tfi.econexo.dto.stats.donor.*;
+import com.tfi.econexo.dto.stats.driver.DriverStatsComparisonDTO;
+import com.tfi.econexo.dto.stats.driver.DriverStatsDTO;
+import com.tfi.econexo.dto.stats.driver.MonthlyDriverTrendDTO;
+import com.tfi.econexo.dto.stats.driver.TopBusinessDTO;
 import com.tfi.econexo.model.donation.Donation;
 import com.tfi.econexo.model.donation.DonationItem;
 import com.tfi.econexo.repository.donation.DonationRepository;
@@ -32,7 +36,7 @@ public class ReportsServiceImpl implements ReportsService {
         return switch (role) {
             case "ROLE_NGO" -> getNgoStats(username);
             case "ROLE_DONOR" -> getDonorStats(username, startDate, endDate);
-            case "ROLE_DRIVER" -> getDriverStats(username);
+            case "ROLE_DRIVER" -> getDriverStats(username, startDate, endDate);
             case "ROLE_ADMIN" -> getAdminStats(username, role, startDate, endDate);
             default -> throw new RuntimeException("Invalid role");
         };
@@ -204,11 +208,16 @@ public class ReportsServiceImpl implements ReportsService {
     }
 
     @Override
-    public DriverStatsDTO getDriverStats(String email) {
-        List<Donation> deliveries = donationRepository.findCompletedDeliveriesByDriver(email);
-        Long totalDeliveries = donationRepository.countDeliveriesByDriver(email);
-        Double totalKilos = donationRepository.sumQuantitiesTransportedByDriver(email);
-        Long punctual = donationRepository.countPunctualDeliveriesByDriver(email);
+    public DriverStatsDTO getDriverStats(String email, LocalDate startDate, LocalDate endDate) {
+        boolean hasDateFilter = startDate != null && endDate != null;
+
+        LocalDateTime start = startDate != null ? startDate.atStartOfDay() : DEFAULT_RANGE_START;
+        LocalDateTime end = endDate != null ? endDate.atTime(23, 59, 59) : LocalDateTime.now();
+
+        List<Donation> deliveries = donationRepository.findCompletedDeliveriesByDriverBetween(email, start, end);
+        Long totalDeliveries = donationRepository.countDeliveriesByDriverBetween(email, start, end);
+        Double totalKilos = donationRepository.sumQuantitiesTransportedByDriverBetween(email, start, end);
+        Long punctual = donationRepository.countPunctualDeliveriesByDriverBetween(email, start, end);
 
         List<Donation> validDeliveries = deliveries.stream()
                 .filter(d -> d.getDeliveryEvidence() != null && d.getDeliveryEvidence().getAcceptedAt() != null)
@@ -217,13 +226,11 @@ public class ReportsServiceImpl implements ReportsService {
         //Actividad por hora (Array de 24 posiciones)
         List<Integer> activityByHour = new ArrayList<>(java.util.Collections.nCopies(24,0));
         validDeliveries.forEach(d -> {
-            if(d.getDeliveryEvidence() != null && d.getDeliveryEvidence().getAcceptedAt() != null) {
-                int hour = d.getDeliveryEvidence().getAcceptedAt().getHour();
-                activityByHour.set(hour, activityByHour.get(hour) + 1);
-            }
+            int hour = d.getDeliveryEvidence().getAcceptedAt().getHour();
+            activityByHour.set(hour, activityByHour.get(hour) + 1);
         });
 
-        List<Map<String, Object>> monthlyPunctuality = donationRepository.getMonthlyPunctuality(email).stream()
+        List<Map<String, Object>> monthlyPunctuality = donationRepository.getMonthlyPunctuality(email, start, end).stream()
                 .filter(obj -> obj[0] != null && obj[1] != null)
                 .map(obj -> {
                     Map<String, Object> map = new HashMap<>();
@@ -233,7 +240,7 @@ public class ReportsServiceImpl implements ReportsService {
                 })
                 .toList();
 
-        Double avgKilos = (totalDeliveries > 0) ? (totalKilos / totalDeliveries) : 0.0;
+        Double avgKilos = (totalDeliveries != null && totalDeliveries > 0 && totalKilos != null) ? (totalKilos / totalDeliveries) : 0.0;
 
         long activeDays = validDeliveries.stream()
                 .map(d -> d.getDeliveryEvidence().getAcceptedAt().toLocalDate())
@@ -244,15 +251,67 @@ public class ReportsServiceImpl implements ReportsService {
                 .mapToDouble(d -> calculateDistance(d.getDonor().getLocation(), d.getNgo().getLocation()))
                 .sum();
 
+        Double punctualityPercentage = (totalDeliveries == null || totalDeliveries == 0) ? 0.0 :
+                (double) (punctual != null ? punctual : 0) / totalDeliveries * 100;
+
+        List<Object[]> funnel = donationRepository.getDonationFunnelByDriver(email, start, end);
+
+        List<TopBusinessDTO> topBusinesses = donationRepository.getTopBusinessesByDriver(email, start, end, PageRequest.of(0, 5)).stream()
+                .map(obj -> new TopBusinessDTO((String) obj[0], (Double) obj[1]))
+                .toList();
+
+        List<TopNgoDTO> topNgos = donationRepository.getTopNgosByDriver(email, start, end, PageRequest.of(0, 5)).stream()
+                .map(obj -> new TopNgoDTO((String) obj[0], (Double) obj[1]))
+                .toList();
+
+        List<MonthlyDriverTrendDTO> monthlyTrend = donationRepository.getMonthlyDeliveryTrendByDriver(email, start, end).stream()
+                .map(obj -> new MonthlyDriverTrendDTO(
+                        ((Number) obj[0]).intValue(),
+                        ((Number) obj[1]).intValue(),
+                        ((Number) obj[2]).longValue(),
+                        obj[3] != null ? ((Number) obj[3]).doubleValue() : 0.0))
+                .toList();
+
+        DriverStatsComparisonDTO comparison = null;
+        if (hasDateFilter) {
+            comparison = comparisonDriverPreviousPeriod(startDate, endDate, start, email, totalDeliveries, totalKilos, punctualityPercentage);
+        }
+
         return new DriverStatsDTO(
-                totalDeliveries,
+                totalDeliveries != null ? totalDeliveries : 0L,
                 totalKilos != null ? totalKilos : 0.0,
                 deliveries.isEmpty() ? 0.0 : totalDist / deliveries.size(),
-                totalDeliveries == 0 ? 0.0 : (double) (punctual != null ? punctual : 0) / totalDeliveries * 100,
+                punctualityPercentage,
                 activityByHour,
                 avgKilos,
                 activeDays,
-                monthlyPunctuality
+                monthlyPunctuality,
+                funnel,
+                topBusinesses,
+                topNgos,
+                monthlyTrend,
+                comparison
+        );
+    }
+
+    private DriverStatsComparisonDTO comparisonDriverPreviousPeriod(LocalDate startDate, LocalDate endDate, LocalDateTime start, String email, Long totalDeliveries, Double totalKilos, Double punctualityPercentage){
+        long durationDays = ChronoUnit.DAYS.between(startDate, endDate) + 1;
+        LocalDateTime prevEnd = start.minusSeconds(1);
+        LocalDateTime prevStart = start.minusDays(durationDays);
+
+        Long prevDeliveries = donationRepository.countDeliveriesByDriverBetween(email, prevStart, prevEnd);
+        Double prevKilos = donationRepository.sumQuantitiesTransportedByDriverBetween(email, prevStart, prevEnd);
+        Long prevPunctual = donationRepository.countPunctualDeliveriesByDriverBetween(email, prevStart, prevEnd);
+        Double prevPunctuality = (prevDeliveries == null || prevDeliveries == 0) ? 0.0 :
+                (double) (prevPunctual != null ? prevPunctual : 0) / prevDeliveries * 100;
+
+        return new DriverStatsComparisonDTO(
+                percentChange(totalDeliveries, prevDeliveries),
+                prevDeliveries != null ? prevDeliveries : 0L,
+                percentChange(totalKilos, prevKilos),
+                prevKilos != null ? prevKilos : 0.0,
+                punctualityPercentage - prevPunctuality,
+                prevPunctuality
         );
     }
 

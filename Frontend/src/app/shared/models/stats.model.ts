@@ -58,7 +58,19 @@ export interface DriverStats {
   activityByHour: number[];
   avgKilosPerDelivery: number;
   activeDays: number;
-  monthlyPunctuality: number[];
+  monthlyPunctuality: { month: number; value: number }[];
+  funnel: any[];
+  topBusinesses: { businessName: string; kilos: number }[];
+  topNgos: { ngoName: string; kilos: number }[];
+  monthlyTrend: { year: number; month: number; deliveries: number; kilos: number }[];
+  comparison: {
+    totalDeliveriesChangePercent: number;
+    totalDeliveriesPrev: number;
+    totalKilosChangePercent: number;
+    totalKilosPrev: number;
+    punctualityDeltaPoints: number;
+    punctualityPrev: number;
+  } | null;
 }
 
 export interface AdminStats {
