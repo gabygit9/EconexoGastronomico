@@ -1,8 +1,9 @@
-import {Component, Input, ViewChild} from '@angular/core';
+import {Component, inject, Input, ViewChild} from '@angular/core';
 import {AdminStats} from '../../../shared/models/stats.model';
 import {ChartComponent} from 'ng-apexcharts';
 import {StatusTranslatePipe} from '../../../shared/pipes/status-translate.pipe';
 import {CurrencyPipe, DecimalPipe} from '@angular/common';
+import {DonationStatusColorsService} from '../../../core/services/donation-status-colors.service';
 
 @Component({
   selector: 'app-admin-stats',
@@ -15,6 +16,9 @@ import {CurrencyPipe, DecimalPipe} from '@angular/common';
   styleUrl: './admin-stats.component.css'
 })
 export class AdminStatsComponent {
+  private readonly statusTranslate = new StatusTranslatePipe();
+  private readonly statusColors = inject(DonationStatusColorsService);
+
   @ViewChild("chart") chart!: ChartComponent;
   private _stats!: AdminStats;
 
@@ -136,11 +140,10 @@ export class AdminStatsComponent {
       series: [{
         name: 'Donaciones',
         data: funnelData.map((item: any) => {
-          const statusKey = String(item[0]).trim().toUpperCase();
           return {
-            x: this.statusTranslations[statusKey] || item[0],
+            x: this.statusTranslate.transform(item[0]),
             y: item[1],
-            fillColor: this.statusColors[statusKey] || '#94a3b8'
+            fillColor: this.statusColors.getHexColor(item[0])
           };
         })
       }],
@@ -348,38 +351,5 @@ export class AdminStatsComponent {
     };
   }
 
-  /**
-   * Status colors helper
-   */
-  private statusColors: { [key: string]: string } = {
-    'PENDING_PAYMENT': '#f59e0b',
-    'AVAILABLE': '#6366f1',
-    'REQUESTED': '#3b82f6',
-    'ASSIGNED': '#8b5cf6',
-    'IN_TRANSIT': '#0ea5e9',
-    'DELIVERED_PENDING_NGO': '#fbbf24',
-    'DELIVERED': '#059669',
-    'REJECTED': '#ef4444',
-    'CANCELED': '#64748b',
-    'EXPIRED': '#94a3b8',
-    'COMPLETED': '#10b981'
-  };
-
-  /**
-   * Status translations helper
-   */
-  private statusTranslations: { [key: string]: string } = {
-    'PENDING_PAYMENT': "Pendiente",
-    'AVAILABLE': 'Disponible',
-    'REQUESTED': 'Solicitado',
-    'ASSIGNED': 'Asignado',
-    'IN_TRANSIT': 'En tránsito',
-    'DELIVERED_PENDING_NGO': 'En destino',
-    'DELIVERED': 'Entregado',
-    'REJECTED': 'Rechazado',
-    'CANCELED': 'Cancelado',
-    'EXPIRED': 'Expirado',
-    'COMPLETED': 'Completado'
-  };
 
 }

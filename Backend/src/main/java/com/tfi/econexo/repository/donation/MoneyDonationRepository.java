@@ -18,9 +18,6 @@ public interface MoneyDonationRepository extends JpaRepository<MoneyDonation, Lo
 
     Page<MoneyDonationDTO> findByNgo_Id(Long ngoId, Pageable pageable);
 
-    @Query("SELECT SUM(md.amount) FROM MoneyDonation md WHERE md.donor.user.email = :email AND md.status = 'COMPLETED'")
-    Double sumDonatedAmountByDonor(@Param("email") String email);
-
     @Query("SELECT SUM(md.amount) FROM MoneyDonation md WHERE md.status = 'COMPLETED'")
     Double sumAllDonatedAmount();
 
@@ -48,4 +45,17 @@ public interface MoneyDonationRepository extends JpaRepository<MoneyDonation, Lo
             "GROUP BY yr, mo ORDER BY yr, mo",
             nativeQuery = true)
     List<Object[]> getMonthlyMoneyTrendByDonor(@Param("email") String email, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT SUM(m.amount) FROM MoneyDonation m WHERE m.ngo.user.email = :email AND m.createdDate BETWEEN :start AND :end")
+    Double sumMoneyReceivedByNgoBetween(@Param("email") String email, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query(value = "SELECT EXTRACT(YEAR FROM md.created_date) AS yr, EXTRACT(MONTH FROM md.created_date) AS mo, " +
+            "COALESCE(SUM(md.amount), 0) AS money " +
+            "FROM money_donations md " +
+            "JOIN organizations n ON md.ngo_id = n.id " +
+            "JOIN users u ON n.user_id = u.id " +
+            "WHERE u.email = :email AND md.status = 'COMPLETED' AND md.created_date BETWEEN :start AND :end " +
+            "GROUP BY yr, mo ORDER BY yr, mo",
+            nativeQuery = true)
+    List<Object[]> getMonthlyMoneyTrendByNgo(@Param("email") String email, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 }

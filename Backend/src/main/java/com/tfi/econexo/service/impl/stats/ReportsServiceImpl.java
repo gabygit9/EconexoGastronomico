@@ -1,11 +1,13 @@
 package com.tfi.econexo.service.impl.stats;
 
-import com.tfi.econexo.dto.stats.*;
 import com.tfi.econexo.dto.stats.donor.*;
 import com.tfi.econexo.dto.stats.driver.DriverStatsComparisonDTO;
 import com.tfi.econexo.dto.stats.driver.DriverStatsDTO;
 import com.tfi.econexo.dto.stats.driver.MonthlyDriverTrendDTO;
 import com.tfi.econexo.dto.stats.driver.TopBusinessDTO;
+import com.tfi.econexo.dto.stats.ngo.MonthlyNgoTrendDTO;
+import com.tfi.econexo.dto.stats.ngo.NgoStatsComparisonDTO;
+import com.tfi.econexo.dto.stats.ngo.NgoStatsDTO;
 import com.tfi.econexo.model.donation.Donation;
 import com.tfi.econexo.model.donation.DonationItem;
 import com.tfi.econexo.repository.donation.DonationRepository;
@@ -30,11 +32,12 @@ public class ReportsServiceImpl implements ReportsService {
 
     private static final LocalDateTime DEFAULT_RANGE_START = LocalDateTime.of(2000, 1, 1, 0, 0);
     private static final double RATIONS_PER_KG = 2.0;
+    boolean hasDateFilter;
 
     @Override
     public Object getStatsByRole(String role, String username, LocalDate startDate, LocalDate endDate) {
         return switch (role) {
-            case "ROLE_NGO" -> getNgoStats(username);
+            case "ROLE_NGO" -> getNgoStats(username, startDate, endDate);
             case "ROLE_DONOR" -> getDonorStats(username, startDate, endDate);
             case "ROLE_DRIVER" -> getDriverStats(username, startDate, endDate);
             case "ROLE_ADMIN" -> getAdminStats(username, role, startDate, endDate);
@@ -43,13 +46,18 @@ public class ReportsServiceImpl implements ReportsService {
     }
 
     @Override
-    public NgoStatsDTO getNgoStats(String email) {
+    public NgoStatsDTO getNgoStats(String email, LocalDate startDate, LocalDate endDate) {
+        hasDateFilter = startDate != null && endDate != null;
+
+        LocalDateTime start = startDate != null ? startDate.atStartOfDay() : DEFAULT_RANGE_START;
+        LocalDateTime end = endDate != null ? endDate.atTime(23, 59, 59) : LocalDateTime.now();
+
         LocalDateTime startOfMonth = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0);
         LocalDateTime startOfPrevMonth = startOfMonth.minusMonths(1);
 
-        Double totalKilos = donationRepository.sumQuantityByNgo(email);
-        Long uniqueDonors = donationRepository.countUniqueDonorsByNgo(email);
-        Long totalRequested = donationRepository.countTotalRequestedByNgo(email);
+        Double totalKilos = donationRepository.sumQuantityByNgoBetween(email, start, end);
+        Long uniqueDonors = donationRepository.countUniqueDonorsByNgoBetween(email, start, end);
+        Long totalRequested = donationRepository.countTotalRequestedByNgoBetween(email, start, end);
 
         Double efficiency = (totalRequested == null || totalRequested == 0) ? 0.0 :
                 (totalKilos != null ? totalKilos : 0.0) / totalRequested;
@@ -58,16 +66,28 @@ public class ReportsServiceImpl implements ReportsService {
         Double prevMonth = donationRepository.sumQuantityByNgoAndDateRange(email, startOfPrevMonth, startOfMonth);
 
         Double currentMoney = moneyDonationRepository.sumMoneyByNgoAndDateRange(email, startOfMonth, LocalDateTime.now());
-        Double totalMoney = moneyDonationRepository.sumMoneyReceivedByNgo(email);
+        Double totalMoney = moneyDonationRepository.sumMoneyReceivedByNgoBetween(email, start, end);
 
-        List<Object[]> rawTopCategories = donationRepository.getTopCategoriesByNgo(email);
-        List<CategoryStatsDTO> topCategories = rawTopCategories.stream()
+        List<CategoryStatsDTO> topCategories = donationRepository.getTopCategoriesByNgo(email).stream()
                 .map(obj -> new CategoryStatsDTO((String) obj[0], (Double) obj[1]))
                 .toList();
 
         List<RecentDonationDTO> recentDonations = donationRepository.findRecentDonationsByNgo(email, PageRequest.of(0, 5))
                 .stream().map(d -> new RecentDonationDTO(d.getDonor().getTradeName(), d.getCreatedDate(), d.getDonationItems().stream().map(DonationItem::getQuantity).reduce(0.0, Double::sum)))
                 .toList();
+
+        List<Object[]> funnel = donationRepository.getDonationFunnelByNgo(email, start, end);
+
+        List<TopBusinessDTO> topBusinesses = donationRepository.getTopBusinessesByNgo(email, start, end, PageRequest.of(0, 5)).stream()
+                .map(obj -> new TopBusinessDTO((String) obj[0], (Double) obj[1]))
+                .toList();
+
+        List<MonthlyNgoTrendDTO> monthlyTrend = buildNgoMonthlyTrend(email, start, end);
+
+        NgoStatsComparisonDTO comparison = null;
+        if (hasDateFilter) {
+            comparison = comparisonNgoPreviousPeriod(email, startDate, endDate, start, efficiency, totalKilos, totalMoney);
+        }
 
         return new NgoStatsDTO(
                 totalKilos != null ? totalKilos : 0.0,
@@ -78,12 +98,67 @@ public class ReportsServiceImpl implements ReportsService {
                 totalMoney != null ? totalMoney : 0.0,
                 currentMoney != null ? currentMoney : 0.0,
                 topCategories,
-                recentDonations);
+                recentDonations,
+                funnel,
+                topBusinesses,
+                monthlyTrend,
+                comparison);
+    }
+
+    private NgoStatsComparisonDTO comparisonNgoPreviousPeriod(String email, LocalDate startDate, LocalDate endDate, LocalDateTime start, Double efficiency, Double totalKilos, Double totalMoney) {
+        long durationDays = ChronoUnit.DAYS.between(startDate, endDate) + 1;
+        LocalDateTime prevEnd = start.minusSeconds(1);
+        LocalDateTime prevStart = start.minusDays(durationDays);
+
+        Double prevKilos = donationRepository.sumQuantityByNgoBetween(email, prevStart, prevEnd);
+        Double prevMoneyRange = moneyDonationRepository.sumMoneyReceivedByNgoBetween(email, prevStart, prevEnd);
+        Long prevRequested = donationRepository.countTotalRequestedByNgoBetween(email, prevStart, prevEnd);
+        Double prevEfficiency = (prevRequested == null || prevRequested == 0) ? 0.0 :
+                (prevKilos != null ? prevKilos : 0.0) / prevRequested;
+
+        return new NgoStatsComparisonDTO(
+                percentChange(totalKilos, prevKilos),
+                prevKilos != null ? prevKilos : 0.0,
+                percentChange(totalMoney, prevMoneyRange),
+                prevMoneyRange != null ? prevMoneyRange : 0.0,
+                (efficiency * 100) - (prevEfficiency * 100),
+                prevEfficiency * 100
+        );
+    }
+
+    private List<MonthlyNgoTrendDTO> buildNgoMonthlyTrend(String email, LocalDateTime start, LocalDateTime end) {
+        Map<String, Double> kilosByMonth = new LinkedHashMap<>();
+        Map<String, Double> moneyByMonth = new LinkedHashMap<>();
+
+        for (Object[] row : donationRepository.getMonthlyKilosTrendByNgo(email, start, end)) {
+            String key = ((Number) row[0]).intValue() + "-" + ((Number) row[1]).intValue();
+            kilosByMonth.put(key, row[2] != null ? ((Number) row[2]).doubleValue() : 0.0);
+        }
+        for (Object[] row : moneyDonationRepository.getMonthlyMoneyTrendByNgo(email, start, end)) {
+            String key = ((Number) row[0]).intValue() + "-" + ((Number) row[1]).intValue();
+            moneyByMonth.put(key, row[2] != null ? ((Number) row[2]).doubleValue() : 0.0);
+        }
+
+        Set<String> allMonths = new TreeSet<>();
+        allMonths.addAll(kilosByMonth.keySet());
+        allMonths.addAll(moneyByMonth.keySet());
+
+        List<MonthlyNgoTrendDTO> result = new ArrayList<>();
+        for (String key : allMonths) {
+            String[] parts = key.split("-");
+            result.add(new MonthlyNgoTrendDTO(
+                    Integer.parseInt(parts[0]),
+                    Integer.parseInt(parts[1]),
+                    kilosByMonth.getOrDefault(key, 0.0),
+                    moneyByMonth.getOrDefault(key, 0.0)
+            ));
+        }
+        return result;
     }
 
     @Override
     public DonorStatsDTO getDonorStats(String email, LocalDate startDate, LocalDate endDate) {
-        boolean hasDateFilter = startDate != null && endDate != null;
+        hasDateFilter = startDate != null && endDate != null;
         //Fechas
         LocalDateTime start = startDate != null ? startDate.atStartOfDay() : DEFAULT_RANGE_START;
         LocalDateTime end = endDate != null ? endDate.atTime(23, 59, 59) : LocalDateTime.now();
@@ -209,7 +284,7 @@ public class ReportsServiceImpl implements ReportsService {
 
     @Override
     public DriverStatsDTO getDriverStats(String email, LocalDate startDate, LocalDate endDate) {
-        boolean hasDateFilter = startDate != null && endDate != null;
+        hasDateFilter = startDate != null && endDate != null;
 
         LocalDateTime start = startDate != null ? startDate.atStartOfDay() : DEFAULT_RANGE_START;
         LocalDateTime end = endDate != null ? endDate.atTime(23, 59, 59) : LocalDateTime.now();

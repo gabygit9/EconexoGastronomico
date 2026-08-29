@@ -8,6 +8,17 @@ export interface NgoStats {
   currentMoney: number;
   topCategories: CategoryStat[];
   recentDonations: RecentDonation[];
+  funnel: any[];
+  topBusinesses: { businessName: string; kilos: number }[];
+  monthlyTrend: { year: number; month: number; kilos: number; money: number }[];
+  comparison: {
+    totalKilosChangePercent: number;
+    totalKilosPrev: number;
+    totalMoneyChangePercent: number;
+    totalMoneyPrev: number;
+    efficiencyDeltaPoints: number;
+    efficiencyPrev: number;
+  } | null;
 }
 
 export interface RecentDonation {

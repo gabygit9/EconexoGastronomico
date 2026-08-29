@@ -2,7 +2,7 @@ package com.tfi.econexo.service.stats;
 
 import com.tfi.econexo.dto.stats.donor.DonorStatsDTO;
 import com.tfi.econexo.dto.stats.driver.DriverStatsDTO;
-import com.tfi.econexo.dto.stats.NgoStatsDTO;
+import com.tfi.econexo.dto.stats.ngo.NgoStatsDTO;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -10,7 +10,7 @@ import java.util.Map;
 public interface ReportsService {
 
     Object getStatsByRole(String role, String username, LocalDate startDate, LocalDate endDate);
-    NgoStatsDTO getNgoStats(String email);
+    NgoStatsDTO getNgoStats(String email, LocalDate startDate, LocalDate endDate);
     DonorStatsDTO getDonorStats(String email, LocalDate startDate, LocalDate endDate);
     DriverStatsDTO getDriverStats(String email, LocalDate startDate, LocalDate endDate);
     Map<String, Object> getAdminStats(String email, String role, LocalDate startDate, LocalDate endDate);

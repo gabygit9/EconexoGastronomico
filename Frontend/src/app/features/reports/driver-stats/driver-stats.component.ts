@@ -1,7 +1,9 @@
-import {Component, Input, ViewChild} from '@angular/core';
+import {Component, inject, Input, ViewChild} from '@angular/core';
 import {DriverStats} from '../../../shared/models/stats.model';
 import {ChartComponent, NgApexchartsModule} from 'ng-apexcharts';
 import {DecimalPipe, PercentPipe} from '@angular/common';
+import {StatusTranslatePipe} from '../../../shared/pipes/status-translate.pipe';
+import {DonationStatusColorsService} from '../../../core/services/donation-status-colors.service';
 
 @Component({
   selector: 'app-driver-stats',
@@ -10,6 +12,9 @@ import {DecimalPipe, PercentPipe} from '@angular/common';
   styleUrl: './driver-stats.component.css'
 })
 export class DriverStatsComponent {
+  private readonly statusTranslate = new StatusTranslatePipe();
+  private readonly statusColors = inject(DonationStatusColorsService);
+
   @ViewChild("chart") chart!: ChartComponent;
 
   @Input() set stats(value: DriverStats){
@@ -31,20 +36,6 @@ export class DriverStatsComponent {
   get stats() { return this._stats; }
 
   private readonly MONTH_NAMES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-
-  private statusColors: { [key: string]: string } = {
-    'PENDING_PAYMENT': '#f59e0b', 'AVAILABLE': '#6366f1', 'REQUESTED': '#3b82f6',
-    'ASSIGNED': '#8b5cf6', 'IN_TRANSIT': '#0ea5e9', 'DELIVERED_PENDING_NGO': '#fbbf24',
-    'DELIVERED': '#059669', 'REJECTED': '#ef4444', 'CANCELED': '#64748b',
-    'EXPIRED': '#94a3b8', 'COMPLETED': '#10b981'
-  };
-
-  private statusTranslations: { [key: string]: string } = {
-    'PENDING_PAYMENT': "Pendiente", 'AVAILABLE': 'Disponible', 'REQUESTED': 'Solicitado',
-    'ASSIGNED': 'Asignado', 'IN_TRANSIT': 'En tránsito', 'DELIVERED_PENDING_NGO': 'En destino',
-    'DELIVERED': 'Entregado', 'REJECTED': 'Rechazado', 'CANCELED': 'Cancelado',
-    'EXPIRED': 'Expirado', 'COMPLETED': 'Completado'
-  };
 
   hasComparison(): boolean {
     return !!this.stats?.comparison;
@@ -179,8 +170,7 @@ export class DriverStatsComponent {
       series: [{
         name: 'Viajes',
         data: funnelData.map((item: any) => {
-          const statusKey = String(item[0]).trim().toUpperCase();
-          return { x: this.statusTranslations[statusKey] || item[0], y: item[1], fillColor: this.statusColors[statusKey] || '#94a3b8' };
+          return { x: this.statusTranslate.transform(item[0]), y: item[1], fillColor: this.statusColors.getHexColor(item[0]) };
         })
       }],
       chart: { type: 'bar', height: 320, width: '100%', toolbar: { show: false } },
